@@ -1,0 +1,186 @@
+package de.timesnake.basic.lobby.server;
+
+import de.timesnake.basic.bukkit.util.Server;
+import de.timesnake.basic.bukkit.util.ServerManager;
+import de.timesnake.basic.bukkit.util.chat.ChatColor;
+import de.timesnake.basic.bukkit.util.server.Network;
+import de.timesnake.basic.bukkit.util.user.User;
+import de.timesnake.basic.bukkit.util.user.event.UserJoinEvent;
+import de.timesnake.basic.bukkit.util.user.scoreboard.Sideboard;
+import de.timesnake.basic.bukkit.util.world.ExWorld;
+import de.timesnake.basic.lobby.build.Build;
+import de.timesnake.basic.lobby.chat.Plugin;
+import de.timesnake.basic.lobby.hub.GamesMenu;
+import de.timesnake.basic.lobby.main.BasicLobby;
+import de.timesnake.basic.lobby.user.LobbyInventory;
+import de.timesnake.basic.lobby.user.LobbyUser;
+import de.timesnake.basic.lobby.user.UserManager;
+import de.timesnake.channel.listener.ChannelServerListener;
+import de.timesnake.database.util.object.Status;
+import de.timesnake.library.waitinggames.WaitingGameManager;
+import net.md_5.bungee.api.chat.ClickEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+
+import java.util.Random;
+
+public class LobbyServerManager extends ServerManager implements ChannelServerListener, Listener {
+
+    public static LobbyServerManager getInstance() {
+        return (LobbyServerManager) ServerManager.getInstance();
+    }
+
+    @Override
+    public LobbyUser loadUser(Player player) {
+        return new LobbyUser(player);
+    }
+
+    private LobbyInventory lobbyInventory;
+    private Build build;
+    private GamesMenu gamesMenu;
+
+    private Sideboard sideboard;
+
+    private ExWorld lobbyWorld;
+
+    private UserManager userManager;
+
+    private WaitingGameManager waitingGameManager;
+
+    public void onLobbyEnable() {
+        this.lobbyInventory = new LobbyInventory();
+        this.build = new Build();
+        this.gamesMenu = new GamesMenu();
+
+        this.userManager = new UserManager();
+
+        this.lobbyWorld = Server.getWorld("world");
+
+        int spawnX = this.lobbyWorld.getSpawnLocation().getChunk().getX();
+        int spawnZ = this.lobbyWorld.getSpawnLocation().getChunk().getZ();
+
+        for (int x = -2; x < 2; x++) {
+            for (int z = -2; z < 2; z++) {
+                this.lobbyWorld.getChunkAt(spawnX + x, spawnZ + z).setForceLoaded(true);
+            }
+        }
+
+
+        this.lobbyWorld.allowEntityExplode(false);
+        this.lobbyWorld.allowPlayerDamage(true);
+        this.lobbyWorld.allowFoodChange(false);
+        this.lobbyWorld.allowBlockBurnUp(false);
+        this.lobbyWorld.allowEntityBlockBreak(false);
+        this.lobbyWorld.allowDropPickItem(false);
+        this.lobbyWorld.allowBlockBreak(false);
+        this.lobbyWorld.setExceptService(true);
+        this.lobbyWorld.setPVP(true);
+        this.lobbyWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+        this.lobbyWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+
+        Thread chatInfoThread = new Thread(new ChatInfoRepeater());
+        chatInfoThread.start();
+
+        this.sideboard = Server.getScoreboardManager().registerNewSideboard("lobby", "§6§lLobby");
+        sideboard.setScore(7, "§1Online:");
+        this.sideboard.setScore(6, "§6" + Server.getNetwork().getPlayerAmount());
+        this.sideboard.setScore(5, "§r§f§f---------------§r");
+        this.sideboard.setScore(4, "§1TimeCoins: ");
+        //user time coins
+        this.sideboard.setScore(2, "§f§f---------------§r");
+        this.sideboard.setScore(1, "§8Server: ");
+        this.sideboard.setScore(0, "§7" + Server.getName());
+
+        this.waitingGameManager = new WaitingGameManager();
+
+        Server.getWorldManager().getWorldBorderManager().setCustomBorders(false);
+        Server.getWorldManager().getWorldBorderManager().allowEnderpearlThrouBorder(false);
+
+        Server.registerListener(this.lobbyInventory, BasicLobby.getPlugin());
+
+        Server.getChannel().addServerListener(new ServerUpdater(), Network.PROXY_PORT);
+    }
+
+    public void broadcastInfoMessage() {
+        switch (new Random().nextInt(3)) {
+            case 0:
+                Server.broadcastMessage(Plugin.INFO, ChatColor.PUBLIC + "Do you need help? Use " + ChatColor.VALUE + "/support");
+                break;
+            case 1:
+                Server.broadcastClickableMessage(Plugin.INFO, "Want to support the server? Donate via §nPatreon", Server.PATREON_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
+                break;
+            case 2:
+                Server.broadcastClickableMessage(Plugin.INFO, "Join our discord and meet our community", Server.DISCORD_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
+                break;
+            case 3:
+                Server.broadcastClickableMessage(Plugin.INFO, "Visit our website to find out more about the server", Server.WEBSITE_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
+                break;
+        }
+    }
+
+    public void msgOnlineTimeAll() {
+        for (User user : Server.getUsers()) {
+            user.sendPluginMessage(Plugin.LOBBY, ChatColor.PUBLIC + "Der Server ist immer samstags ab 19:30 " + "online.");
+        }
+    }
+
+    public ExWorld getLobbyWorld() {
+        return lobbyWorld;
+    }
+
+    public Build getBuild() {
+        return build;
+    }
+
+    public GamesMenu getGamesMenu() {
+        return gamesMenu;
+    }
+
+    public LobbyInventory getLobbyInventory() {
+        return lobbyInventory;
+    }
+
+    public Sideboard getLobbySideboard() {
+        return sideboard;
+    }
+
+    public WaitingGameManager getWaitingGameManager() {
+        return waitingGameManager;
+    }
+
+    @EventHandler
+    public void onUserJoin(UserJoinEvent e) {
+        LobbyUser user = (LobbyUser) e.getUser();
+        if (user.isService()) {
+            user.sendPluginMessage(Plugin.LOBBY, ChatColor.PERSONAL + "Switched to lobby-mode!");
+            user.sendPluginMessage(Plugin.LOBBY, ChatColor.PERSONAL + "Use " + ChatColor.VALUE + "/build " + ChatColor.PERSONAL + " to switch mode");
+            user.setStatus(Status.User.ONLINE);
+        }
+
+        if (!user.agreedDataProtection()) {
+            user.setDefault();
+        } else {
+            user.joinLobby();
+        }
+    }
+
+    private class ChatInfoRepeater implements Runnable {
+
+        public void run() {
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(BasicLobby.getPlugin(), new Runnable() {
+                int i = 0;
+
+                public void run() {
+                    if (this.i % 300 == 0) {
+                        LobbyServerManager.this.broadcastInfoMessage();
+                    }
+
+                    ++this.i;
+                }
+            }, 0L, 20L);
+        }
+    }
+}
