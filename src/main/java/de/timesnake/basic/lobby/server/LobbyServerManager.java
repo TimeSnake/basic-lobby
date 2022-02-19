@@ -3,7 +3,6 @@ package de.timesnake.basic.lobby.server;
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.ServerManager;
 import de.timesnake.basic.bukkit.util.chat.ChatColor;
-import de.timesnake.basic.bukkit.util.server.Network;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserJoinEvent;
 import de.timesnake.basic.bukkit.util.user.scoreboard.Sideboard;
@@ -15,8 +14,8 @@ import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.basic.lobby.user.LobbyInventory;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.basic.lobby.user.UserManager;
-import de.timesnake.channel.listener.ChannelServerListener;
-import de.timesnake.database.util.object.Status;
+import de.timesnake.channel.util.listener.ChannelListener;
+import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.waitinggames.WaitingGameManager;
 import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.Bukkit;
@@ -27,7 +26,7 @@ import org.bukkit.event.Listener;
 
 import java.util.Random;
 
-public class LobbyServerManager extends ServerManager implements ChannelServerListener, Listener {
+public class LobbyServerManager extends ServerManager implements ChannelListener, Listener {
 
     public static LobbyServerManager getInstance() {
         return (LobbyServerManager) ServerManager.getInstance();
@@ -101,7 +100,7 @@ public class LobbyServerManager extends ServerManager implements ChannelServerLi
 
         Server.registerListener(this.lobbyInventory, BasicLobby.getPlugin());
 
-        Server.getChannel().addServerListener(new ServerUpdater(), Network.PROXY_PORT);
+        new ServerUpdater();
     }
 
     public void broadcastInfoMessage() {

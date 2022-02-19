@@ -10,13 +10,17 @@ import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.hub.ServerPasswordCmd;
-import de.timesnake.channel.api.message.ChannelServerMessage;
-import de.timesnake.channel.listener.ChannelServerListener;
-import de.timesnake.database.util.object.Status;
+import de.timesnake.channel.util.listener.ChannelHandler;
+import de.timesnake.channel.util.listener.ChannelListener;
+import de.timesnake.channel.util.listener.ListenerType;
+import de.timesnake.channel.util.message.ChannelServerMessage;
 import de.timesnake.database.util.server.DbBuildServer;
+import de.timesnake.library.basic.util.Status;
 import org.bukkit.Material;
 
-public class BuildServer extends ServerInfo implements UserInventoryClickListener, ChannelServerListener {
+import java.util.Collections;
+
+public class BuildServer extends ServerInfo implements UserInventoryClickListener, ChannelListener {
 
     private static final Material ONLINE = Material.GREEN_WOOL;
     private static final Material OFFLINE = Material.GRAY_WOOL;
@@ -36,7 +40,7 @@ public class BuildServer extends ServerInfo implements UserInventoryClickListene
         this.item = new ExItemStack(slot, OFFLINE, "§6" + server.getName()).setLore("§b" + task);
 
         Server.getInventoryEventManager().addClickListener(this, this.item);
-        Server.getChannel().addServerListener(this, server.getPort());
+        Server.getChannel().addListener(this, () -> Collections.singleton(server.getPort()));
 
         this.updateItem();
         Server.printText(Plugin.LOBBY, "Loaded build server " + super.name + " successfully", "Build");
@@ -84,8 +88,8 @@ public class BuildServer extends ServerInfo implements UserInventoryClickListene
     }
 
 
-    @Override
-    public void onServerMessage(ChannelServerMessage msg) {
+    @ChannelHandler(type = ListenerType.SERVER, filtered = true)
+    public void onServerMessage(ChannelServerMessage<?> msg) {
         super.setOnlinePlayers(database.getOnlinePlayers());
         this.maxPlayers = database.getMaxPlayers();
         this.status = database.getStatus();

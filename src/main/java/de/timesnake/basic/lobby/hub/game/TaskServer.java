@@ -12,21 +12,21 @@ import de.timesnake.basic.bukkit.util.user.event.UserQuitEvent;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.hub.ServerPasswordCmd;
 import de.timesnake.basic.lobby.user.LobbyUser;
-import de.timesnake.channel.api.message.ChannelServerMessage;
-import de.timesnake.channel.listener.ChannelServerListener;
-import de.timesnake.database.util.object.Status;
+import de.timesnake.channel.util.listener.ChannelHandler;
+import de.timesnake.channel.util.listener.ChannelListener;
+import de.timesnake.channel.util.listener.ListenerType;
+import de.timesnake.channel.util.message.ChannelServerMessage;
+import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.database.util.server.DbTaskServer;
+import de.timesnake.library.basic.util.Status;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
-public class TaskServer extends ServerInfo implements ChannelServerListener, UserInventoryClickListener, Listener {
+public class TaskServer extends ServerInfo implements ChannelListener, UserInventoryClickListener, Listener {
 
     protected static final Material ONLINE = Material.GREEN_WOOL;
     protected static final Material ONLINE_FULL = Material.YELLOW_WOOL;
@@ -101,7 +101,7 @@ public class TaskServer extends ServerInfo implements ChannelServerListener, Use
     }
 
     protected void registerServerListener() {
-        Server.getChannel().addServerListener(this, this.port);
+        Server.getChannel().addListener(this, () -> Collections.singleton(this.port));
     }
 
     protected void updateItemAmount() {
@@ -280,23 +280,23 @@ public class TaskServer extends ServerInfo implements ChannelServerListener, Use
         return this.onlinePlayers >= this.maxPlayers;
     }
 
-    @Override
-    public void onServerMessage(ChannelServerMessage msg) {
+    @ChannelHandler(type = {ListenerType.SERVER_PASSWORD, ListenerType.SERVER_STATUS, ListenerType.SERVER_MAX_PLAYERS, ListenerType.SERVER_ONLINE_PLAYERS}, filtered = true)
+    public void onServerMessage(ChannelServerMessage<?> msg) {
         if (!msg.getPort().equals(this.port)) {
             return;
         }
 
-        ChannelServerMessage.MessageType type = msg.getType();
+        MessageType<?> type = msg.getMessageType();
 
-        if (type.equals(ChannelServerMessage.MessageType.PASSWORD)) {
+        if (type.equals(MessageType.Server.PASSWORD)) {
             this.password = this.database.getPassword();
             this.updateItemDescription();
-        } else if (type.equals(ChannelServerMessage.MessageType.STATUS)) {
+        } else if (type.equals(MessageType.Server.STATUS)) {
             this.status = this.database.getStatus();
             this.onlinePlayers = this.database.getOnlinePlayers();
             this.updateItemDescription();
             this.updateQueue();
-        } else if (type.equals(ChannelServerMessage.MessageType.MAX_PLAYERS) || type.equals(ChannelServerMessage.MessageType.ONLINE_PLAYERS)) {
+        } else if (type.equals(MessageType.Server.MAX_PLAYERS) || type.equals(MessageType.Server.ONLINE_PLAYERS)) {
             this.onlinePlayers = this.database.getOnlinePlayers();
             if (this.onlinePlayers == null) {
                 this.onlinePlayers = 0;

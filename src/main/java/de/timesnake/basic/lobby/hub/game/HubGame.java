@@ -9,8 +9,10 @@ import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.user.LobbyUser;
-import de.timesnake.channel.api.message.ChannelServerMessage;
-import de.timesnake.channel.listener.ChannelServerListener;
+import de.timesnake.channel.util.listener.ChannelHandler;
+import de.timesnake.channel.util.listener.ChannelListener;
+import de.timesnake.channel.util.listener.ListenerType;
+import de.timesnake.channel.util.message.ChannelServerMessage;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.game.DbGame;
 import de.timesnake.database.util.object.Type;
@@ -21,7 +23,7 @@ import org.bukkit.Material;
 import java.util.HashMap;
 import java.util.List;
 
-public class HubGame extends GameInfo implements UserInventoryClickListener, ChannelServerListener {
+public class HubGame extends GameInfo implements UserInventoryClickListener, ChannelListener {
 
     public static final ExItemStack BACK = new ExItemStack(Material.BLUE_BED, 1, "§cBack", List.of("§fClick to get back"));
 
@@ -41,11 +43,11 @@ public class HubGame extends GameInfo implements UserInventoryClickListener, Cha
 
         Server.getInventoryEventManager().addClickListener(this, this.item);
 
-        Server.getChannel().addServerListener(this, ChannelServerMessage.MessageType.STATUS);
+        Server.getChannel().addListener(this);
     }
 
     protected void loadServers() {
-        for (DbGameServer server : Database.getServers().<DbGameServer>getServers(Type.Server.GAME, this.name)) {
+        for (DbGameServer server : Database.getServers().getServers(Type.Server.GAME, this.name)) {
             this.addGameServer(server);
         }
 
@@ -110,8 +112,8 @@ public class HubGame extends GameInfo implements UserInventoryClickListener, Cha
         }
     }
 
-    @Override
-    public void onServerMessage(ChannelServerMessage msg) {
+    @ChannelHandler(type = ListenerType.SERVER_STATUS)
+    public void onServerMessage(ChannelServerMessage<?> msg) {
         DbServer server = Database.getServers().getServer(msg.getPort());
         if (!(server instanceof DbGameServer)) {
             return;
