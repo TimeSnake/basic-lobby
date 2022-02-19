@@ -4,8 +4,10 @@ import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.lobby.chat.Plugin;
-import de.timesnake.channel.api.message.ChannelServerMessage;
-import de.timesnake.channel.listener.ChannelServerListener;
+import de.timesnake.channel.util.listener.ChannelHandler;
+import de.timesnake.channel.util.listener.ChannelListener;
+import de.timesnake.channel.util.listener.ListenerType;
+import de.timesnake.channel.util.message.ChannelServerMessage;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.game.DbGame;
 import de.timesnake.database.util.object.Type;
@@ -14,10 +16,12 @@ import de.timesnake.database.util.server.DbServer;
 import de.timesnake.database.util.server.DbTaskServer;
 import de.timesnake.database.util.server.DbTempGameServer;
 
-public class HubTempGame extends HubGame implements ChannelServerListener {
+public class HubTempGame extends HubGame implements ChannelListener {
 
     public HubTempGame(DbGame game) {
         super(game);
+
+        Server.getChannel().addListener(this);
     }
 
     @Override
@@ -53,8 +57,8 @@ public class HubTempGame extends HubGame implements ChannelServerListener {
         e.setCancelled(true);
     }
 
-    @Override
-    public void onServerMessage(ChannelServerMessage msg) {
+    @ChannelHandler(type = ListenerType.SERVER)
+    public void onServerMessage(ChannelServerMessage<?> msg) {
         DbServer server = Database.getServers().getServer(msg.getPort());
         if (!(server instanceof DbTempGameServer || server instanceof DbLoungeServer)) {
             return;

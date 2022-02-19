@@ -3,10 +3,10 @@ package de.timesnake.basic.lobby.hub.game;
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.lobby.user.LobbyUser;
-import de.timesnake.database.util.object.Status;
 import de.timesnake.database.util.object.Type;
 import de.timesnake.database.util.server.DbLoungeServer;
 import de.timesnake.database.util.server.DbTempGameServer;
+import de.timesnake.library.basic.util.Status;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class TempGameServer extends TaskServer {
     protected void updateItemDescription() {
         if (status.equals(Status.Server.OFFLINE)) {
             super.hubGame.removeServer(super.getName());
-            Server.getChannel().removeServerListener(this);
+            Server.getChannel().removeListener(this);
             Server.getInventoryEventManager().removeClickListener(this);
         } else {
             super.updateItemDescription();
