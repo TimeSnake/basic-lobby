@@ -83,7 +83,9 @@ public class TaskServer extends ServerInfo implements ChannelListener, UserInven
 
         Server.getInventoryEventManager().addClickListener(this, this.item);
 
-        this.registerServerListener();
+        System.out.println("new " + this.port);
+
+        Server.getChannel().addListener(this, () -> Collections.singleton(this.port));
     }
 
     public String getDisplayName() {
@@ -98,10 +100,6 @@ public class TaskServer extends ServerInfo implements ChannelListener, UserInven
         this.updateItemAmount();
         this.updateItemDescription();
         this.updateItem();
-    }
-
-    protected void registerServerListener() {
-        Server.getChannel().addListener(this, () -> Collections.singleton(this.port));
     }
 
     protected void updateItemAmount() {
@@ -281,7 +279,10 @@ public class TaskServer extends ServerInfo implements ChannelListener, UserInven
     }
 
     @ChannelHandler(type = {ListenerType.SERVER_PASSWORD, ListenerType.SERVER_STATUS, ListenerType.SERVER_MAX_PLAYERS, ListenerType.SERVER_ONLINE_PLAYERS}, filtered = true)
-    public void onServerMessage(ChannelServerMessage<?> msg) {
+    public void onChannelMessage(ChannelServerMessage<?> msg) {
+
+        System.out.println("call " + this.port);
+
         if (!msg.getPort().equals(this.port)) {
             return;
         }
