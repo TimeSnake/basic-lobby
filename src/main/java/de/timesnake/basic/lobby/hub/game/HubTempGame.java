@@ -57,7 +57,7 @@ public class HubTempGame extends HubGame implements ChannelListener {
         e.setCancelled(true);
     }
 
-    @ChannelHandler(type = ListenerType.SERVER)
+    @ChannelHandler(type = ListenerType.SERVER_STATUS)
     public void onServerMessage(ChannelServerMessage<?> msg) {
         DbServer server = Database.getServers().getServer(msg.getPort());
         if (!(server instanceof DbTempGameServer || server instanceof DbLoungeServer)) {

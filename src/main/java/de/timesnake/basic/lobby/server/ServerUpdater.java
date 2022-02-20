@@ -15,7 +15,7 @@ public class ServerUpdater implements ChannelListener {
         Server.getChannel().addListener(this, () -> Collections.singleton(Network.PROXY_PORT));
     }
 
-    @ChannelHandler(type = ListenerType.SERVER_ONLINE_PLAYERS)
+    @ChannelHandler(type = ListenerType.SERVER_ONLINE_PLAYERS, filtered = true)
     public void onServerMessage(ChannelServerMessage<?> msg) {
         LobbyServer.getLobbySideboard().setScore(6, "§6" + msg.getValue());
 
