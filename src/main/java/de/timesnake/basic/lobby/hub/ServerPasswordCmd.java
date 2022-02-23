@@ -28,7 +28,7 @@ public class ServerPasswordCmd implements UserChatCommandListener {
             censoredPassword.append("*");
         }
 
-        sender.sendPluginMessage(ChatColor.WARNING + "Password: " + ChatColor.VALUE + censoredPassword.toString());
+        sender.sendPluginMessage(ChatColor.WARNING + "Password: " + ChatColor.VALUE + censoredPassword);
 
         if (e.getUser().hasPermission("lobby.gamehub.password", 1206, Plugin.LOBBY)) {
             sender.sendPluginMessage(ChatColor.PERSONAL + "Used permission, instead of password");
