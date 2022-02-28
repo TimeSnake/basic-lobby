@@ -18,8 +18,9 @@ import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.waitinggames.WaitingGameManager;
 import net.md_5.bungee.api.chat.ClickEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
+import org.bukkit.Instrument;
+import org.bukkit.Note;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -104,7 +105,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     }
 
     public void broadcastInfoMessage() {
-        switch (new Random().nextInt(3)) {
+        switch (new Random().nextInt(6)) {
             case 0:
                 Server.broadcastMessage(Plugin.INFO, ChatColor.PUBLIC + "Do you need help? Use " + ChatColor.VALUE + "/support");
                 break;
@@ -112,12 +113,19 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
                 Server.broadcastClickableMessage(Plugin.INFO, "Want to support the server? Donate via §nPatreon", Server.PATREON_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
                 break;
             case 2:
-                Server.broadcastClickableMessage(Plugin.INFO, "Join our discord and meet our community", Server.DISCORD_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
+                Server.broadcastClickableMessage(Plugin.INFO, "Join our §ndiscord §rand meet our community", Server.DISCORD_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
                 break;
             case 3:
-                Server.broadcastClickableMessage(Plugin.INFO, "Visit our website to find out more about the server", Server.WEBSITE_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
+                Server.broadcastClickableMessage(Plugin.INFO, "Visit our §nwebsite §rto find out more about the server", Server.WEBSITE_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
+                break;
+            case 4:
+                Server.broadcastMessage(Plugin.INFO, ChatColor.PUBLIC + "Invite new members to gain" + ChatColor.GOLD + " 100 TimeCoins" + ChatColor.VALUE + " (if the new player reached 100 TimeCoins)");
+                break;
+            case 5:
+                Server.broadcastMessage(Plugin.INFO, ChatColor.WARNING + "Trampling on turtle eggs is forbidden!");
                 break;
         }
+        Server.broadcastNote(Instrument.PLING, Note.natural(1, Note.Tone.C));
     }
 
     public void msgOnlineTimeAll() {
@@ -169,17 +177,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     private class ChatInfoRepeater implements Runnable {
 
         public void run() {
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(BasicLobby.getPlugin(), new Runnable() {
-                int i = 0;
-
-                public void run() {
-                    if (this.i % 300 == 0) {
-                        LobbyServerManager.this.broadcastInfoMessage();
-                    }
-
-                    ++this.i;
-                }
-            }, 0L, 20L);
+            Server.runTaskTimerSynchrony(LobbyServerManager.this::broadcastInfoMessage, 0, 20 * 60 * 3, BasicLobby.getPlugin());
         }
     }
 }
