@@ -1,18 +1,24 @@
 package de.timesnake.basic.lobby.user;
 
 import de.timesnake.basic.bukkit.util.Server;
+import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserDamageByUserEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserDamageEvent;
+import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.basic.lobby.server.LobbyServer;
+import de.timesnake.library.basic.util.chat.ChatColor;
 import de.timesnake.library.waitinggames.WaitingGameManager;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 
@@ -72,4 +78,14 @@ public class UserManager implements Listener {
             e.setCancelled(true);
         }
     }
+
+    @EventHandler
+    public void onInventoryInteract(PlayerInteractEvent e) {
+        if (e.getAction().equals(Action.PHYSICAL) && e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.TURTLE_EGG)) {
+            User user = Server.getUser(e.getPlayer());
+            user.removeCoins(10, true);
+            Server.broadcastMessage(Plugin.LOBBY, user.getChatName() + ChatColor.WARNING + " trampled on turtle eggs!");
+        }
+    }
+
 }
