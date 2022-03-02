@@ -5,6 +5,7 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.server.LobbyServer;
 import de.timesnake.library.basic.util.Status;
+import de.timesnake.library.extension.util.chat.Chat;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
@@ -55,7 +56,7 @@ public class LobbyUser extends User {
     }
 
     public void setScoreboardCoins() {
-        this.setSideboardScore(3, String.valueOf(super.getCoins()));
+        this.setSideboardScore(3, String.valueOf(Chat.roundCoinAmount(super.getCoins())));
     }
 
     public void switchMode() {

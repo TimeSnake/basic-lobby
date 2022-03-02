@@ -76,8 +76,11 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
         this.lobbyWorld.allowEntityBlockBreak(false);
         this.lobbyWorld.allowDropPickItem(false);
         this.lobbyWorld.allowBlockBreak(false);
+        this.lobbyWorld.allowPlaceInBlock(false);
+        this.lobbyWorld.allowFlintAndSteel(false);
+        this.lobbyWorld.allowLightUpInteraction(false);
         this.lobbyWorld.setExceptService(true);
-        this.lobbyWorld.setPVP(true);
+        this.lobbyWorld.setPVP(false);
         this.lobbyWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
         this.lobbyWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
 
