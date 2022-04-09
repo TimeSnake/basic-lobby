@@ -116,10 +116,12 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
                 Server.broadcastClickableMessage(Plugin.INFO, "Want to support the server? Donate via §nPatreon", Server.PATREON_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
                 break;
             case 2:
-                Server.broadcastClickableMessage(Plugin.INFO, "Join our §ndiscord §rand meet our community", Server.DISCORD_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
+                Server.broadcastClickableMessage(Plugin.INFO, "Join our §ndiscord§r and meet our community",
+                        Server.DISCORD_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
                 break;
             case 3:
-                Server.broadcastClickableMessage(Plugin.INFO, "Visit our §nwebsite §rto find out more about the server", Server.WEBSITE_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
+                Server.broadcastClickableMessage(Plugin.INFO, "Visit our §nwebsite§r to find out more about the " +
+                        "server", Server.WEBSITE_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
                 break;
             case 4:
                 Server.broadcastMessage(Plugin.INFO, ChatColor.PUBLIC + "Invite new members to gain" + ChatColor.GOLD + " 100 TimeCoins" + ChatColor.VALUE + " (if the new player reached 100 TimeCoins)");
