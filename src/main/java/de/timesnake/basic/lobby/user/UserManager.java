@@ -4,20 +4,17 @@ import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserDamageByUserEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserDamageEvent;
+import de.timesnake.basic.bukkit.util.user.event.UserDeathEvent;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.basic.lobby.server.LobbyServer;
 import de.timesnake.library.basic.util.chat.ChatColor;
 import de.timesnake.library.waitinggames.WaitingGameManager;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
@@ -44,21 +41,9 @@ public class UserManager implements Listener {
     }
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent e) {
-        e.deathMessage(Component.text(""));
-        Player p = e.getEntity();
-        p.spigot().respawn();
-        ((LobbyUser) Server.getUser(p)).setLobbyInventory();
-
-    }
-
-    @EventHandler
-    public void onPlayerClick(InventoryClickEvent e) {
-        if (e.getWhoClicked() instanceof Player) {
-            if (!Server.getUser(((Player) e.getWhoClicked())).isService()) {
-                e.setCancelled(true);
-            }
-        }
+    public void onPlayerDeath(UserDeathEvent e) {
+        e.setBroadcastDeathMessage(false);
+        e.setAutoRespawn(true);
     }
 
     @EventHandler
