@@ -21,22 +21,6 @@ public class LobbyUser extends User {
         this.getDatabase().setKit(null);
     }
 
-    public boolean isStoryMode() {
-        return this.isStoryMode;
-    }
-
-    public void setStoryMode(boolean story) {
-        this.isStoryMode = story;
-    }
-
-    public int getStoryPoint() {
-        return this.storyPoint;
-    }
-
-    public void setStoryPoint(int storyPoint) {
-        this.storyPoint = storyPoint;
-    }
-
     @Override
     public void addCoins(float coins, boolean sendMessage) {
         super.addCoins(coins, sendMessage);
@@ -102,20 +86,21 @@ public class LobbyUser extends User {
         this.setStatus(Status.User.ONLINE);
         this.setService(false);
         this.clearInventory();
-        this.getPlayer().setExp(0.0F);
-        this.getPlayer().setLevel(0);
-        this.getPlayer().setWalkSpeed(0.2F);
-        this.getPlayer().setFlySpeed(0.2F);
-        this.getPlayer().setFlying(false);
+        this.setExp(0.0F);
+        this.setLevel(0);
+        this.setWalkSpeed(0.2F);
+        this.setFlySpeed(0.2F);
+        this.setFlying(false);
         this.setGameMode(GameMode.ADVENTURE);
-        this.getPlayer().setHealthScaled(false);
-        this.getPlayer().setInvulnerable(false);
+        this.setHealthScaled(false);
+        this.setInvulnerable(false);
         this.setLobbyInventory();
         if (this.getLocation().getWorld().equals(LobbyServer.getLobbyWorld().getBukkitWorld())) {
             this.teleportSpawn();
         }
         this.setLobbySideboard();
         this.setScoreboardCoins();
+        this.lockInventory();
 
     }
 
