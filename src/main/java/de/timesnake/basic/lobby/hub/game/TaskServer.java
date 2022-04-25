@@ -133,7 +133,8 @@ public class TaskServer extends ServerInfo implements ChannelListener, UserInven
             this.item.setType(OFFLINE);
             lore.add(OFFLINE_TEXT);
             this.queueing = false;
-        } else if (Status.Server.IN_GAME.equals(this.status) || Status.Server.PRE_GAME.equals(this.status) || Status.Server.POST_GAME.equals(this.status)) {
+        } else if (Status.Server.IN_GAME.equals(this.status) || Status.Server.PRE_GAME.equals(this.status)
+                || Status.Server.POST_GAME.equals(this.status)) {
             this.item.setType(IN_GAME);
             lore.add(INGAME_TEXT);
             this.queueing = true;
