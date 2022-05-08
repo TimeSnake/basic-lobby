@@ -59,7 +59,6 @@ public class LobbyUser extends User {
 
     public void setLobbyInventory() {
         this.setItem(LobbyInventory.RULES);
-        this.setItem(LobbyInventory.STORY);
         this.setItem(LobbyInventory.TELEPORTER);
         this.setItem(LobbyInventory.SPEED);
         this.setItem(LobbyInventory.GAMES_HUB);

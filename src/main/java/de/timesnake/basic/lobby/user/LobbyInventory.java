@@ -22,14 +22,13 @@ public class LobbyInventory implements Listener, UserInventoryInteractListener {
 
     public static final ExItemStack TELEPORTER = new ExItemStack(5, Material.ENDER_PEARL, "§1Teleporter", List.of("§fThrow to teleport"));
     public static final ExItemStack RULES = new ExItemStack(0, Material.WRITTEN_BOOK, "§4§lRules", List.of("§fClick to show the rules"));
-    public static final ExItemStack STORY = new ExItemStack(1, Material.MAP, "§6Story", List.of("§fClick to start the story"));
     public static final ExItemStack SPEED = new ExItemStack(2, Material.FEATHER, "§bSpeed", List.of("§fHold in hand to get speed"));
     public static final ExItemStack GAMES_HUB = new ExItemStack(4, Material.NETHER_STAR, "§6Games", List.of("§fClick to open the game hub"));
     public static final ExItemStack SPAWN = new ExItemStack(6, Material.BEACON, "§6Spawn", List.of("§fClick to teleport to spawn"));
     public static final ExItemStack BUILD_SERVER = new ExItemStack(8, Material.STONE_PICKAXE, "§3BUILD", List.of("§fClick to switch mode"));
 
     public LobbyInventory() {
-        Server.getInventoryEventManager().addInteractListener(this, RULES, STORY, GAMES_HUB, SPAWN, BUILD_SERVER);
+        Server.getInventoryEventManager().addInteractListener(this, RULES, GAMES_HUB, SPAWN, BUILD_SERVER);
         Server.registerListener(this, BasicLobby.getPlugin());
     }
 
@@ -37,7 +36,8 @@ public class LobbyInventory implements Listener, UserInventoryInteractListener {
     public void onPlayerHeldItem(PlayerItemHeldEvent e) {
         Player p = e.getPlayer();
         if (!Server.getUser(p).isService()) {
-            if (p.getInventory().getItem(e.getNewSlot()) != null && p.getInventory().getItem(e.getNewSlot()).getItemMeta() != null && ExItemStack.getItem(p.getInventory().getItem(e.getNewSlot()), true).equals(SPEED)) {
+            if (p.getInventory().getItem(e.getNewSlot()) != null && p.getInventory().getItem(e.getNewSlot()).getItemMeta() != null
+                    && ExItemStack.getItem(p.getInventory().getItem(e.getNewSlot()), true).equals(SPEED)) {
                 p.setWalkSpeed(0.8F);
                 return;
             }
@@ -53,9 +53,6 @@ public class LobbyInventory implements Listener, UserInventoryInteractListener {
         ExItemStack clickedItem = e.getClickedItem();
         if (SPAWN.equals(clickedItem)) {
             user.teleportSpawn();
-            e.setCancelled(true);
-        } else if (STORY.equals(clickedItem)) {
-            user.sendPluginMessage(Plugin.LOBBY, ChatColor.PUBLIC + "Bist du kreativ? Und bist " + "§bermotiviert? Dann hilf eine coole Lobby-Story zukreiren.");
             e.setCancelled(true);
         } else if (GAMES_HUB.equals(clickedItem)) {
             user.openGameHubInventory();
