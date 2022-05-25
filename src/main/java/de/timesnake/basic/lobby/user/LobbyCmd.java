@@ -21,7 +21,8 @@ public class LobbyCmd implements CommandListener {
                 } else if (args.isLengthEquals(1, true) && args.get(0).isPlayerName(true)) {
                     LobbyUser user1 = (LobbyUser) args.get(0).toUser();
                     user1.switchMode();
-                    sender.sendPluginMessage(ChatColor.VALUE + user1.getChatName() + ChatColor.PERSONAL + " switched mode!");
+                    sender.sendPluginMessage(ChatColor.VALUE + user1.getChatName() + ChatColor.PERSONAL + " switched " +
+                            "mode!");
                 }
             }
         } else if (sender.isConsole(false) && args.isLengthEquals(1, true) && args.get(0).isPlayerName(true)) {

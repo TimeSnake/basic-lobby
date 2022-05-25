@@ -29,6 +29,14 @@ import java.util.Random;
 
 public class LobbyServerManager extends ServerManager implements ChannelListener, Listener {
 
+    private LobbyInventory lobbyInventory;
+    private Build build;
+    private GamesMenu gamesMenu;
+    private Sideboard sideboard;
+    private ExWorld lobbyWorld;
+    private UserManager userManager;
+    private WaitingGameManager waitingGameManager;
+
     public static LobbyServerManager getInstance() {
         return (LobbyServerManager) ServerManager.getInstance();
     }
@@ -37,18 +45,6 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     public LobbyUser loadUser(Player player) {
         return new LobbyUser(player);
     }
-
-    private LobbyInventory lobbyInventory;
-    private Build build;
-    private GamesMenu gamesMenu;
-
-    private Sideboard sideboard;
-
-    private ExWorld lobbyWorld;
-
-    private UserManager userManager;
-
-    private WaitingGameManager waitingGameManager;
 
     public void onLobbyEnable() {
         this.lobbyInventory = new LobbyInventory();
@@ -129,7 +125,8 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
 
     public void msgOnlineTimeAll() {
         for (User user : Server.getUsers()) {
-            user.sendPluginMessage(Plugin.LOBBY, ChatColor.PUBLIC + "Der Server ist immer samstags ab 19:30 " + "online.");
+            user.sendPluginMessage(Plugin.LOBBY, ChatColor.PUBLIC + "Der Server ist immer samstags ab 19:30 " +
+                    "online.");
         }
     }
 
@@ -162,7 +159,8 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
         LobbyUser user = (LobbyUser) e.getUser();
         if (user.isService()) {
             user.sendPluginMessage(Plugin.LOBBY, ChatColor.PERSONAL + "Switched to lobby-mode!");
-            user.sendPluginMessage(Plugin.LOBBY, ChatColor.PERSONAL + "Use " + ChatColor.VALUE + "/build " + ChatColor.PERSONAL + " to switch mode");
+            user.sendPluginMessage(Plugin.LOBBY,
+                    ChatColor.PERSONAL + "Use " + ChatColor.VALUE + "/build " + ChatColor.PERSONAL + " to switch mode");
             user.setStatus(Status.User.ONLINE);
         }
 
@@ -176,7 +174,8 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     private class ChatInfoRepeater implements Runnable {
 
         public void run() {
-            Server.runTaskTimerSynchrony(LobbyServerManager.this::broadcastInfoMessage, 0, 20 * 60 * 3, BasicLobby.getPlugin());
+            Server.runTaskTimerSynchrony(LobbyServerManager.this::broadcastInfoMessage, 0, 20 * 60 * 3,
+                    BasicLobby.getPlugin());
         }
     }
 }
