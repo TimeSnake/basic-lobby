@@ -25,7 +25,8 @@ import java.util.List;
 
 public class HubGame extends GameInfo implements UserInventoryClickListener, ChannelListener {
 
-    public static final ExItemStack BACK = new ExItemStack(Material.BLUE_BED, 1, "§cBack", List.of("§fClick to get back"));
+    public static final ExItemStack BACK = new ExItemStack(Material.BLUE_BED, 1, "§cBack", List.of("§fClick to get " +
+            "back"));
 
     public static final Integer SERVER_SLOTS_START = 9;
 

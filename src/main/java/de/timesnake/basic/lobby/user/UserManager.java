@@ -72,5 +72,4 @@ public class UserManager implements Listener {
             Server.broadcastMessage(Plugin.LOBBY, user.getChatName() + ChatColor.WARNING + " trampled on turtle eggs!");
         }
     }
-
 }

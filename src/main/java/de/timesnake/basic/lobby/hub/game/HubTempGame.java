@@ -45,7 +45,8 @@ public class HubTempGame extends HubGame implements ChannelListener {
             TempGameServer gameServer = new TempGameServer(super.getServerNumber(slot), this, loungeServer, slot);
             this.servers.put(loungeServer.getName(), gameServer);
         } else {
-            Server.printWarning(Plugin.LOBBY, "Can not load game server " + server.getName() + ", lounge not found", "GameHub");
+            Server.printWarning(Plugin.LOBBY, "Can not load game server " + server.getName() + ", lounge not found",
+                    "GameHub");
         }
     }
 

@@ -58,16 +58,12 @@ public class TaskServer extends ServerInfo implements ChannelListener, UserInven
 
     protected final String displayName;
     protected final Integer serverNumber;
-    protected String serverName;
-
     protected final String task;
-
     protected final ExItemStack item;
-
     protected final HubGame hubGame;
-
-    protected boolean queueing;
     protected final Queue<User> queue = new LinkedList<>();
+    protected String serverName;
+    protected boolean queueing;
 
     public TaskServer(Integer serverNumber, HubGame hubGame, DbTaskServer server, int slot) {
         super(server);
@@ -255,7 +251,9 @@ public class TaskServer extends ServerInfo implements ChannelListener, UserInven
             }
         } else if (this.status.equals(Status.Server.OFFLINE)) {
             for (User user : this.queue) {
-                user.sendPluginMessage(Plugin.LOBBY, ChatColor.WARNING + "Server " + ChatColor.VALUE + this.displayName + ChatColor.WARNING + " has gone offline. Removed from queue.");
+                user.sendPluginMessage(Plugin.LOBBY,
+                        ChatColor.WARNING + "Server " + ChatColor.VALUE + this.displayName + ChatColor.WARNING + " " +
+                                "has gone offline. Removed from queue.");
             }
             this.queue.clear();
         }
@@ -277,7 +275,8 @@ public class TaskServer extends ServerInfo implements ChannelListener, UserInven
         return this.onlinePlayers >= this.maxPlayers;
     }
 
-    @ChannelHandler(type = {ListenerType.SERVER_PASSWORD, ListenerType.SERVER_STATUS, ListenerType.SERVER_MAX_PLAYERS, ListenerType.SERVER_ONLINE_PLAYERS}, filtered = true)
+    @ChannelHandler(type = {ListenerType.SERVER_PASSWORD, ListenerType.SERVER_STATUS, ListenerType.SERVER_MAX_PLAYERS
+            , ListenerType.SERVER_ONLINE_PLAYERS}, filtered = true)
     public void onChannelMessage(ChannelServerMessage<?> msg) {
 
         if (!msg.getPort().equals(this.port)) {

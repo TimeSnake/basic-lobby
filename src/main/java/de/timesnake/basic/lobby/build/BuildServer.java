@@ -58,7 +58,8 @@ public class BuildServer extends ServerInfo implements UserInventoryClickListene
         }
         if (this.status.equals(Status.Server.ONLINE) || this.status.equals(Status.Server.SERVICE)) {
             this.item.setType(ONLINE);
-            this.item.setLore("", "§9Players:" + " §f" + this.onlinePlayers + " §8/ §f" + this.maxPlayers, "§b" + this.task);
+            this.item.setLore("", "§9Players:" + " §f" + this.onlinePlayers + " §8/ §f" + this.maxPlayers,
+                    "§b" + this.task);
         } else if (this.status.equals(Status.Server.OFFLINE)) {
             this.item.setType(OFFLINE);
             this.item.setLore("", "§cOffline", "§b" + this.task);
