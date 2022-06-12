@@ -21,17 +21,17 @@ import java.util.List;
 public class LobbyInventory implements Listener, UserInventoryInteractListener {
 
     public static final ExItemStack TELEPORTER = new ExItemStack(5, Material.ENDER_PEARL, "§1Teleporter", List.of(
-            "§fThrow to teleport"));
+            "§fThrow to teleport")).setMoveable(false).setDropable(false);
     public static final ExItemStack RULES = new ExItemStack(0, Material.WRITTEN_BOOK, "§4§lRules", List.of("§fClick " +
-            "to show the rules"));
+            "to show the rules")).setMoveable(false).setDropable(false);
     public static final ExItemStack SPEED = new ExItemStack(2, Material.FEATHER, "§bSpeed", List.of("§fHold in hand " +
-            "to get speed"));
+            "to get speed")).setMoveable(false).setDropable(false);
     public static final ExItemStack GAMES_HUB = new ExItemStack(4, Material.NETHER_STAR, "§6Games", List.of("§fClick " +
-            "to open the game hub"));
+            "to open the game hub")).setMoveable(false).setDropable(false);
     public static final ExItemStack SPAWN = new ExItemStack(6, Material.BEACON, "§6Spawn", List.of("§fClick to " +
-            "teleport to spawn"));
+            "teleport to spawn")).setMoveable(false).setDropable(false);
     public static final ExItemStack BUILD_SERVER = new ExItemStack(8, Material.STONE_PICKAXE, "§3BUILD", List.of(
-            "§fClick to switch mode"));
+            "§fClick to switch mode")).setMoveable(false).setDropable(false);
 
     public LobbyInventory() {
         Server.getInventoryEventManager().addInteractListener(this, RULES, GAMES_HUB, SPAWN, BUILD_SERVER);
