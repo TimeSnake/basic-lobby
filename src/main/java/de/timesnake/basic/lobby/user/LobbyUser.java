@@ -99,7 +99,6 @@ public class LobbyUser extends User {
         }
         this.setLobbySideboard();
         this.setScoreboardCoins();
-        this.lockInventory();
 
     }
 
