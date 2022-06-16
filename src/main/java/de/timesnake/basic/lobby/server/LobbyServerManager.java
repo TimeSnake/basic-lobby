@@ -29,6 +29,10 @@ import java.util.Random;
 
 public class LobbyServerManager extends ServerManager implements ChannelListener, Listener {
 
+    public static LobbyServerManager getInstance() {
+        return (LobbyServerManager) ServerManager.getInstance();
+    }
+
     private LobbyInventory lobbyInventory;
     private Build build;
     private GamesMenu gamesMenu;
@@ -36,10 +40,6 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     private ExWorld lobbyWorld;
     private UserManager userManager;
     private WaitingGameManager waitingGameManager;
-
-    public static LobbyServerManager getInstance() {
-        return (LobbyServerManager) ServerManager.getInstance();
-    }
 
     @Override
     public LobbyUser loadUser(Player player) {

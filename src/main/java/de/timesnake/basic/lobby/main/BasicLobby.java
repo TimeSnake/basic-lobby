@@ -10,6 +10,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class BasicLobby extends JavaPlugin {
 
 
+    public static BasicLobby getPlugin() {
+        return plugin;
+    }
+
     private static BasicLobby plugin;
 
     @Override
@@ -26,9 +30,5 @@ public class BasicLobby extends JavaPlugin {
 
         LobbyServerManager.getInstance().onLobbyEnable();
 
-    }
-
-    public static BasicLobby getPlugin() {
-        return plugin;
     }
 }
