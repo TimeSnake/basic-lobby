@@ -10,8 +10,6 @@ import de.timesnake.library.waitinggames.WaitingGameManager;
 
 public class LobbyServer extends Server {
 
-    private static final LobbyServerManager server = LobbyServerManager.getInstance();
-
     public static void msgHelp() {
         server.broadcastInfoMessage();
     }
@@ -43,5 +41,6 @@ public class LobbyServer extends Server {
     public static WaitingGameManager getWaitingGameManager() {
         return server.getWaitingGameManager();
     }
+    private static final LobbyServerManager server = LobbyServerManager.getInstance();
 
 }
