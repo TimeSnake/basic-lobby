@@ -34,8 +34,8 @@ public class HubGame extends GameInfo implements UserInventoryClickListener, Cha
     protected final HashMap<String, TaskServer> servers = new HashMap<>();
     protected final ExItemStack item;
 
-    public HubGame(DbGame game) {
-        super(game);
+    public HubGame(DbGame<?> game) {
+        super(game.getInfo());
         this.inventory = Server.createExInventory(54, super.getDisplayName());
         this.inventory.setItemStack(4, BACK);
         this.item = new ExItemStack(super.item);

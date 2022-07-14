@@ -10,6 +10,7 @@ import de.timesnake.basic.lobby.hub.game.HubTempGame;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.game.DbGame;
+import de.timesnake.database.util.game.DbTmpGame;
 
 import java.util.HashMap;
 
@@ -27,15 +28,15 @@ public class GamesMenu implements UserInventoryClickListener {
         inventory.getInventory().clear();
         games.clear();
 
-        for (DbGame game : Database.getGames().getGames()) {
+        for (DbGame<?> game : Database.getGames().getGames()) {
             HubGame hubGame;
-            if (game.isTemporary()) {
-                hubGame = new HubTempGame(game);
+            if (game instanceof DbTmpGame) {
+                hubGame = new HubTempGame(((DbTmpGame) game));
             } else {
                 hubGame = new HubGame(game);
             }
             if (hubGame == null) {
-                Server.printError(Plugin.LOBBY, "Can not load game " + game.getName());
+                Server.printError(Plugin.LOBBY, "Can not load game " + game.getInfo().getName());
             } else {
                 inventory.setItemStack(hubGame.getSlot(), hubGame.getItem());
                 games.put(hubGame.getSlot(), hubGame);
