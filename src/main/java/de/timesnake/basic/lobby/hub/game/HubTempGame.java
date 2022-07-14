@@ -9,19 +9,25 @@ import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.channel.util.listener.ListenerType;
 import de.timesnake.channel.util.message.ChannelServerMessage;
 import de.timesnake.database.util.Database;
-import de.timesnake.database.util.game.DbGame;
+import de.timesnake.database.util.game.DbTmpGame;
 import de.timesnake.database.util.object.Type;
 import de.timesnake.database.util.server.DbLoungeServer;
 import de.timesnake.database.util.server.DbServer;
 import de.timesnake.database.util.server.DbTaskServer;
 import de.timesnake.database.util.server.DbTempGameServer;
 
+import java.util.List;
+
 public class HubTempGame extends HubGame implements ChannelListener {
 
-    public HubTempGame(DbGame game) {
+    public HubTempGame(DbTmpGame game) {
         super(game);
 
         Server.getChannel().addListener(this);
+    }
+
+    public List<Integer> getTeamSizes() {
+        return ((DbTmpGame) this.database).getTeamSizes();
     }
 
     @Override
