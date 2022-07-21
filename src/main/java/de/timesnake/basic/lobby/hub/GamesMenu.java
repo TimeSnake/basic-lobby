@@ -5,11 +5,13 @@ import de.timesnake.basic.bukkit.util.user.ExInventory;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
 import de.timesnake.basic.lobby.chat.Plugin;
-import de.timesnake.basic.lobby.hub.game.HubGame;
-import de.timesnake.basic.lobby.hub.game.HubTempGame;
+import de.timesnake.basic.lobby.hub.game.GameHub;
+import de.timesnake.basic.lobby.hub.game.NonTmpGameHub;
+import de.timesnake.basic.lobby.hub.game.TmpGameHub;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.game.DbGame;
+import de.timesnake.database.util.game.DbNonTmpGame;
 import de.timesnake.database.util.game.DbTmpGame;
 
 import java.util.HashMap;
@@ -17,10 +19,10 @@ import java.util.HashMap;
 public class GamesMenu implements UserInventoryClickListener {
 
     private final ExInventory inventory = Server.createExInventory(54, "Gamehub");
-    private final HashMap<Integer, HubGame> games = new HashMap<>();
+    private final HashMap<Integer, GameHub<?>> games = new HashMap<>();
 
     public GamesMenu() {
-        Server.getInventoryEventManager().addClickListener(this, HubGame.BACK);
+        Server.getInventoryEventManager().addClickListener(this, GameHub.BACK);
         this.updateInventory();
     }
 
@@ -28,18 +30,18 @@ public class GamesMenu implements UserInventoryClickListener {
         inventory.getInventory().clear();
         games.clear();
 
-        for (DbGame<?> game : Database.getGames().getGames()) {
-            HubGame hubGame;
+        for (DbGame game : Database.getGames().getGames()) {
+            GameHub<?> gameHub;
             if (game instanceof DbTmpGame) {
-                hubGame = new HubTempGame(((DbTmpGame) game));
+                gameHub = new TmpGameHub(((DbTmpGame) game));
             } else {
-                hubGame = new HubGame(game);
+                gameHub = new NonTmpGameHub(((DbNonTmpGame) game));
             }
-            if (hubGame == null) {
+            if (gameHub == null) {
                 Server.printError(Plugin.LOBBY, "Can not load game " + game.getInfo().getName());
             } else {
-                inventory.setItemStack(hubGame.getSlot(), hubGame.getItem());
-                games.put(hubGame.getSlot(), hubGame);
+                inventory.setItemStack(gameHub.getGameInfo().getSlot(), gameHub.getItem());
+                games.put(gameHub.getGameInfo().getSlot(), gameHub);
             }
         }
     }
