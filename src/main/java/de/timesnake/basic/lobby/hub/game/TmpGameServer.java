@@ -7,12 +7,13 @@ import de.timesnake.database.util.object.Type;
 import de.timesnake.database.util.server.DbLoungeServer;
 import de.timesnake.database.util.server.DbTempGameServer;
 import de.timesnake.library.basic.util.Status;
+import de.timesnake.library.game.TmpGameInfo;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TempGameServer extends TaskServer {
+public class TmpGameServer extends GameServer<TmpGameInfo> {
 
     protected final DbTempGameServer tempGameServer;
     protected final String tempGameServerName;
@@ -23,19 +24,19 @@ public class TempGameServer extends TaskServer {
     protected final Integer maxPlayersPerTeam;
     protected final Integer teamAmount;
 
-    public TempGameServer(Integer serverNumber, HubTempGame hubGame, DbLoungeServer server, int slot) {
+    public TmpGameServer(Integer serverNumber, TmpGameHub gameHub, DbLoungeServer server, int slot) {
 
-        super(serverNumber, hubGame, server, slot);
+        super(serverNumber, gameHub, server, slot);
 
         this.tempGameServer = server.getTwinServer();
         this.tempGameServerName = this.tempGameServer.getName();
 
-        if (hubGame.getKitAvailability().equals(Type.Availability.ALLOWED)) {
+        if (gameHub.getGameInfo().getKitAvailability().equals(Type.Availability.ALLOWED)) {
             this.kitsEnabled = this.tempGameServer.areKitsEnabled();
         } else {
             this.kitsEnabled = false;
         }
-        if (hubGame.getMapAvailability().equals(Type.Availability.ALLOWED)) {
+        if (gameHub.getGameInfo().getMapAvailability().equals(Type.Availability.ALLOWED)) {
             this.mapsEnabled = this.tempGameServer.areMapsEnabled();
         } else {
             this.mapsEnabled = false;
@@ -46,7 +47,7 @@ public class TempGameServer extends TaskServer {
         this.maxPlayersPerTeam = this.tempGameServer.getMaxPlayersPerTeam();
 
         Integer teamAmount = this.tempGameServer.getTeamAmount();
-        if (hubGame.getTeamSizes().size() > 1) {
+        if (gameHub.getGameInfo().getTeamSizes().size() > 1) {
             this.teamAmount = teamAmount;
         } else {
             this.teamAmount = null;
@@ -62,7 +63,7 @@ public class TempGameServer extends TaskServer {
     @Override
     protected void updateItemDescription() {
         if (status.equals(Status.Server.OFFLINE)) {
-            super.hubGame.removeServer(super.getName());
+            super.gameHub.removeServer(super.getName());
             Server.getChannel().removeListener(this);
             Server.getInventoryEventManager().removeClickListener(this);
         } else {

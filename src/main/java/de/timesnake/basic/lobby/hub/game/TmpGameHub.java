@@ -1,67 +1,52 @@
 package de.timesnake.basic.lobby.hub.game;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.user.User;
-import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.channel.util.listener.ChannelHandler;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.channel.util.listener.ListenerType;
 import de.timesnake.channel.util.message.ChannelServerMessage;
 import de.timesnake.database.util.Database;
-import de.timesnake.database.util.game.DbTmpGame;
+import de.timesnake.database.util.game.DbTmpGameInfo;
 import de.timesnake.database.util.object.Type;
 import de.timesnake.database.util.server.DbLoungeServer;
 import de.timesnake.database.util.server.DbServer;
 import de.timesnake.database.util.server.DbTaskServer;
 import de.timesnake.database.util.server.DbTempGameServer;
+import de.timesnake.library.game.TmpGameInfo;
 
-import java.util.List;
+public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener {
 
-public class HubTempGame extends HubGame implements ChannelListener {
-
-    public HubTempGame(DbTmpGame game) {
-        super(game);
+    public TmpGameHub(DbTmpGameInfo gameInfo) {
+        super(new TmpGameInfo(gameInfo));
 
         Server.getChannel().addListener(this);
     }
 
-    public List<Integer> getTeamSizes() {
-        return ((DbTmpGame) this.database).getTeamSizes();
-    }
-
     @Override
     protected void loadServers() {
-        for (DbServer server : Database.getServers().getServers(Type.Server.TEMP_GAME, this.name)) {
+        for (DbTempGameServer server : Database.getServers().getServers(Type.Server.TEMP_GAME, this.gameInfo.getName())) {
             if (!server.getType().equals(Type.Server.TEMP_GAME)) {
                 continue;
             }
-            if (((DbTempGameServer) server).getTwinServerPort() != null) {
-                this.addGameServer(((DbTempGameServer) server));
+            if (server.getTwinServerPort() != null) {
+                this.addGameServer(server);
             }
         }
 
-        Server.printText(Plugin.LOBBY, "Game-Servers for temp-game " + this.name + " loaded successfully", "GameHub");
+        Server.printText(Plugin.LOBBY, "Game-Servers for temp-game " + this.gameInfo.getName() + " loaded successfully", "GameHub");
     }
 
     protected void addGameServer(DbTempGameServer server) {
         DbLoungeServer loungeServer = server.getTwinServer();
         if (loungeServer != null && loungeServer.exists()) {
             Integer slot = this.getEmptySlot();
-            TempGameServer gameServer = new TempGameServer(super.getServerNumber(slot), this, loungeServer, slot);
+            TmpGameServer gameServer = new TmpGameServer(super.getServerNumber(slot), this, loungeServer, slot);
             this.servers.put(loungeServer.getName(), gameServer);
         } else {
             Server.printWarning(Plugin.LOBBY, "Can not load game server " + server.getName() + ", lounge not found",
                     "GameHub");
         }
-    }
-
-    @Override
-    public void onUserInventoryClick(UserInventoryClickEvent e) {
-        User user = e.getUser();
-        user.playSoundItemClicked();
-        this.openServersInventory(user);
-        e.setCancelled(true);
     }
 
     @ChannelHandler(type = ListenerType.SERVER_STATUS)
@@ -76,7 +61,7 @@ public class HubTempGame extends HubGame implements ChannelListener {
             return;
         }
 
-        if (!task.equals(this.name)) {
+        if (!task.equals(this.getGameInfo().getName())) {
             return;
         }
 
