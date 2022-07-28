@@ -5,7 +5,7 @@ import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.database.util.object.Type;
 import de.timesnake.database.util.server.DbLoungeServer;
-import de.timesnake.database.util.server.DbTempGameServer;
+import de.timesnake.database.util.server.DbTmpGameServer;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.game.TmpGameInfo;
 import org.bukkit.event.inventory.ClickType;
@@ -15,7 +15,7 @@ import java.util.List;
 
 public class TmpGameServer extends GameServer<TmpGameInfo> {
 
-    protected final DbTempGameServer tempGameServer;
+    protected final DbTmpGameServer tempGameServer;
     protected final String tempGameServerName;
 
     protected final boolean kitsEnabled;

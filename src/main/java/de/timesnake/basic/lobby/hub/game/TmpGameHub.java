@@ -12,7 +12,7 @@ import de.timesnake.database.util.object.Type;
 import de.timesnake.database.util.server.DbLoungeServer;
 import de.timesnake.database.util.server.DbServer;
 import de.timesnake.database.util.server.DbTaskServer;
-import de.timesnake.database.util.server.DbTempGameServer;
+import de.timesnake.database.util.server.DbTmpGameServer;
 import de.timesnake.library.game.TmpGameInfo;
 
 public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener {
@@ -25,7 +25,7 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
 
     @Override
     protected void loadServers() {
-        for (DbTempGameServer server : Database.getServers().getServers(Type.Server.TEMP_GAME, this.gameInfo.getName())) {
+        for (DbTmpGameServer server : Database.getServers().getServers(Type.Server.TEMP_GAME, this.gameInfo.getName())) {
             if (!server.getType().equals(Type.Server.TEMP_GAME)) {
                 continue;
             }
@@ -37,7 +37,7 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
         Server.printText(Plugin.LOBBY, "Game-Servers for temp-game " + this.gameInfo.getName() + " loaded successfully", "GameHub");
     }
 
-    protected void addGameServer(DbTempGameServer server) {
+    protected void addGameServer(DbTmpGameServer server) {
         DbLoungeServer loungeServer = server.getTwinServer();
         if (loungeServer != null && loungeServer.exists()) {
             Integer slot = this.getEmptySlot();
@@ -52,7 +52,7 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
     @ChannelHandler(type = ListenerType.SERVER_STATUS)
     public void onServerMessage(ChannelServerMessage<?> msg) {
         DbServer server = Database.getServers().getServer(msg.getPort());
-        if (!(server instanceof DbTempGameServer || server instanceof DbLoungeServer)) {
+        if (!(server instanceof DbTmpGameServer || server instanceof DbLoungeServer)) {
             return;
         }
 
@@ -70,7 +70,7 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
         }
 
         if (server.getType().equals(Type.Server.LOUNGE)) {
-            DbTempGameServer gameServer = ((DbLoungeServer) server).getTwinServer();
+            DbTmpGameServer gameServer = ((DbLoungeServer) server).getTwinServer();
 
 
             if (gameServer == null || !gameServer.exists()) {

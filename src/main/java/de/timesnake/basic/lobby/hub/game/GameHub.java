@@ -8,7 +8,7 @@ import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.user.LobbyUser;
-import de.timesnake.database.util.server.DbGameServer;
+import de.timesnake.database.util.server.DbNonTmpGameServer;
 import org.bukkit.Material;
 
 import java.util.HashMap;
@@ -40,7 +40,7 @@ public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInf
 
     protected abstract void loadServers();
 
-    protected void addGameServer(DbGameServer server) {
+    protected void addGameServer(DbNonTmpGameServer server) {
         Integer slot = this.getEmptySlot();
         GameServer<GameInfo> gameServer = new GameServer<>(this.getServerNumber(slot), this, server, slot);
         this.servers.put(server.getName(), gameServer);
