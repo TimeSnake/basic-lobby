@@ -58,13 +58,13 @@ public class LobbyUser extends User {
     }
 
     public void setLobbyInventory() {
-        this.setItem(LobbyInventory.RULES);
-        this.setItem(LobbyInventory.TELEPORTER);
-        this.setItem(LobbyInventory.SPEED);
-        this.setItem(LobbyInventory.GAMES_HUB);
-        this.setItem(LobbyInventory.SPAWN);
+        this.setItem(LobbyInventory.RULES.cloneWithId());
+        this.setItem(LobbyInventory.TELEPORTER.cloneWithId());
+        this.setItem(LobbyInventory.SPEED.cloneWithId());
+        this.setItem(LobbyInventory.GAMES_HUB.cloneWithId());
+        this.setItem(LobbyInventory.SPAWN.cloneWithId());
         if (this.hasPermission("lobby.build.inventory")) {
-            this.setItem(LobbyInventory.BUILD_SERVER);
+            this.setItem(LobbyInventory.BUILD_SERVER.cloneWithId());
         }
 
     }
