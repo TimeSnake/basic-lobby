@@ -30,6 +30,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
         implements ChannelListener, UserInventoryClickListener, Listener {
 
     protected static final Material ONLINE = Material.GREEN_WOOL;
+    protected static final Material STARTING = Material.YELLOW_WOOL;
     protected static final Material ONLINE_FULL = Material.YELLOW_WOOL;
     protected static final Material SERVICE = Material.RED_WOOL;
     protected static final Material OFFLINE = Material.GRAY_WOOL;
@@ -41,6 +42,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
 
     protected static final String ONLINE_TEXT = "§aOnline";
     protected static final String OFFLINE_TEXT = "§cOffline";
+    protected static final String STARTING_TEXT = "§eStarting";
     protected static final String INGAME_TEXT = "§eIn-game";
     protected static final String SERVICE_TEXT = "§6Service Work";
     protected static final String PLAYER_TEXT = "§9Players:";
@@ -125,11 +127,16 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
             lore.add(ONLINE_TEXT);
             lore.add("");
             lore.add(PLAYER_TEXT + " §f" + this.onlinePlayers + " §8/ §f" + this.maxPlayers);
-        } else if (Status.Server.OFFLINE.equals(this.status) || Status.Server.STARTING.equals(this.status)) {
+        } else if (Status.Server.OFFLINE.equals(this.status) || Status.Server.LAUNCHING.equals(this.status)) {
             this.item.setAmount(1);
             this.item.setType(OFFLINE);
             lore.add(OFFLINE_TEXT);
             this.queueing = false;
+        } else if (Status.Server.LOADING.equals(this.status)) {
+            this.item.setAmount(1);
+            this.item.setType(STARTING);
+            lore.add(STARTING_TEXT);
+            this.queueing = true;
         } else if (Status.Server.IN_GAME.equals(this.status) || Status.Server.PRE_GAME.equals(this.status)
                 || Status.Server.POST_GAME.equals(this.status)) {
             this.item.setType(IN_GAME);
