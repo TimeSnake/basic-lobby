@@ -23,6 +23,7 @@ import java.util.Collections;
 public class BuildServer extends ServerInfo implements UserInventoryClickListener, ChannelListener {
 
     private static final Material ONLINE = Material.GREEN_WOOL;
+    private static final Material STARTING = Material.YELLOW_WOOL;
     private static final Material OFFLINE = Material.GRAY_WOOL;
 
     private final ExItemStack item;
@@ -63,6 +64,12 @@ public class BuildServer extends ServerInfo implements UserInventoryClickListene
         } else if (this.status.equals(Status.Server.OFFLINE)) {
             this.item.setType(OFFLINE);
             this.item.setLore("", "§cOffline", "§b" + this.task);
+        } else if (this.status.equals(Status.Server.LAUNCHING)) {
+            this.item.setType(STARTING);
+            this.item.setLore("", "§cStarting", "§b" + this.task);
+        } else if (this.status.equals(Status.Server.LOADING)) {
+            this.item.setType(STARTING);
+            this.item.setLore("", "§cLoading", "§b" + this.task);
         }
 
         this.build.getInventory().setItemStack(this.item);
