@@ -83,7 +83,6 @@ public class LobbyUser extends User {
 
     public void joinLobby() {
         this.setStatus(Status.User.ONLINE);
-        this.setService(false);
         this.clearInventory();
         this.setExp(0.0F);
         this.setLevel(0);
