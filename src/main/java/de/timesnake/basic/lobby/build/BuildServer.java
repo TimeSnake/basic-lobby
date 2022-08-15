@@ -1,7 +1,6 @@
 package de.timesnake.basic.lobby.build;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.chat.ChatColor;
 import de.timesnake.basic.bukkit.util.chat.Sender;
 import de.timesnake.basic.bukkit.util.server.ServerInfo;
 import de.timesnake.basic.bukkit.util.user.ExItemStack;
@@ -16,6 +15,8 @@ import de.timesnake.channel.util.listener.ListenerType;
 import de.timesnake.channel.util.message.ChannelServerMessage;
 import de.timesnake.database.util.server.DbBuildServer;
 import de.timesnake.library.basic.util.Status;
+import de.timesnake.library.basic.util.chat.ExTextColor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 
 import java.util.Collections;
@@ -82,14 +83,15 @@ public class BuildServer extends ServerInfo implements UserInventoryClickListene
 
         if (this.password != null) {
             user.closeInventory();
-            sender.sendPluginMessage(ChatColor.PERSONAL + "Enter the server-password:");
+            sender.sendPluginMessage(Component.text("Enter the server-password:", ExTextColor.PERSONAL));
             Server.getUserEventManager().addUserChatCommand(user, new ServerPasswordCmd(this));
         } else {
             if (this.status.equals(Status.Server.ONLINE) || this.status.equals(Status.Server.SERVICE)) {
                 user.switchToServer(this.name);
-                sender.sendPluginMessage(ChatColor.PERSONAL + "Switching to build-server " + ChatColor.VALUE + this.name);
+                sender.sendPluginMessage(Component.text("Switching to build-server ", ExTextColor.PERSONAL)
+                        .append(Component.text(this.name, ExTextColor.VALUE)));
             } else {
-                sender.sendPluginMessage(ChatColor.WARNING + "This server is offline or in-game");
+                sender.sendPluginMessage(Component.text("This server is offline or in-game", ExTextColor.WARNING));
             }
         }
         e.setCancelled(true);

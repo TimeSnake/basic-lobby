@@ -2,11 +2,12 @@ package de.timesnake.basic.lobby.user;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.chat.Argument;
-import de.timesnake.basic.bukkit.util.chat.ChatColor;
 import de.timesnake.basic.bukkit.util.chat.CommandListener;
 import de.timesnake.basic.bukkit.util.chat.Sender;
+import de.timesnake.library.basic.util.chat.ExTextColor;
 import de.timesnake.library.extension.util.cmd.Arguments;
 import de.timesnake.library.extension.util.cmd.ExCommand;
+import net.kyori.adventure.text.Component;
 
 import java.util.List;
 
@@ -21,14 +22,15 @@ public class LobbyCmd implements CommandListener {
                 } else if (args.isLengthEquals(1, true) && args.get(0).isPlayerName(true)) {
                     LobbyUser user1 = (LobbyUser) args.get(0).toUser();
                     user1.switchMode();
-                    sender.sendPluginMessage(ChatColor.VALUE + user1.getChatName() + ChatColor.PERSONAL + " switched " +
-                            "mode!");
+                    sender.sendPluginMessage(user1.getChatNameComponent()
+                            .append(Component.text(" switched mode!", ExTextColor.PERSONAL)));
                 }
             }
         } else if (sender.isConsole(false) && args.isLengthEquals(1, true) && args.get(0).isPlayerName(true)) {
             LobbyUser user = (LobbyUser) args.get(0).toUser();
             user.switchMode();
-            sender.sendPluginMessage(ChatColor.VALUE + user.getChatName() + ChatColor.PERSONAL + " switched mode!");
+            sender.sendPluginMessage(user.getChatNameComponent()
+                    .append(Component.text(" switched mode!", ExTextColor.PERSONAL)));
         }
     }
 

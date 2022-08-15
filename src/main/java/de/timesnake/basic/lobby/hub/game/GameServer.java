@@ -19,6 +19,8 @@ import de.timesnake.channel.util.message.ChannelServerMessage;
 import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.database.util.server.DbTaskServer;
 import de.timesnake.library.basic.util.Status;
+import de.timesnake.library.basic.util.chat.ExTextColor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -55,9 +57,9 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
     protected static final String QUEUE_JOIN_TEXT = "§7Right click to join the queue";
     protected static final String SPECTATOR_JOIN_TEXT = "§7Left click to join as spectator";
 
-    protected static final String INGAME_OFFLINE_MESSAGE = ChatColor.WARNING + "This server is offline or in-game";
-    protected static final String SERVICE_MESSAGE = ChatColor.WARNING + "This server is in service-mode";
-    protected static final String FULL_MESSAGE = ChatColor.WARNING + "This server is full";
+    protected static final Component INGAME_OFFLINE_MESSAGE = Component.text("This server is offline or in-game", ExTextColor.WARNING);
+    protected static final Component SERVICE_MESSAGE = Component.text("This server is in service-mode", ExTextColor.WARNING);
+    protected static final Component FULL_MESSAGE = Component.text("This server is full", ExTextColor.WARNING);
 
     protected final String displayName;
     protected final Integer serverNumber;
@@ -200,10 +202,12 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
             if (clickType.isRightClick()) {
                 if (this.queue.contains(user)) {
                     this.queue.remove(user);
-                    sender.sendPluginMessage(ChatColor.PERSONAL + "Left the queue of server " + ChatColor.VALUE + this.displayName);
+                    sender.sendPluginMessage(Component.text("Left the queue of server ", ExTextColor.PERSONAL)
+                            .append(Component.text(this.displayName, ExTextColor.VALUE)));
                 } else {
                     this.queue.add(user);
-                    sender.sendPluginMessage(ChatColor.PERSONAL + "Joined the queue of server " + ChatColor.VALUE + this.displayName);
+                    sender.sendPluginMessage(Component.text("Joined the queue of server ", ExTextColor.PERSONAL)
+                            .append(Component.text(this.displayName, ExTextColor.VALUE)));
                 }
                 user.closeInventory();
                 e.setCancelled(true);
@@ -225,7 +229,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
 
         if (this.hasPassword()) {
             user.closeInventory();
-            sender.sendPluginMessage(ChatColor.PERSONAL + "Enter the server-password:");
+            sender.sendPluginMessage(Component.text("Enter the server-password:", ExTextColor.PERSONAL));
             Server.getUserEventManager().addUserChatCommand(user, new ServerPasswordCmd(this));
             return;
         }
@@ -255,14 +259,15 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
                 this.moveUserToServer(this.queue.poll());
             }
             for (User user : this.queue) {
-                user.asSender(Plugin.LOBBY).sendPluginMessage(ChatColor.WARNING + "Server " + ChatColor.VALUE +
-                        this.displayName + ChatColor.PERSONAL + " is full. Right click on the server to leave the queue.");
+                user.asSender(Plugin.LOBBY).sendPluginMessage(Component.text("Server ", ExTextColor.WARNING)
+                        .append(Component.text(this.displayName, ExTextColor.VALUE))
+                        .append(Component.text(" is full. Right click on the server to leave the queue.", ExTextColor.WARNING)));
             }
         } else if (this.status.equals(Status.Server.OFFLINE)) {
             for (User user : this.queue) {
-                user.sendPluginMessage(Plugin.LOBBY,
-                        ChatColor.WARNING + "Server " + ChatColor.VALUE + this.displayName + ChatColor.WARNING + " " +
-                                "has gone offline. Removed from queue.");
+                user.sendPluginMessage(Plugin.LOBBY, Component.text("Server ", ExTextColor.WARNING)
+                        .append(Component.text(this.displayName, ExTextColor.VALUE))
+                        .append(Component.text(" has gone offline. Removed from queue.", ExTextColor.WARNING)));
             }
             this.queue.clear();
         }

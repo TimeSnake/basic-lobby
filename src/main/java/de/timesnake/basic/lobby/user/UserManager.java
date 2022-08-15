@@ -8,8 +8,9 @@ import de.timesnake.basic.bukkit.util.user.event.UserDeathEvent;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.basic.lobby.server.LobbyServer;
-import de.timesnake.library.basic.util.chat.ChatColor;
+import de.timesnake.library.basic.util.chat.ExTextColor;
 import de.timesnake.library.waitinggames.WaitingGameManager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -66,10 +67,12 @@ public class UserManager implements Listener {
 
     @EventHandler
     public void onInventoryInteract(PlayerInteractEvent e) {
-        if (e.getAction().equals(Action.PHYSICAL) && e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.TURTLE_EGG)) {
+        if (e.getAction().equals(Action.PHYSICAL) && e.getClickedBlock() != null
+                && e.getClickedBlock().getType().equals(Material.TURTLE_EGG)) {
             User user = Server.getUser(e.getPlayer());
             user.removeCoins(10, true);
-            Server.broadcastMessage(Plugin.LOBBY, user.getChatName() + ChatColor.WARNING + " trampled on turtle eggs!");
+            Server.broadcastMessage(Plugin.LOBBY, user.getChatNameComponent()
+                    .append(Component.text(" trampled on turtle eggs!", ExTextColor.WARNING)));
         }
     }
 }
