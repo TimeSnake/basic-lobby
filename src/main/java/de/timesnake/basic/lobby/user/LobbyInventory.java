@@ -1,13 +1,14 @@
 package de.timesnake.basic.lobby.user;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.chat.ChatColor;
 import de.timesnake.basic.bukkit.util.user.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryInteractEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryInteractListener;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.main.BasicLobby;
+import de.timesnake.library.basic.util.chat.ExTextColor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -67,7 +68,8 @@ public class LobbyInventory implements Listener, UserInventoryInteractListener {
             user.openBuildInventory();
             e.setCancelled(true);
         } else if (RULES.equals(clickedItem)) {
-            user.sendPluginMessage(Plugin.LOBBY, ChatColor.PUBLIC + "Use " + ChatColor.VALUE + "/rules");
+            user.sendPluginMessage(Plugin.LOBBY, Component.text("Use ", ExTextColor.PERSONAL)
+                    .append(Component.text("/rules", ExTextColor.VALUE)));
             e.setCancelled(true);
         }
     }

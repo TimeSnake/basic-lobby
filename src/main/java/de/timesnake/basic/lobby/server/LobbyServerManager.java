@@ -2,8 +2,6 @@ package de.timesnake.basic.lobby.server;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.ServerManager;
-import de.timesnake.basic.bukkit.util.chat.ChatColor;
-import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserJoinEvent;
 import de.timesnake.basic.bukkit.util.user.scoreboard.Sideboard;
 import de.timesnake.basic.bukkit.util.world.ExWorld;
@@ -16,8 +14,11 @@ import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.basic.lobby.user.UserManager;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.library.basic.util.Status;
+import de.timesnake.library.basic.util.chat.ExTextColor;
 import de.timesnake.library.waitinggames.WaitingGameManager;
-import net.md_5.bungee.api.chat.ClickEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.GameRule;
 import org.bukkit.Instrument;
 import org.bukkit.Note;
@@ -107,27 +108,29 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     public void broadcastInfoMessage() {
         switch (new Random().nextInt(6)) {
             case 0 -> Server.broadcastMessage(Plugin.INFO,
-                    ChatColor.PUBLIC + "Do you need help? Use " + ChatColor.VALUE + "/support");
-            case 1 -> Server.broadcastClickableMessage(Plugin.INFO, "Want to support the server? Donate via §nPatreon",
-                    Server.PATREON_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
-            case 2 -> Server.broadcastClickableMessage(Plugin.INFO, "Join our §ndiscord§r and meet our community",
-                    Server.DISCORD_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
-            case 3 ->
-                    Server.broadcastClickableMessage(Plugin.INFO, "Visit our §nwebsite§r to find out more about the " +
-                            "server", Server.WEBSITE_LINK, "Click to open the link", ClickEvent.Action.OPEN_URL);
-            case 4 -> Server.broadcastMessage(Plugin.INFO,
-                    ChatColor.PUBLIC + "Invite new members to gain" + ChatColor.GOLD + " 100 TimeCoins" + ChatColor.VALUE + " (if the new player reached 100 TimeCoins)");
+                    Component.text("Do you need help? Use ", ExTextColor.PUBLIC)
+                            .append(Component.text("/support", ExTextColor.VALUE)));
+            case 1 -> Server.broadcastClickableMessage(Plugin.INFO,
+                    Component.text("Want to support the server? Donate via", ExTextColor.PUBLIC)
+                            .append(Component.text(" Patreon", ExTextColor.PUBLIC, TextDecoration.UNDERLINED)),
+                    Server.PATREON_LINK, Component.text("Click to open the link"), ClickEvent.Action.OPEN_URL);
+            case 2 -> Server.broadcastClickableMessage(Plugin.INFO, Component.text("Join our", ExTextColor.PUBLIC)
+                            .append(Component.text(" discord", ExTextColor.PUBLIC, TextDecoration.UNDERLINED))
+                            .append(Component.text("and meet our community", ExTextColor.PUBLIC)),
+                    Server.DISCORD_LINK, Component.text("Click to open the link"), ClickEvent.Action.OPEN_URL);
+            case 3 -> Server.broadcastClickableMessage(Plugin.INFO, Component.text("Visit our", ExTextColor.PUBLIC)
+                            .append(Component.text("website", ExTextColor.PUBLIC, TextDecoration.UNDERLINED))
+                            .append(Component.text(" to find out more about the server", ExTextColor.PUBLIC)),
+                    Server.WEBSITE_LINK, Component.text("Click to open the link", ExTextColor.PUBLIC),
+                    ClickEvent.Action.OPEN_URL);
+            case 4 ->
+                    Server.broadcastMessage(Plugin.INFO, Component.text("Invite new members to gain", ExTextColor.PUBLIC)
+                            .append(Component.text(" 100 TimeCoins", ExTextColor.GOLD))
+                            .append(Component.text(" (if the new player reached 100 TimeCoins)", ExTextColor.QUICK_INFO)));
             case 5 ->
-                    Server.broadcastMessage(Plugin.INFO, ChatColor.WARNING + "Trampling on turtle eggs is forbidden!");
+                    Server.broadcastMessage(Plugin.INFO, Component.text("Trampling on turtle eggs is forbidden!", ExTextColor.WARNING));
         }
         Server.broadcastNote(Instrument.PLING, Note.natural(1, Note.Tone.C));
-    }
-
-    public void msgOnlineTimeAll() {
-        for (User user : Server.getUsers()) {
-            user.sendPluginMessage(Plugin.LOBBY, ChatColor.PUBLIC + "Der Server ist immer samstags ab 19:30 " +
-                    "online.");
-        }
     }
 
     public ExWorld getLobbyWorld() {
@@ -158,9 +161,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     public void onUserJoin(UserJoinEvent e) {
         LobbyUser user = (LobbyUser) e.getUser();
         if (user.isService()) {
-            user.sendPluginMessage(Plugin.LOBBY, ChatColor.PERSONAL + "Switched to lobby-mode!");
-            user.sendPluginMessage(Plugin.LOBBY,
-                    ChatColor.PERSONAL + "Use " + ChatColor.VALUE + "/build " + ChatColor.PERSONAL + " to switch mode");
+            user.sendPluginMessage(Plugin.LOBBY, Component.text("Switched to lobby-mode!", ExTextColor.PERSONAL));
             user.setStatus(Status.User.ONLINE);
         }
 

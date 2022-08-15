@@ -1,11 +1,12 @@
 package de.timesnake.basic.lobby.user;
 
-import de.timesnake.basic.bukkit.util.chat.ChatColor;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.server.LobbyServer;
 import de.timesnake.library.basic.util.Status;
+import de.timesnake.library.basic.util.chat.ExTextColor;
 import de.timesnake.library.extension.util.chat.Chat;
+import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
@@ -49,9 +50,9 @@ public class LobbyUser extends User {
         if (!this.isService()) {
             this.setService(true);
             this.unlockInventory();
-            this.sendPluginMessage(Plugin.LOBBY, ChatColor.PERSONAL + "Switched to buildmode!");
+            this.sendPluginMessage(Plugin.LOBBY, Component.text("Switched to buildmode!", ExTextColor.PERSONAL));
         } else {
-            this.sendPluginMessage(Plugin.LOBBY, ChatColor.PERSONAL + "Switched to lobbymode!");
+            this.sendPluginMessage(Plugin.LOBBY, Component.text("Switched to lobbymode!", ExTextColor.PERSONAL));
             this.joinLobby();
         }
 

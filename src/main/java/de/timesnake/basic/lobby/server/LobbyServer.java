@@ -14,10 +14,6 @@ public class LobbyServer extends Server {
         server.broadcastInfoMessage();
     }
 
-    public static void msgOnlineTimeAll() {
-        server.msgOnlineTimeAll();
-    }
-
     public static ExWorld getLobbyWorld() {
         return server.getLobbyWorld();
     }
@@ -41,6 +37,7 @@ public class LobbyServer extends Server {
     public static WaitingGameManager getWaitingGameManager() {
         return server.getWaitingGameManager();
     }
+
     private static final LobbyServerManager server = LobbyServerManager.getInstance();
 
 }
