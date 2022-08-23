@@ -116,7 +116,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
                     Server.PATREON_LINK, Component.text("Click to open the link"), ClickEvent.Action.OPEN_URL);
             case 2 -> Server.broadcastClickableMessage(Plugin.INFO, Component.text("Join our", ExTextColor.PUBLIC)
                             .append(Component.text(" discord", ExTextColor.PUBLIC, TextDecoration.UNDERLINED))
-                            .append(Component.text("and meet our community", ExTextColor.PUBLIC)),
+                            .append(Component.text(" and meet our community", ExTextColor.PUBLIC)),
                     Server.DISCORD_LINK, Component.text("Click to open the link"), ClickEvent.Action.OPEN_URL);
             case 3 -> Server.broadcastClickableMessage(Plugin.INFO, Component.text("Visit our", ExTextColor.PUBLIC)
                             .append(Component.text("website", ExTextColor.PUBLIC, TextDecoration.UNDERLINED))

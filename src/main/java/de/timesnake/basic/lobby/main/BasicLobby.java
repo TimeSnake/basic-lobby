@@ -25,7 +25,7 @@ public class BasicLobby extends JavaPlugin {
     public void onEnable() {
         plugin = this;
 
-        Server.getCommandManager().addCommand(this, "build", new LobbyCmd(), Plugin.LOBBY);
+        Server.getCommandManager().addCommand(this, "lobbybuild", new LobbyCmd(), Plugin.LOBBY);
         Server.registerListener(LobbyServerManager.getInstance(), this);
 
         LobbyServerManager.getInstance().onLobbyEnable();

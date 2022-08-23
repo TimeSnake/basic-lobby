@@ -16,8 +16,8 @@ import java.util.List;
 
 public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInfo> implements UserInventoryClickListener {
 
-    public static final ExItemStack BACK = new ExItemStack(Material.BLUE_BED, 1, "§cBack", List.of("§fClick to get " +
-            "back"));
+    public static final ExItemStack BACK = new ExItemStack(Material.BLUE_BED, 1, "§cBack",
+            List.of("§fClick to get back"));
 
     public static final Integer SERVER_SLOTS_START = 9;
 
@@ -81,7 +81,7 @@ public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInf
 
     public void removeServer(String name) {
         if (this.servers.containsKey(name)) {
-            GameServer server = this.servers.get(name);
+            GameServer<?> server = this.servers.get(name);
 
             this.inventory.removeItemStack(this.servers.get(name).getItem().getSlot());
             this.servers.remove(name);

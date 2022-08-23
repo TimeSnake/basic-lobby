@@ -12,9 +12,6 @@ import org.bukkit.entity.Player;
 
 public class LobbyUser extends User {
 
-    private boolean isStoryMode = false;
-    private int storyPoint = 1;
-
     public LobbyUser(Player p) {
         super(p);
         this.setTask(null);
@@ -79,7 +76,8 @@ public class LobbyUser extends User {
     }
 
     public void openBuildInventory() {
-        this.openInventory(LobbyServer.getBuild().getInventory());
+        this.sendPluginMessage(Plugin.NETWORK, Component.text("Use ", ExTextColor.PERSONAL)
+                .append(Component.text("/build", ExTextColor.VALUE)));
     }
 
     public void joinLobby() {
