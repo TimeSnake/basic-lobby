@@ -25,6 +25,7 @@ repositories {
 dependencies {
     implementation 'de.timesnake:library-waiting-game:1.0-SNAPSHOT'
     implementation 'de.timesnake:library-game:1.0-SNAPSHOT'
+    compileOnly 'de.timesnake:library-network:1.0-SNAPSHOT'
     compileOnly 'de.timesnake:library-extension:1.0-SNAPSHOT'
     compileOnly 'de.timesnake:library-basic:1.0-SNAPSHOT'
     compileOnly 'de.timesnake:basic-bukkit:1.0-SNAPSHOT'

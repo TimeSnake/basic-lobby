@@ -84,7 +84,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
 
         Server.getInventoryEventManager().addClickListener(this, this.item);
 
-        Server.getChannel().addListener(this, () -> Collections.singleton(this.port));
+        Server.getChannel().addListener(this, () -> Collections.singleton(this.name));
     }
 
     public String getDisplayName() {
@@ -293,7 +293,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
             , ListenerType.SERVER_ONLINE_PLAYERS}, filtered = true)
     public void onChannelMessage(ChannelServerMessage<?> msg) {
 
-        if (!msg.getPort().equals(this.port)) {
+        if (!msg.getName().equals(this.name)) {
             return;
         }
 
