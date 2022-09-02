@@ -76,8 +76,8 @@ public class LobbyUser extends User {
     }
 
     public void openBuildInventory() {
-        this.sendPluginMessage(Plugin.NETWORK, Component.text("Use ", ExTextColor.PERSONAL)
-                .append(Component.text("/build", ExTextColor.VALUE)));
+        this.openInventory(LobbyServer.getBuild().getInventory());
+        //this.sendPluginMessage(Plugin.NETWORK, Component.text("Use ", ExTextColor.PERSONAL).append(Component.text("/build", ExTextColor.VALUE)));
     }
 
     public void joinLobby() {

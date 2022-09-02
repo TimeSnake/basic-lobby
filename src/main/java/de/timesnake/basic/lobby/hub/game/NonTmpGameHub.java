@@ -1,7 +1,6 @@
 package de.timesnake.basic.lobby.hub.game;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.channel.util.listener.ChannelHandler;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.channel.util.listener.ListenerType;
@@ -24,13 +23,11 @@ public class NonTmpGameHub extends GameHub<NonTmpGameInfo> implements ChannelLis
         for (DbNonTmpGameServer server : Database.getServers().getServers(Type.Server.GAME, this.gameInfo.getName())) {
             this.addGameServer(server);
         }
-
-        Server.printText(Plugin.LOBBY, "Game-Servers for game " + this.gameInfo.getName() + " loaded successfully", "GameHub");
     }
 
     @ChannelHandler(type = ListenerType.SERVER_STATUS)
     public void onServerMessage(ChannelServerMessage<?> msg) {
-        DbServer server = Database.getServers().getServer(msg.getPort());
+        DbServer server = Database.getServers().getServer(msg.getName());
         if (!(server instanceof DbNonTmpGameServer)) {
             return;
         }

@@ -6,7 +6,6 @@ import de.timesnake.basic.bukkit.util.user.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
-import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.database.util.server.DbNonTmpGameServer;
 import org.bukkit.Material;
@@ -81,11 +80,8 @@ public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInf
 
     public void removeServer(String name) {
         if (this.servers.containsKey(name)) {
-            GameServer<?> server = this.servers.get(name);
-
             this.inventory.removeItemStack(this.servers.get(name).getItem().getSlot());
             this.servers.remove(name);
-            Server.printText(Plugin.LOBBY, "Removed server " + name + " from game-hub", "GameHub");
         }
     }
 

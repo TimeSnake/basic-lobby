@@ -33,8 +33,6 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
                 this.addGameServer(server);
             }
         }
-
-        Server.printText(Plugin.LOBBY, "Game-Servers for temp-game " + this.gameInfo.getName() + " loaded successfully", "GameHub");
     }
 
     protected void addGameServer(DbTmpGameServer server) {
@@ -51,7 +49,7 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
 
     @ChannelHandler(type = ListenerType.SERVER_STATUS)
     public void onServerMessage(ChannelServerMessage<?> msg) {
-        DbServer server = Database.getServers().getServer(msg.getPort());
+        DbServer server = Database.getServers().getServer(msg.getName());
         if (!(server instanceof DbTmpGameServer || server instanceof DbLoungeServer)) {
             return;
         }
