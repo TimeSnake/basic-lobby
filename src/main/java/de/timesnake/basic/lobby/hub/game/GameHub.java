@@ -23,7 +23,7 @@ public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInf
     protected final GameInfo gameInfo;
 
     protected final ExInventory inventory;
-    protected final HashMap<String, GameServer<GameInfo>> servers = new HashMap<>();
+    protected final HashMap<String, GameServerBasis> servers = new HashMap<>();
     protected final ExItemStack item;
 
     public GameHub(GameInfo gameInfo) {
@@ -41,7 +41,8 @@ public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInf
 
     protected void addGameServer(DbNonTmpGameServer server) {
         Integer slot = this.getEmptySlot();
-        GameServer<GameInfo> gameServer = new GameServer<>(this.getServerNumber(slot), this, server, slot);
+        GameServer<GameInfo> gameServer = new GameServer<>(this.getGameInfo().getDisplayName() + " " +
+                this.getServerNumber(slot), this, server, slot, true);
         this.servers.put(server.getName(), gameServer);
     }
 

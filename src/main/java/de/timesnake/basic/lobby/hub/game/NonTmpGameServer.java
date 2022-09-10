@@ -3,31 +3,28 @@ package de.timesnake.basic.lobby.hub.game;
 import de.timesnake.database.util.server.DbNonTmpGameServer;
 import de.timesnake.library.game.NonTmpGameInfo;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 public class NonTmpGameServer extends GameServer<NonTmpGameInfo> {
 
+    private final UUID owner;
     protected String gameInfo;
 
-    public NonTmpGameServer(Integer serverNumber, NonTmpGameHub hubGame, DbNonTmpGameServer server, int slot) {
-        super(serverNumber, hubGame, server, slot);
+    public NonTmpGameServer(NonTmpGameHub hubGame, DbNonTmpGameServer server, String displayName, int slot, UUID owner) {
+        super(displayName, hubGame, server, slot, false);
         this.gameInfo = server.getGameInfo();
+        this.owner = owner;
+        this.updateItem();
     }
 
     @Override
-    public List<String> getPasswordLore() {
-        List<String> lore = new ArrayList<>();
-        lore.addAll(this.getServerInfoLore());
-        lore.addAll(super.getPasswordLore());
-        return lore;
+    protected void updateItem() {
+        if (this.owner == null) {
+            super.updateItem();
+        }
     }
 
-    public List<String> getServerInfoLore() {
-        if (this.serverName != null) {
-            return List.of("", this.serverName);
-        } else {
-            return List.of();
-        }
+    public UUID getOwner() {
+        return owner;
     }
 }
