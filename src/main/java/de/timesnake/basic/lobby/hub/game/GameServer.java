@@ -1,7 +1,6 @@
 package de.timesnake.basic.lobby.hub.game;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.chat.ChatColor;
 import de.timesnake.basic.bukkit.util.chat.Sender;
 import de.timesnake.basic.bukkit.util.server.ServerInfo;
 import de.timesnake.basic.bukkit.util.user.ExItemStack;
@@ -29,40 +28,9 @@ import org.bukkit.event.inventory.ClickType;
 import java.util.*;
 
 public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> extends ServerInfo
-        implements ChannelListener, UserInventoryClickListener, Listener {
-
-    protected static final Material ONLINE = Material.GREEN_WOOL;
-    protected static final Material STARTING = Material.YELLOW_WOOL;
-    protected static final Material ONLINE_FULL = Material.YELLOW_WOOL;
-    protected static final Material SERVICE = Material.RED_WOOL;
-    protected static final Material OFFLINE = Material.GRAY_WOOL;
-    protected static final Material IN_GAME = Material.ORANGE_WOOL;
-
-    protected static final String SERVER_TITLE_COLOR = org.bukkit.ChatColor.GOLD + "";
-
-    protected static final String SERVER_NAME_COLOR = ChatColor.DARK_GRAY + "";
-
-    protected static final String ONLINE_TEXT = "§aOnline";
-    protected static final String OFFLINE_TEXT = "§cOffline";
-    protected static final String STARTING_TEXT = "§eStarting";
-    protected static final String INGAME_TEXT = "§eIn-game";
-    protected static final String SERVICE_TEXT = "§6Service Work";
-    protected static final String PLAYER_TEXT = "§9Players:";
-    protected static final String PASSWORD_TEXT = "§cThis server is password protected!";
-    protected static final String KIT_TEXT = "§bKits";
-    protected static final String MAP_TEXT = "§bMaps";
-    protected static final String OLD_PVP_TEXT = "§cpre1.9 PvP (1.8 PvP)";
-    protected static final String PLAYERS_PER_TEAM_TEXT = "§3Players per Team: §f";
-    protected static final String TEAM_AMOUNT = "§3Teams: §f";
-    protected static final String QUEUE_JOIN_TEXT = "§7Right click to join the queue";
-    protected static final String SPECTATOR_JOIN_TEXT = "§7Left click to join as spectator";
-
-    protected static final Component INGAME_OFFLINE_MESSAGE = Component.text("This server is offline or in-game", ExTextColor.WARNING);
-    protected static final Component SERVICE_MESSAGE = Component.text("This server is in service-mode", ExTextColor.WARNING);
-    protected static final Component FULL_MESSAGE = Component.text("This server is full", ExTextColor.WARNING);
+        implements ChannelListener, UserInventoryClickListener, Listener, GameServerBasis {
 
     protected final String displayName;
-    protected final Integer serverNumber;
     protected final String task;
     protected final ExItemStack item;
     protected final GameHub<GameInfo> gameHub;
@@ -70,17 +38,20 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
     protected String serverName;
     protected boolean queueing;
 
-    public GameServer(Integer serverNumber, GameHub<GameInfo> gameHub, DbTaskServer server, int slot) {
+    public GameServer(String displayName, GameHub<GameInfo> gameHub, DbTaskServer server, int slot, boolean updateItem) {
         super(server);
-        this.serverNumber = serverNumber;
-        this.displayName = gameHub.getGameInfo().getDisplayName() + " " + serverNumber;
+        this.displayName = displayName;
         this.serverName = server.getName();
         this.task = server.getTask();
         this.gameHub = gameHub;
 
         this.item = new ExItemStack(slot, Material.WHITE_WOOL, SERVER_TITLE_COLOR + this.displayName);
 
-        this.initUpdate();
+        this.updateItemAmount();
+        this.updateItemDescription();
+        if (updateItem) {
+            this.updateItem();
+        }
 
         Server.getInventoryEventManager().addClickListener(this, this.item);
 
@@ -89,10 +60,6 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
 
     public String getDisplayName() {
         return displayName;
-    }
-
-    public Integer getServerNumber() {
-        return serverNumber;
     }
 
     protected void initUpdate() {
@@ -281,6 +248,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
         return this.password != null;
     }
 
+    @Override
     public ExItemStack getItem() {
         return this.item;
     }

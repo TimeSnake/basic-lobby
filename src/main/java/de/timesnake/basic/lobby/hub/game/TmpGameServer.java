@@ -26,7 +26,7 @@ public class TmpGameServer extends GameServer<TmpGameInfo> {
 
     public TmpGameServer(Integer serverNumber, TmpGameHub gameHub, DbLoungeServer server, int slot) {
 
-        super(serverNumber, gameHub, server, slot);
+        super(gameHub.getGameInfo().getDisplayName() + " " + serverNumber, gameHub, server, slot, true);
 
         this.tempGameServer = server.getTwinServer();
         this.tempGameServerName = this.tempGameServer.getName();
