@@ -63,7 +63,7 @@ public class TmpGameServer extends GameServer<TmpGameInfo> {
     @Override
     protected void updateItemDescription() {
         if (status.equals(Status.Server.OFFLINE)) {
-            super.gameHub.removeServer(super.getName());
+            ((TmpGameHub) super.gameHub).removeServer(super.getName());
             Server.getChannel().removeListener(this);
             Server.getInventoryEventManager().removeClickListener(this);
         } else {

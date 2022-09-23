@@ -51,16 +51,18 @@ public class BuildWorld {
         return true;
     }
 
-    public void removeIfServer(String serverName) {
+    public boolean removeIfServer(String serverName) {
         if (serverName.equals(this.serverName)) {
             this.update(null);
+            return true;
         }
+        return false;
     }
 
     public void moveUser(User user) {
         Sender sender = user.asSender(Plugin.LOBBY);
 
-        if (this.serverName != null) {
+        if (this.isLoaded()) {
             user.switchToServer(this.serverName);
             sender.sendPluginMessage(Component.text("Switching to build-server ", ExTextColor.PERSONAL)
                     .append(Component.text(this.serverName, ExTextColor.VALUE)));
@@ -69,6 +71,10 @@ public class BuildWorld {
                     "build " + this.name));
             user.closeInventory();
         }
+    }
+
+    public boolean isLoaded() {
+        return this.serverName != null;
     }
 
 

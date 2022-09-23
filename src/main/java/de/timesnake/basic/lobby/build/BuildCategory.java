@@ -24,14 +24,18 @@ public class BuildCategory implements InventoryHolder, UserInventoryClickListene
 
     private final ExInventory inventory;
 
+    private final Build build;
+
     private final MultiKeyMap<String, ExItemStack, BuildWorld> worldByNameOrItem = new MultiKeyMap<>();
 
-    public BuildCategory(String name) {
+    public BuildCategory(String name, Build build) {
         this.name = name;
-        this.displayItem = new ExItemStack(Material.LIME_WOOL).setDisplayName(ChatColor.BLUE + name).immutable();
+        this.displayItem = new ExItemStack(Material.GRAY_WOOL).setDisplayName(ChatColor.BLUE + name);
 
         this.inventory = Server.createExInventory(6 * 9, this.name, this);
         Server.getInventoryEventManager().addClickListener(this, this);
+
+        this.build = build;
     }
 
     public ExItemStack getDisplayItem() {
@@ -55,7 +59,16 @@ public class BuildCategory implements InventoryHolder, UserInventoryClickListene
     }
 
     public void removeServer(String serverName) {
-        this.worldByNameOrItem.values().forEach(world -> world.removeIfServer(serverName));
+        boolean update = false;
+        for (BuildWorld world : this.worldByNameOrItem.values()) {
+            if (world.removeIfServer(serverName)) {
+                update = true;
+            }
+        }
+
+        if (update) {
+            this.updateInventory();
+        }
     }
 
     private void updateInventory() {
@@ -70,6 +83,19 @@ public class BuildCategory implements InventoryHolder, UserInventoryClickListene
             this.inventory.setItemStack(slot, element.getB());
             slot++;
         }
+
+        long loadedWorlds = this.worldByNameOrItem.values().stream().filter(BuildWorld::isLoaded).count();
+
+        if (loadedWorlds == 0) {
+            this.displayItem.setType(Material.GRAY_WOOL);
+            this.displayItem.setAmount(1);
+        } else if (loadedWorlds >= 1) {
+            this.displayItem.setType(Material.GREEN_WOOL);
+            this.displayItem.setAmount((int) loadedWorlds);
+        }
+
+        this.displayItem.setLore("", "§7" + loadedWorlds + " worlds loaded");
+        this.build.updateInventory();
     }
 
     @NotNull

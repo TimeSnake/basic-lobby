@@ -10,6 +10,7 @@ import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
 import de.timesnake.basic.bukkit.util.user.event.UserQuitEvent;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.hub.ServerPasswordCmd;
+import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.channel.util.listener.ChannelHandler;
 import de.timesnake.channel.util.listener.ChannelListener;
@@ -35,6 +36,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
     protected final ExItemStack item;
     protected final GameHub<GameInfo> gameHub;
     protected final Queue<User> queue = new LinkedList<>();
+    private final int slot;
     protected String serverName;
     protected boolean queueing;
 
@@ -42,6 +44,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
         super(server);
         this.displayName = displayName;
         this.serverName = server.getName();
+        this.slot = slot;
         this.task = server.getTask();
         this.gameHub = gameHub;
 
@@ -62,9 +65,14 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
         return displayName;
     }
 
+    public int getSlot() {
+        return slot;
+    }
+
     protected void initUpdate() {
         this.updateItemAmount();
         this.updateItemDescription();
+        this.updateQueue();
         this.updateItem();
     }
 
@@ -74,7 +82,6 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
         } else {
             this.item.setAmount(1);
         }
-        this.updateItem();
     }
 
     protected void updateItemDescription() {
@@ -126,7 +133,6 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
         lore.addAll(this.getServerNameLore());
 
         this.item.setExLore(lore);
-        this.updateItem();
     }
 
     public List<String> getPasswordLore() {
@@ -155,7 +161,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
     }
 
     protected void updateItem() {
-        gameHub.getInventory().setItemStack(this.item);
+        gameHub.updateServer(this);
     }
 
     @Override
@@ -222,14 +228,17 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
 
     public void updateQueue() {
         if (this.status.equals(Status.Server.ONLINE)) {
-            for (int i = this.onlinePlayers; i <= this.maxPlayers && !this.queue.isEmpty(); i++) {
-                this.moveUserToServer(this.queue.poll());
-            }
-            for (User user : this.queue) {
-                user.asSender(Plugin.LOBBY).sendPluginMessage(Component.text("Server ", ExTextColor.WARNING)
-                        .append(Component.text(this.displayName, ExTextColor.VALUE))
-                        .append(Component.text(" is full. Right click on the server to leave the queue.", ExTextColor.WARNING)));
-            }
+            Server.runTaskLaterSynchrony(() -> {
+                for (int i = this.onlinePlayers; i <= this.maxPlayers && !this.queue.isEmpty(); i++) {
+                    this.moveUserToServer(this.queue.poll());
+                }
+                for (User user : this.queue) {
+                    user.asSender(Plugin.LOBBY).sendPluginMessage(Component.text("Server ", ExTextColor.WARNING)
+                            .append(Component.text(this.displayName, ExTextColor.VALUE))
+                            .append(Component.text(" is full. Right click on the server to leave the queue.", ExTextColor.WARNING)));
+                }
+            }, 2 * 20, BasicLobby.getPlugin());
+
         } else if (this.status.equals(Status.Server.OFFLINE)) {
             for (User user : this.queue) {
                 user.sendPluginMessage(Plugin.LOBBY, Component.text("Server ", ExTextColor.WARNING)
@@ -257,6 +266,12 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
         return this.onlinePlayers >= this.maxPlayers;
     }
 
+    @Override
+    public void destroy() {
+        Server.getChannel().removeListener(this);
+        UserQuitEvent.getHandlerList().unregister(this);
+    }
+
     @ChannelHandler(type = {ListenerType.SERVER_PASSWORD, ListenerType.SERVER_STATUS, ListenerType.SERVER_MAX_PLAYERS
             , ListenerType.SERVER_ONLINE_PLAYERS}, filtered = true)
     public void onChannelMessage(ChannelServerMessage<?> msg) {
@@ -270,11 +285,11 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
         if (type.equals(MessageType.Server.PASSWORD)) {
             this.password = this.database.getPassword();
             this.updateItemDescription();
+            this.updateItem();
         } else if (type.equals(MessageType.Server.STATUS)) {
             this.status = this.database.getStatus();
             this.onlinePlayers = this.database.getOnlinePlayers();
-            this.updateItemDescription();
-            this.updateQueue();
+            this.initUpdate();
         } else if (type.equals(MessageType.Server.MAX_PLAYERS) || type.equals(MessageType.Server.ONLINE_PLAYERS)) {
             this.onlinePlayers = this.database.getOnlinePlayers();
             if (this.onlinePlayers == null) {
@@ -284,9 +299,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
             if (this.maxPlayers == null) {
                 this.maxPlayers = 0;
             }
-            this.updateItemAmount();
-            this.updateItemDescription();
-            this.updateQueue();
+            this.initUpdate();
         }
     }
 }

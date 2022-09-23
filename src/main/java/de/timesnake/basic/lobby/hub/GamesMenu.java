@@ -7,6 +7,7 @@ import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.hub.game.GameHub;
 import de.timesnake.basic.lobby.hub.game.NonTmpGameHub;
+import de.timesnake.basic.lobby.hub.game.OwnableNonTmpGameHubManager;
 import de.timesnake.basic.lobby.hub.game.TmpGameHub;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.database.util.Database;
@@ -35,7 +36,11 @@ public class GamesMenu implements UserInventoryClickListener {
             if (game instanceof DbTmpGame) {
                 gameHub = new TmpGameHub(((DbTmpGame) game));
             } else {
-                gameHub = new NonTmpGameHub(((DbNonTmpGame) game));
+                if (((DbNonTmpGame) game).isOwnable()) {
+                    gameHub = new OwnableNonTmpGameHubManager(((DbNonTmpGame) game));
+                } else {
+                    gameHub = new NonTmpGameHub(((DbNonTmpGame) game));
+                }
             }
             if (gameHub == null) {
                 Server.printError(Plugin.LOBBY, "Can not load game " + game.getInfo().getName());
