@@ -40,4 +40,8 @@ public interface GameServerBasis {
     String getName();
 
     ExItemStack getItem();
+
+    int getSlot();
+
+    void destroy();
 }

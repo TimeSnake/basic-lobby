@@ -15,15 +15,20 @@ import de.timesnake.database.util.server.DbTaskServer;
 import de.timesnake.database.util.server.DbTmpGameServer;
 import de.timesnake.library.game.TmpGameInfo;
 
+import java.util.HashMap;
+
 public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener {
+
+    protected final HashMap<String, GameServerBasis> servers = new HashMap<>();
 
     public TmpGameHub(DbTmpGameInfo gameInfo) {
         super(new TmpGameInfo(gameInfo));
 
+        this.loadServers();
+
         Server.getChannel().addListener(this);
     }
 
-    @Override
     protected void loadServers() {
         for (DbTmpGameServer server : Database.getServers().getServers(Type.Server.TEMP_GAME, this.gameInfo.getName())) {
             if (!server.getType().equals(Type.Server.TEMP_GAME)) {
@@ -42,8 +47,14 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
             TmpGameServer gameServer = new TmpGameServer(super.getServerNumber(slot), this, loungeServer, slot);
             this.servers.put(loungeServer.getName(), gameServer);
         } else {
-            Server.printWarning(Plugin.LOBBY, "Can not load game server " + server.getName() + ", lounge not found",
-                    "GameHub");
+            Server.printWarning(Plugin.LOBBY, "Can not load game server " + server.getName() + ", lounge not found", "GameHub");
+        }
+    }
+
+    public void removeServer(String name) {
+        if (this.servers.containsKey(name)) {
+            this.inventory.removeItemStack(this.servers.get(name).getItem().getSlot());
+            this.servers.remove(name);
         }
     }
 

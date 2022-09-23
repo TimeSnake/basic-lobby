@@ -7,10 +7,8 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
 import de.timesnake.basic.lobby.user.LobbyUser;
-import de.timesnake.database.util.server.DbNonTmpGameServer;
 import org.bukkit.Material;
 
-import java.util.HashMap;
 import java.util.List;
 
 public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInfo> implements UserInventoryClickListener {
@@ -23,7 +21,7 @@ public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInf
     protected final GameInfo gameInfo;
 
     protected final ExInventory inventory;
-    protected final HashMap<String, GameServerBasis> servers = new HashMap<>();
+
     protected final ExItemStack item;
 
     public GameHub(GameInfo gameInfo) {
@@ -32,18 +30,7 @@ public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInf
         this.inventory.setItemStack(4, BACK);
         this.item = new ExItemStack(this.gameInfo.getItem());
 
-        this.loadServers();
-
         Server.getInventoryEventManager().addClickListener(this, this.item);
-    }
-
-    protected abstract void loadServers();
-
-    protected void addGameServer(DbNonTmpGameServer server) {
-        Integer slot = this.getEmptySlot();
-        GameServer<GameInfo> gameServer = new GameServer<>(this.getGameInfo().getDisplayName() + " " +
-                this.getServerNumber(slot), this, server, slot, true);
-        this.servers.put(server.getName(), gameServer);
     }
 
     protected Integer getServerNumber(Integer slot) {
@@ -51,12 +38,7 @@ public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInf
     }
 
     public Integer getEmptySlot() {
-        for (int i = SERVER_SLOTS_START; i < this.inventory.getSize(); i++) {
-            if (this.inventory.getInventory().getItem(i) == null) {
-                return i;
-            }
-        }
-        return 9;
+        return this.inventory.getFirstEmptySlot(SERVER_SLOTS_START);
     }
 
     @Override
@@ -79,18 +61,15 @@ public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInf
         user.openInventory(this.inventory);
     }
 
-    public void removeServer(String name) {
-        if (this.servers.containsKey(name)) {
-            this.inventory.removeItemStack(this.servers.get(name).getItem().getSlot());
-            this.servers.remove(name);
-        }
-    }
-
     public org.bukkit.inventory.ItemStack getItem() {
         return this.item;
     }
 
     public GameInfo getGameInfo() {
         return gameInfo;
+    }
+
+    public void updateServer(GameServer<?> server) {
+        this.inventory.setItemStack(server.getSlot(), server.getItem());
     }
 }

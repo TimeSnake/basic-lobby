@@ -38,7 +38,7 @@ public class Build implements ChannelListener, UserInventoryClickListener, Inven
             String shortWorldName = worldName.replaceFirst(categoryName + "_", "");
             BuildCategory category = this.categoryByNameOrItem.get1(categoryName);
             if (category == null) {
-                category = new BuildCategory(categoryName);
+                category = new BuildCategory(categoryName, this);
                 this.categoryByNameOrItem.put(categoryName, category.getDisplayItem(), category);
                 this.inventory.setItemStack(slot, category.getDisplayItem());
                 slot++;
@@ -60,8 +60,16 @@ public class Build implements ChannelListener, UserInventoryClickListener, Inven
         this.categoryByNameOrItem.values().forEach(category -> category.removeServer(serverName));
     }
 
-    @Override
+    public void updateInventory() {
+        int slot = 0;
+        for (BuildCategory category : this.categoryByNameOrItem.values()) {
+            this.inventory.setItemStack(slot, category.getDisplayItem());
+            slot++;
+        }
+    }
+
     @NotNull
+    @Override
     public Inventory getInventory() {
         return inventory.getInventory();
     }
@@ -88,5 +96,6 @@ public class Build implements ChannelListener, UserInventoryClickListener, Inven
         }
 
         event.setCancelled(true);
+
     }
 }
