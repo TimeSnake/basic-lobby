@@ -5,6 +5,8 @@ import de.timesnake.basic.bukkit.util.chat.Argument;
 import de.timesnake.basic.bukkit.util.chat.CommandListener;
 import de.timesnake.basic.bukkit.util.chat.Sender;
 import de.timesnake.library.basic.util.chat.ExTextColor;
+import de.timesnake.library.extension.util.chat.Code;
+import de.timesnake.library.extension.util.chat.Plugin;
 import de.timesnake.library.extension.util.cmd.Arguments;
 import de.timesnake.library.extension.util.cmd.ExCommand;
 import net.kyori.adventure.text.Component;
@@ -13,9 +15,11 @@ import java.util.List;
 
 public class LobbyCmd implements CommandListener {
 
+    private Code.Permission buildPerm;
+
     public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
         if (sender.isPlayer(false)) {
-            if (sender.hasPermission("lobby.build", 1201)) {
+            if (sender.hasPermission(this.buildPerm)) {
                 LobbyUser user = (LobbyUser) sender.getUser();
                 if (args.isLengthEquals(0, false)) {
                     user.switchMode();
@@ -40,5 +44,10 @@ public class LobbyCmd implements CommandListener {
             return Server.getCommandManager().getTabCompleter().getPlayerNames();
         }
         return List.of();
+    }
+
+    @Override
+    public void loadCodes(Plugin plugin) {
+        this.buildPerm = plugin.createPermssionCode("lbl", "lobby.build");
     }
 }

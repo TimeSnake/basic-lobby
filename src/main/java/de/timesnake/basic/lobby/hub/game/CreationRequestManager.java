@@ -9,11 +9,14 @@ import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.channel.util.message.ChannelUserMessage;
 import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.database.util.object.Type;
+import de.timesnake.library.extension.util.chat.Code;
 import de.timesnake.library.game.GameInfo;
 import de.timesnake.library.game.NonTmpGameInfo;
 import org.bukkit.Material;
 
 public class CreationRequestManager implements UserInventoryClickListener {
+
+    public static final Code.Permission CREATION_PERM = Plugin.LOBBY.createPermssionCode("ghc", "lobby.gamehub.creation_request");
 
     private final ExItemStack item = new ExItemStack(Material.BLUE_WOOL).setDisplayName("§9Request new server")
             .setLore("", "§7Click to request a new server").setMoveable(false).setDropable(false).immutable();
@@ -35,7 +38,7 @@ public class CreationRequestManager implements UserInventoryClickListener {
 
         e.setCancelled(true);
 
-        if (!user.hasPermission("lobby.gamehub.creation_request", 1207, Plugin.LOBBY)) {
+        if (!user.hasPermission(CREATION_PERM, Plugin.LOBBY)) {
             return;
         }
 
