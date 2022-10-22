@@ -67,7 +67,8 @@ public class UserManager implements Listener {
 
     @EventHandler
     public void onUserDamage(UserDamageEvent e) {
-        if (!e.getDamageCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK) && !e.getDamageCause().equals(EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK)) {
+        if (!e.getDamageCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)
+                && !e.getDamageCause().equals(EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK)) {
             e.setCancelled(true);
         }
     }

@@ -66,7 +66,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
         this.task = server.getTask();
         this.gameHub = gameHub;
 
-        this.item = new ExItemStack(slot, Material.WHITE_WOOL, SERVER_TITLE_COLOR + this.displayName);
+        this.item = new ExItemStack(Material.WHITE_WOOL, SERVER_TITLE_COLOR + this.displayName).setSlot(slot);
 
         this.updateItemAmount();
         this.updateItemDescription();
@@ -77,6 +77,10 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
         Server.getInventoryEventManager().addClickListener(this, this.item);
 
         Server.getChannel().addListener(this, () -> Collections.singleton(this.name));
+    }
+
+    public String getServerName() {
+        return serverName;
     }
 
     public String getDisplayName() {
@@ -288,6 +292,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
     public void destroy() {
         Server.getChannel().removeListener(this);
         UserQuitEvent.getHandlerList().unregister(this);
+        Server.getInventoryEventManager().removeClickListener(this);
     }
 
     @ChannelHandler(type = {ListenerType.SERVER_PASSWORD, ListenerType.SERVER_STATUS, ListenerType.SERVER_MAX_PLAYERS

@@ -18,7 +18,6 @@
 
 package de.timesnake.basic.lobby.hub.game;
 
-import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.database.util.object.Type;
@@ -74,19 +73,11 @@ public class TmpGameServer extends GameServer<TmpGameInfo> {
 
     @Override
     protected void initUpdate() {
-        super.serverName = ((DbLoungeServer) super.getDatabase()).getTwinServer().getName() + " " + this.name;
-        super.initUpdate();
-    }
-
-    @Override
-    protected void updateItemDescription() {
-        if (status.equals(Status.Server.OFFLINE)) {
-            ((TmpGameHub) super.gameHub).removeServer(super.getName());
-            Server.getChannel().removeListener(this);
-            Server.getInventoryEventManager().removeClickListener(this);
-        } else {
-            super.updateItemDescription();
+        DbTmpGameServer twinServer = ((DbLoungeServer) super.getDatabase()).getTwinServer();
+        if (twinServer != null) {
+            super.serverName = twinServer.getName() + " " + this.name;
         }
+        super.initUpdate();
     }
 
     @Override
