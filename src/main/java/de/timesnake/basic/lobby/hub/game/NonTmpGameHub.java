@@ -53,6 +53,13 @@ public class NonTmpGameHub extends GameHub<NonTmpGameInfo> implements ChannelLis
         }
     }
 
+    public void removeServer(String name) {
+        if (this.servers.containsKey(name)) {
+            this.inventory.removeItemStack(this.servers.get(name).getItem().getSlot());
+            this.servers.remove(name);
+        }
+    }
+
     protected void addGameServer(DbNonTmpGameServer server) {
         Integer slot = this.getEmptySlot();
         GameServer<NonTmpGameInfo> gameServer = new GameServer<>(this.getGameInfo().getDisplayName() + " " +

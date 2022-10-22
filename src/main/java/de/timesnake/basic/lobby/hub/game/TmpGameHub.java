@@ -31,6 +31,7 @@ import de.timesnake.database.util.server.DbLoungeServer;
 import de.timesnake.database.util.server.DbServer;
 import de.timesnake.database.util.server.DbTaskServer;
 import de.timesnake.database.util.server.DbTmpGameServer;
+import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.game.TmpGameInfo;
 
 import java.util.HashMap;
@@ -69,11 +70,18 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
         }
     }
 
-    public void removeServer(String name) {
-        if (this.servers.containsKey(name)) {
-            this.inventory.removeItemStack(this.servers.get(name).getItem().getSlot());
-            this.servers.remove(name);
+    @Override
+    public void updateServer(GameServer<?> server) {
+        if (server.getStatus().equals(Status.Server.OFFLINE)) {
+            server.destroy();
+            this.removeServer(((TmpGameServer) server));
+        } else {
+            super.updateServer(server);
         }
+    }
+
+    public void removeServer(TmpGameServer server) {
+        this.inventory.removeItemStack(server.getItem().getSlot());
     }
 
     @ChannelHandler(type = ListenerType.SERVER_STATUS)
