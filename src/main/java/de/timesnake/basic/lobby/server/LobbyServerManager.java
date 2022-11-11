@@ -1,5 +1,5 @@
 /*
- * basic-lobby.main
+ * timesnake.basic-lobby.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -84,16 +84,16 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
         }
 
 
-        this.lobbyWorld.allowEntityExplode(false);
-        this.lobbyWorld.allowPlayerDamage(true);
-        this.lobbyWorld.allowFoodChange(false);
-        this.lobbyWorld.allowBlockBurnUp(false);
-        this.lobbyWorld.allowEntityBlockBreak(false);
-        this.lobbyWorld.allowDropPickItem(false);
-        this.lobbyWorld.allowBlockBreak(false);
-        this.lobbyWorld.allowPlaceInBlock(false);
-        this.lobbyWorld.allowFlintAndSteel(false);
-        this.lobbyWorld.allowLightUpInteraction(false);
+        this.lobbyWorld.restrict(ExWorld.Restriction.ENTITY_EXPLODE, true);
+        this.lobbyWorld.restrict(ExWorld.Restriction.PLAYER_DAMAGE, false);
+        this.lobbyWorld.restrict(ExWorld.Restriction.FOOD_CHANGE, true);
+        this.lobbyWorld.restrict(ExWorld.Restriction.BLOCK_BURN_UP, true);
+        this.lobbyWorld.restrict(ExWorld.Restriction.ENTITY_BLOCK_BREAK, true);
+        this.lobbyWorld.restrict(ExWorld.Restriction.DROP_PICK_ITEM, true);
+        this.lobbyWorld.restrict(ExWorld.Restriction.BLOCK_BREAK, true);
+        this.lobbyWorld.restrict(ExWorld.Restriction.PLACE_IN_BLOCK, true);
+        this.lobbyWorld.restrict(ExWorld.Restriction.FLINT_AND_STEEL, true);
+        this.lobbyWorld.restrict(ExWorld.Restriction.LIGHT_UP_INTERACTION, true);
         this.lobbyWorld.setExceptService(true);
         this.lobbyWorld.setPVP(true);
         this.lobbyWorld.setGameRule(GameRule.KEEP_INVENTORY, true);
@@ -103,7 +103,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
         Thread chatInfoThread = new Thread(new ChatInfoRepeater());
         chatInfoThread.start();
 
-        this.sideboard = Server.getScoreboardManager().registerNewSideboard("lobby", "§6§lLobby");
+        this.sideboard = Server.getScoreboardManager().registerSideboard("lobby", "§6§lLobby");
         sideboard.setScore(7, "§1Online:");
         this.sideboard.setScore(6, "§6" + Server.getNetwork().getPlayerAmount());
         this.sideboard.setScore(5, "§r§f§f---------------§r");
@@ -129,14 +129,14 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
                     Component.text("Do you need help? Use ", ExTextColor.PUBLIC)
                             .append(Component.text("/support", ExTextColor.VALUE)));
             case 1 -> Server.broadcastClickableMessage(Plugin.INFO,
-                    Component.text("Want to support the server? Donate via", ExTextColor.PUBLIC)
-                            .append(Component.text(" Patreon", ExTextColor.PUBLIC, TextDecoration.UNDERLINED)),
+                    Component.text("Want to support the server? Donate via ", ExTextColor.PUBLIC)
+                            .append(Component.text("Patreon", ExTextColor.PUBLIC, TextDecoration.UNDERLINED)),
                     Server.PATREON_LINK, Component.text("Click to open the link"), ClickEvent.Action.OPEN_URL);
-            case 2 -> Server.broadcastClickableMessage(Plugin.INFO, Component.text("Join our", ExTextColor.PUBLIC)
-                            .append(Component.text(" discord", ExTextColor.PUBLIC, TextDecoration.UNDERLINED))
+            case 2 -> Server.broadcastClickableMessage(Plugin.INFO, Component.text("Join our ", ExTextColor.PUBLIC)
+                            .append(Component.text("discord", ExTextColor.PUBLIC, TextDecoration.UNDERLINED))
                             .append(Component.text(" and meet our community", ExTextColor.PUBLIC)),
                     Server.DISCORD_LINK, Component.text("Click to open the link"), ClickEvent.Action.OPEN_URL);
-            case 3 -> Server.broadcastClickableMessage(Plugin.INFO, Component.text("Visit our", ExTextColor.PUBLIC)
+            case 3 -> Server.broadcastClickableMessage(Plugin.INFO, Component.text("Visit our ", ExTextColor.PUBLIC)
                             .append(Component.text("website", ExTextColor.PUBLIC, TextDecoration.UNDERLINED))
                             .append(Component.text(" to find out more about the server", ExTextColor.PUBLIC)),
                     Server.WEBSITE_LINK, Component.text("Click to open the link", ExTextColor.PUBLIC),
