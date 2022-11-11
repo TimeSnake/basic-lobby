@@ -1,5 +1,5 @@
 /*
- * basic-lobby.main
+ * timesnake.basic-lobby.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@ public class CreationRequestManager implements UserInventoryClickListener {
     public static final Code.Permission CREATION_PERM = Plugin.LOBBY.createPermssionCode("ghc", "lobby.gamehub.creation_request");
 
     private final ExItemStack item = new ExItemStack(Material.BLUE_WOOL).setDisplayName("§9Request new server")
-            .setLore("", "§7Click to request a new server").setMoveable(false).setDropable(false).immutable();
+            .setLore("", "§7Click to request a new server", "", "§cPunishable in case of abuse").setMoveable(false).setDropable(false).immutable();
 
     private final GameHub<?> hub;
 
