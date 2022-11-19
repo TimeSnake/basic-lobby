@@ -1,5 +1,5 @@
 /*
- * basic-lobby.main
+ * workspace.basic-lobby.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -61,7 +61,7 @@ public class GamesMenu implements UserInventoryClickListener {
                 }
             }
             if (gameHub == null) {
-                Server.printError(Plugin.LOBBY, "Can not load game " + game.getInfo().getName());
+                Server.printWarning(Plugin.LOBBY, "Can not load game " + game.getInfo().getName());
             } else {
                 inventory.setItemStack(gameHub.getGameInfo().getSlot(), gameHub.getItem());
                 games.put(gameHub.getGameInfo().getSlot(), gameHub);
