@@ -1,5 +1,5 @@
 /*
- * basic-lobby.main
+ * workspace.basic-lobby.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@ import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
 import de.timesnake.library.basic.util.MultiKeyMap;
 import de.timesnake.library.basic.util.Tuple;
 import de.timesnake.library.basic.util.chat.ChatColor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -50,7 +51,7 @@ public class BuildCategory implements InventoryHolder, UserInventoryClickListene
         this.name = name;
         this.displayItem = new ExItemStack(Material.GRAY_WOOL).setDisplayName(ChatColor.BLUE + name);
 
-        this.inventory = Server.createExInventory(6 * 9, this.name, this);
+        this.inventory = new ExInventory(6 * 9, Component.text(this.name), this);
         Server.getInventoryEventManager().addClickListener(this, this);
 
         this.build = build;
