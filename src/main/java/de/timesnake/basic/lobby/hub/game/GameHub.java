@@ -1,5 +1,5 @@
 /*
- * basic-lobby.main
+ * workspace.basic-lobby.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
 import de.timesnake.basic.lobby.user.LobbyUser;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInf
 
     public GameHub(GameInfo gameInfo) {
         this.gameInfo = gameInfo;
-        this.inventory = Server.createExInventory(54, this.gameInfo.getDisplayName());
+        this.inventory = new ExInventory(54, Component.text(this.gameInfo.getDisplayName()));
         this.inventory.setItemStack(4, BACK);
         this.item = new ExItemStack(this.gameInfo.getItem());
 

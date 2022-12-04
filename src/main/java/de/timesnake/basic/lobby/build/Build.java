@@ -1,5 +1,5 @@
 /*
- * basic-lobby.main
+ * workspace.basic-lobby.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -32,13 +32,14 @@ import de.timesnake.channel.util.message.ChannelServerMessage;
 import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.database.util.object.Type;
 import de.timesnake.library.basic.util.MultiKeyMap;
+import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 
 public class Build implements ChannelListener, UserInventoryClickListener, InventoryHolder {
 
-    private final ExInventory inventory = Server.createExInventory(54, "Build-Worlds", this);
+    private final ExInventory inventory = new ExInventory(54, Component.text("Build-Worlds"), this);
 
     private final MultiKeyMap<String, ExItemStack, BuildCategory> categoryByNameOrItem = new MultiKeyMap<>();
 
