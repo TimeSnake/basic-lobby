@@ -1,5 +1,5 @@
 /*
- * basic-lobby.main
+ * workspace.basic-lobby.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -68,6 +68,7 @@ public class LobbyUser extends User {
             this.sendPluginMessage(Plugin.LOBBY, Component.text("Switched to buildmode!", ExTextColor.PERSONAL));
         } else {
             this.sendPluginMessage(Plugin.LOBBY, Component.text("Switched to lobbymode!", ExTextColor.PERSONAL));
+            this.setService(false);
             this.joinLobby();
         }
 

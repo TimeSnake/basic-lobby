@@ -1,5 +1,5 @@
 /*
- * timesnake.basic-lobby.main
+ * workspace.basic-lobby.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -183,7 +183,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
             user.setStatus(Status.User.ONLINE);
         }
 
-        if (!user.agreedDataProtection()) {
+        if (!user.agreedPrivacyPolicy()) {
             user.setDefault();
         } else {
             user.joinLobby();
