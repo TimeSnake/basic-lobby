@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.basic.lobby.build;
@@ -12,10 +12,9 @@ import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.channel.util.message.ChannelUserMessage;
 import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.library.basic.util.chat.ExTextColor;
+import java.util.Objects;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-
-import java.util.Objects;
 
 public class BuildWorld {
 

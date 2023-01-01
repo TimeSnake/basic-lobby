@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.basic.lobby.hub;
@@ -18,9 +18,8 @@ import de.timesnake.database.util.Database;
 import de.timesnake.database.util.game.DbGame;
 import de.timesnake.database.util.game.DbNonTmpGame;
 import de.timesnake.database.util.game.DbTmpGame;
-import net.kyori.adventure.text.Component;
-
 import java.util.HashMap;
+import net.kyori.adventure.text.Component;
 
 public class GamesMenu implements UserInventoryClickListener {
 

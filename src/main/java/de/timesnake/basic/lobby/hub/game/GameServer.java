@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.basic.lobby.hub.game;
@@ -24,13 +24,16 @@ import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.database.util.server.DbTaskServer;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.basic.util.chat.ExTextColor;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
-
-import java.util.*;
 
 public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> extends ServerInfo
         implements ChannelListener, UserInventoryClickListener, Listener, GameServerBasis {

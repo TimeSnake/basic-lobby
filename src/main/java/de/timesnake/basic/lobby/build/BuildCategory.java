@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.basic.lobby.build;
@@ -13,14 +13,13 @@ import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
 import de.timesnake.library.basic.util.MultiKeyMap;
 import de.timesnake.library.basic.util.Tuple;
 import de.timesnake.library.basic.util.chat.ChatColor;
+import java.util.Comparator;
+import java.util.TreeSet;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Comparator;
-import java.util.TreeSet;
 
 public class BuildCategory implements InventoryHolder, UserInventoryClickListener {
 

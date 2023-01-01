@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.basic.lobby.server;
@@ -20,6 +20,7 @@ import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.basic.util.chat.ExTextColor;
 import de.timesnake.library.waitinggames.WaitingGameManager;
+import java.util.Random;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -29,8 +30,6 @@ import org.bukkit.Note;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-
-import java.util.Random;
 
 public class LobbyServerManager extends ServerManager implements ChannelListener, Listener {
 
