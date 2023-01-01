@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.basic.lobby.hub.game;
@@ -14,11 +14,10 @@ import de.timesnake.channel.util.message.ChannelUserMessage;
 import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.library.basic.util.chat.ExTextColor;
 import de.timesnake.library.game.NonTmpGameInfo;
-import net.kyori.adventure.text.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
 
 public class UnloadedNonTmpGameServer implements GameServerBasis, UserInventoryClickListener {
 

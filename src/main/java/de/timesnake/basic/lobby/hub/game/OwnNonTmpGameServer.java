@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.basic.lobby.hub.game;
 
 import de.timesnake.database.util.server.DbNonTmpGameServer;
 import de.timesnake.library.game.NonTmpGameInfo;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;

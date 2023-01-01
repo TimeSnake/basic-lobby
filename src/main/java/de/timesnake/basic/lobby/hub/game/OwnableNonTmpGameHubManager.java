@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.basic.lobby.hub.game;
@@ -18,7 +18,6 @@ import de.timesnake.database.util.server.DbNonTmpGameServer;
 import de.timesnake.database.util.server.DbServer;
 import de.timesnake.library.basic.util.MultiKeyMap;
 import de.timesnake.library.game.NonTmpGameInfo;
-
 import java.util.HashMap;
 import java.util.UUID;
 

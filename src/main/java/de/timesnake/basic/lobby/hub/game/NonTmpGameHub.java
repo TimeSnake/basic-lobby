@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 timesnake
+ * Copyright (C) 2023 timesnake
  */
 
 package de.timesnake.basic.lobby.hub.game;
@@ -15,7 +15,6 @@ import de.timesnake.database.util.object.Type;
 import de.timesnake.database.util.server.DbNonTmpGameServer;
 import de.timesnake.database.util.server.DbServer;
 import de.timesnake.library.game.NonTmpGameInfo;
-
 import java.util.HashMap;
 
 public class NonTmpGameHub extends GameHub<NonTmpGameInfo> implements ChannelListener {
