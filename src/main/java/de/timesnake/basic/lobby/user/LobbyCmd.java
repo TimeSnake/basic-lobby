@@ -18,9 +18,10 @@ import net.kyori.adventure.text.Component;
 
 public class LobbyCmd implements CommandListener {
 
-    private Code.Permission buildPerm;
+    private Code buildPerm;
 
-    public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
+    public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd,
+            Arguments<Argument> args) {
         if (sender.isPlayer(false)) {
             if (sender.hasPermission(this.buildPerm)) {
                 LobbyUser user = (LobbyUser) sender.getUser();
@@ -33,7 +34,8 @@ public class LobbyCmd implements CommandListener {
                             .append(Component.text(" switched mode!", ExTextColor.PERSONAL)));
                 }
             }
-        } else if (sender.isConsole(false) && args.isLengthEquals(1, true) && args.get(0).isPlayerName(true)) {
+        } else if (sender.isConsole(false) && args.isLengthEquals(1, true) && args.get(0)
+                .isPlayerName(true)) {
             LobbyUser user = (LobbyUser) args.get(0).toUser();
             user.switchMode();
             sender.sendPluginMessage(user.getChatNameComponent()
@@ -42,7 +44,8 @@ public class LobbyCmd implements CommandListener {
     }
 
     @Override
-    public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
+    public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd,
+            Arguments<Argument> args) {
         if (args.isLengthEquals(1, false)) {
             return Server.getCommandManager().getTabCompleter().getPlayerNames();
         }
@@ -51,6 +54,6 @@ public class LobbyCmd implements CommandListener {
 
     @Override
     public void loadCodes(Plugin plugin) {
-        this.buildPerm = plugin.createPermssionCode("lbl", "lobby.build");
+        this.buildPerm = plugin.createPermssionCode("lobby.build");
     }
 }

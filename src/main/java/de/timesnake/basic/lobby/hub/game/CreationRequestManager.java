@@ -20,10 +20,13 @@ import org.bukkit.Material;
 
 public class CreationRequestManager implements UserInventoryClickListener {
 
-    public static final Code.Permission CREATION_PERM = Plugin.LOBBY.createPermssionCode("ghc", "lobby.gamehub.creation_request");
+    public static final Code CREATION_PERM = Plugin.LOBBY.createPermssionCode(
+            "lobby.gamehub.creation_request");
 
-    private final ExItemStack item = new ExItemStack(Material.BLUE_WOOL).setDisplayName("§9Request new server")
-            .setLore("", "§7Click to request a new server", "", "§cPunishable in case of abuse").setMoveable(false).setDropable(false).immutable();
+    private final ExItemStack item = new ExItemStack(Material.BLUE_WOOL).setDisplayName(
+                    "§9Request new server")
+            .setLore("", "§7Click to request a new server", "", "§cPunishable in case of abuse")
+            .setMoveable(false).setDropable(false).immutable();
 
     private final GameHub<?> hub;
 
@@ -63,8 +66,9 @@ public class CreationRequestManager implements UserInventoryClickListener {
             if (nonTmpInfo.isOwnable()) {
                 // TODO own games
             } else {
-                Server.getChannel().sendMessage(new ChannelUserMessage<>(user.getUniqueId(), MessageType.User.PROXY_COMMAND,
-                        "start game " + info.getName() + settings));
+                Server.getChannel().sendMessage(
+                        new ChannelUserMessage<>(user.getUniqueId(), MessageType.User.PROXY_COMMAND,
+                                "start game " + info.getName() + settings));
             }
         } else {
             // TODO tmp games
