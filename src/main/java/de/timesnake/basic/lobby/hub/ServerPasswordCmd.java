@@ -17,7 +17,8 @@ import org.bukkit.event.EventHandler;
 
 public class ServerPasswordCmd implements UserChatCommandListener {
 
-    public static final Code.Permission PASSWORD_PERM = Plugin.LOBBY.createPermssionCode("pwd", "lobby.gamehub.password");
+    public static final Code PASSWORD_PERM = Plugin.LOBBY.createPermssionCode(
+            "lobby.gamehub.password");
 
     private final ServerInfo server;
 
@@ -35,9 +36,12 @@ public class ServerPasswordCmd implements UserChatCommandListener {
                 .append(Component.text("*".repeat(password.length()), ExTextColor.VALUE)));
 
         if (e.getUser().hasPermission(PASSWORD_PERM, Plugin.LOBBY)) {
-            sender.sendPluginMessage(Component.text("Used permission, instead of password", ExTextColor.PERSONAL));
+            sender.sendPluginMessage(
+                    Component.text("Used permission, instead of password", ExTextColor.PERSONAL));
         } else if (!password.equals(server.getPassword())) {
-            sender.sendPluginMessage(Component.text("Wrong password, please select the server and try again", ExTextColor.WARNING));
+            sender.sendPluginMessage(
+                    Component.text("Wrong password, please select the server and try again",
+                            ExTextColor.WARNING));
             return;
         }
 
