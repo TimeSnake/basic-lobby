@@ -5,11 +5,11 @@
 package de.timesnake.basic.lobby.build;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.user.ExInventory;
-import de.timesnake.basic.bukkit.util.user.ExItemStack;
+import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
+import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.User;
-import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
-import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
+import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
+import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.channel.util.listener.ChannelHandler;
 import de.timesnake.channel.util.listener.ChannelListener;
@@ -29,6 +29,8 @@ public class Build implements ChannelListener, UserInventoryClickListener, Inven
 
     private final MultiKeyMap<String, ExItemStack, BuildCategory> categoryByNameOrItem = new MultiKeyMap<>();
 
+    private int slotCounter = 0;
+
     public Build() {
         Server.getChannel().addListener(this);
         Server.getInventoryEventManager().addClickListener(this, this);
@@ -36,17 +38,13 @@ public class Build implements ChannelListener, UserInventoryClickListener, Inven
     }
 
     private void loadExistingWorlds() {
-        int slot = 0;
         for (String worldName : Server.getNetwork().getWorldNames(Type.Server.BUILD, null)) {
             String[] nameParts = worldName.split("_");
             String categoryName = nameParts[0];
             String shortWorldName = worldName.replaceFirst(categoryName + "_", "");
             BuildCategory category = this.categoryByNameOrItem.get1(categoryName);
             if (category == null) {
-                category = new BuildCategory(categoryName, this);
-                this.categoryByNameOrItem.put(categoryName, category.getDisplayItem(), category);
-                this.inventory.setItemStack(slot, category.getDisplayItem());
-                slot++;
+                category = this.addCategory(categoryName);
             }
 
             category.addWorld(worldName, shortWorldName);
@@ -56,9 +54,27 @@ public class Build implements ChannelListener, UserInventoryClickListener, Inven
     }
 
     private void updateWorld(String worldName, String serverName) {
-        for (BuildCategory category : this.categoryByNameOrItem.values()) {
-            category.updateWorld(worldName, serverName);
+        String categoryName = this.getCategoryFromWorldName(worldName);
+        BuildCategory category = this.categoryByNameOrItem.get1(categoryName);
+
+        if (category == null) {
+            this.addCategory(categoryName);
         }
+
+        category.updateWorld(worldName, serverName);
+    }
+
+    private BuildCategory addCategory(String name) {
+        BuildCategory category = new BuildCategory(name, this);
+        this.categoryByNameOrItem.put(name, category.getDisplayItem(), category);
+        this.inventory.setItemStack(slotCounter, category.getDisplayItem());
+        slotCounter++;
+
+        return category;
+    }
+
+    private String getCategoryFromWorldName(String worldName) {
+        return worldName.split("_", 2)[0];
     }
 
     private void removeServer(String serverName) {
@@ -80,7 +96,8 @@ public class Build implements ChannelListener, UserInventoryClickListener, Inven
     }
 
     @ChannelHandler(type = {ListenerType.SERVER_LOAD_WORLD, ListenerType.SERVER_UNLOAD_WORLD,
-            ListenerType.SERVER_LOADED_WORLD, ListenerType.SERVER_UNLOADED_WORLD, ListenerType.SERVER_UNLOADED_ALL_WORLDS})
+            ListenerType.SERVER_LOADED_WORLD, ListenerType.SERVER_UNLOADED_WORLD,
+            ListenerType.SERVER_UNLOADED_ALL_WORLDS})
     public void onServerMessage(ChannelServerMessage<?> msg) {
         if (msg.getMessageType().equals(MessageType.Server.UNLOADED_ALL_WORLDS)) {
             this.removeServer(msg.getName());

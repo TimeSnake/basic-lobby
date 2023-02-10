@@ -5,10 +5,10 @@
 package de.timesnake.basic.lobby.user;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.user.ExItemStack;
+import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.User;
-import de.timesnake.basic.bukkit.util.user.event.UserInventoryInteractEvent;
-import de.timesnake.basic.bukkit.util.user.event.UserInventoryInteractListener;
+import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractEvent;
+import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractListener;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.library.basic.util.chat.ExTextColor;
