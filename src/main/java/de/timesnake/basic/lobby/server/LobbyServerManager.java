@@ -68,7 +68,6 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
             }
         }
 
-
         this.lobbyWorld.restrict(ExWorld.Restriction.ENTITY_EXPLODE, true);
         this.lobbyWorld.restrict(ExWorld.Restriction.PLAYER_DAMAGE, false);
         this.lobbyWorld.restrict(ExWorld.Restriction.FOOD_CHANGE, true);
@@ -115,23 +114,33 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
                             .append(Component.text("/support", ExTextColor.VALUE)));
             case 1 -> Server.broadcastClickableMessage(Plugin.INFO,
                     Component.text("Want to support the server? Donate via ", ExTextColor.PUBLIC)
-                            .append(Component.text("Patreon", ExTextColor.PUBLIC, TextDecoration.UNDERLINED)),
-                    Server.PATREON_LINK, Component.text("Click to open the link"), ClickEvent.Action.OPEN_URL);
-            case 2 -> Server.broadcastClickableMessage(Plugin.INFO, Component.text("Join our ", ExTextColor.PUBLIC)
-                            .append(Component.text("discord", ExTextColor.PUBLIC, TextDecoration.UNDERLINED))
-                            .append(Component.text(" and meet our community", ExTextColor.PUBLIC)),
-                    Server.DISCORD_LINK, Component.text("Click to open the link"), ClickEvent.Action.OPEN_URL);
-            case 3 -> Server.broadcastClickableMessage(Plugin.INFO, Component.text("Visit our ", ExTextColor.PUBLIC)
-                            .append(Component.text("website", ExTextColor.PUBLIC, TextDecoration.UNDERLINED))
-                            .append(Component.text(" to find out more about the server", ExTextColor.PUBLIC)),
-                    Server.WEBSITE_LINK, Component.text("Click to open the link", ExTextColor.PUBLIC),
+                            .append(Component.text("Patreon", ExTextColor.PUBLIC,
+                                    TextDecoration.UNDERLINED)),
+                    Server.PATREON_LINK, Component.text("Click to open the link"),
                     ClickEvent.Action.OPEN_URL);
-            case 4 ->
-                    Server.broadcastMessage(Plugin.INFO, Component.text("Invite new members to gain", ExTextColor.PUBLIC)
+            case 2 -> Server.broadcastClickableMessage(Plugin.INFO,
+                    Component.text("Join our ", ExTextColor.PUBLIC)
+                            .append(Component.text("discord", ExTextColor.PUBLIC,
+                                    TextDecoration.UNDERLINED))
+                            .append(Component.text(" and meet our community", ExTextColor.PUBLIC)),
+                    Server.DISCORD_LINK, Component.text("Click to open the link"),
+                    ClickEvent.Action.OPEN_URL);
+            case 3 -> Server.broadcastClickableMessage(Plugin.INFO,
+                    Component.text("Visit our ", ExTextColor.PUBLIC)
+                            .append(Component.text("website", ExTextColor.PUBLIC,
+                                    TextDecoration.UNDERLINED))
+                            .append(Component.text(" to find out more about the server",
+                                    ExTextColor.PUBLIC)),
+                    Server.WEBSITE_LINK,
+                    Component.text("Click to open the link", ExTextColor.PUBLIC),
+                    ClickEvent.Action.OPEN_URL);
+            case 4 -> Server.broadcastMessage(Plugin.INFO,
+                    Component.text("Invite new members to gain", ExTextColor.PUBLIC)
                             .append(Component.text(" 100 TimeCoins", ExTextColor.GOLD))
-                            .append(Component.text(" (if the new player reached 100 TimeCoins)", ExTextColor.QUICK_INFO)));
-            case 5 ->
-                    Server.broadcastMessage(Plugin.INFO, Component.text("Trampling on turtle eggs is forbidden!", ExTextColor.WARNING));
+                            .append(Component.text(" (if the new player reached 100 TimeCoins)",
+                                    ExTextColor.QUICK_INFO)));
+            case 5 -> Server.broadcastMessage(Plugin.INFO,
+                    Component.text("Trampling on turtle eggs is forbidden!", ExTextColor.WARNING));
         }
         Server.broadcastNote(Instrument.PLING, Note.natural(1, Note.Tone.C));
     }
@@ -164,7 +173,8 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     public void onUserJoin(UserJoinEvent e) {
         LobbyUser user = (LobbyUser) e.getUser();
         if (user.isService()) {
-            user.sendPluginMessage(Plugin.LOBBY, Component.text("Switched to lobby-mode!", ExTextColor.PERSONAL));
+            user.sendPluginMessage(Plugin.LOBBY,
+                    Component.text("Switched to lobby-mode!", ExTextColor.PERSONAL));
             user.setStatus(Status.User.ONLINE);
         }
 
@@ -178,7 +188,8 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     private class ChatInfoRepeater implements Runnable {
 
         public void run() {
-            Server.runTaskTimerSynchrony(LobbyServerManager.this::broadcastInfoMessage, 0, 20 * 60 * 3,
+            Server.runTaskTimerSynchrony(LobbyServerManager.this::broadcastInfoMessage, 0,
+                    20 * 60 * 3,
                     BasicLobby.getPlugin());
         }
     }
