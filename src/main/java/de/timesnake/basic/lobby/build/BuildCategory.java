@@ -5,11 +5,11 @@
 package de.timesnake.basic.lobby.build;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.user.ExInventory;
-import de.timesnake.basic.bukkit.util.user.ExItemStack;
+import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
+import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.User;
-import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
-import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
+import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
+import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
 import de.timesnake.library.basic.util.MultiKeyMap;
 import de.timesnake.library.basic.util.Tuple;
 import de.timesnake.library.basic.util.chat.ChatColor;
@@ -34,7 +34,8 @@ public class BuildCategory implements InventoryHolder, UserInventoryClickListene
 
     public BuildCategory(String name, Build build) {
         this.name = name;
-        this.displayItem = new ExItemStack(Material.GRAY_WOOL).setDisplayName(ChatColor.BLUE + name);
+        this.displayItem = new ExItemStack(Material.GRAY_WOOL).setDisplayName(
+                ChatColor.BLUE + name);
 
         this.inventory = new ExInventory(6 * 9, Component.text(this.name), this);
         Server.getInventoryEventManager().addClickListener(this, this);
@@ -59,6 +60,8 @@ public class BuildCategory implements InventoryHolder, UserInventoryClickListene
             if (result) {
                 this.updateInventory();
             }
+        } else {
+            this.addWorld(worldName, worldName.split("_", 2)[1]);
         }
     }
 
@@ -76,7 +79,8 @@ public class BuildCategory implements InventoryHolder, UserInventoryClickListene
     }
 
     private void updateInventory() {
-        TreeSet<Tuple<String, ExItemStack>> sortedItems = new TreeSet<>(Comparator.comparing(Tuple::getA));
+        TreeSet<Tuple<String, ExItemStack>> sortedItems = new TreeSet<>(
+                Comparator.comparing(Tuple::getA));
 
         for (BuildWorld world : this.worldByNameOrItem.values()) {
             sortedItems.add(new Tuple<>(world.getName(), world.getItem()));
@@ -88,7 +92,8 @@ public class BuildCategory implements InventoryHolder, UserInventoryClickListene
             slot++;
         }
 
-        long loadedWorlds = this.worldByNameOrItem.values().stream().filter(BuildWorld::isLoaded).count();
+        long loadedWorlds = this.worldByNameOrItem.values().stream().filter(BuildWorld::isLoaded)
+                .count();
 
         if (loadedWorlds == 0) {
             this.displayItem.setType(Material.GRAY_WOOL);
