@@ -18,7 +18,7 @@ import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.basic.lobby.user.UserManager;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.library.basic.util.Status;
-import de.timesnake.library.basic.util.chat.ExTextColor;
+import de.timesnake.library.chat.ExTextColor;
 import de.timesnake.library.waitinggames.WaitingGameManager;
 import java.util.Random;
 import net.kyori.adventure.text.Component;
@@ -109,9 +109,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
 
     public void broadcastInfoMessage() {
         switch (new Random().nextInt(6)) {
-            case 0 -> Server.broadcastMessage(Plugin.INFO,
-                    Component.text("Do you need help? Use ", ExTextColor.PUBLIC)
-                            .append(Component.text("/support", ExTextColor.VALUE)));
+            case 0 -> Server.broadcastTDMessage(Plugin.INFO, "§pDo you need help? Use §v/support");
             case 1 -> Server.broadcastClickableMessage(Plugin.INFO,
                     Component.text("Want to support the server? Donate via ", ExTextColor.PUBLIC)
                             .append(Component.text("Patreon", ExTextColor.PUBLIC,
@@ -139,8 +137,8 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
                             .append(Component.text(" 100 TimeCoins", ExTextColor.GOLD))
                             .append(Component.text(" (if the new player reached 100 TimeCoins)",
                                     ExTextColor.QUICK_INFO)));
-            case 5 -> Server.broadcastMessage(Plugin.INFO,
-                    Component.text("Trampling on turtle eggs is forbidden!", ExTextColor.WARNING));
+            case 5 -> Server.broadcastTDMessage(Plugin.INFO,
+                    "§wTrampling on turtle eggs is forbidden!");
         }
         Server.broadcastNote(Instrument.PLING, Note.natural(1, Note.Tone.C));
     }
@@ -173,8 +171,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     public void onUserJoin(UserJoinEvent e) {
         LobbyUser user = (LobbyUser) e.getUser();
         if (user.isService()) {
-            user.sendPluginMessage(Plugin.LOBBY,
-                    Component.text("Switched to lobby-mode!", ExTextColor.PERSONAL));
+            user.sendPluginTDMessage(Plugin.LOBBY, "§sSwitched to lobby-mode!");
             user.setStatus(Status.User.ONLINE);
         }
 

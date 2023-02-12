@@ -6,12 +6,12 @@ package de.timesnake.basic.lobby.build;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.chat.Sender;
-import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.User;
+import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.channel.util.message.ChannelUserMessage;
 import de.timesnake.channel.util.message.MessageType;
-import de.timesnake.library.basic.util.chat.ExTextColor;
+import de.timesnake.library.chat.ExTextColor;
 import java.util.Objects;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -29,7 +29,9 @@ public class BuildWorld {
 
     public BuildWorld(String name, String shortWorldName) {
         this.name = name;
-        this.item = new ExItemStack(OFFLINE, "§6" + shortWorldName).setLore("", "§cUnloaded", "§7Click to load");
+        this.item = new ExItemStack(OFFLINE, "§6" + shortWorldName)
+                .setLore("", "§cUnloaded", "§7Click to load")
+                .onClick(event -> this.moveUser(event.getUser()), true);
     }
 
     public String getName() {
@@ -67,11 +69,13 @@ public class BuildWorld {
 
         if (this.isLoaded()) {
             user.switchToServer(this.serverName);
-            sender.sendPluginMessage(Component.text("Switching to build-server ", ExTextColor.PERSONAL)
-                    .append(Component.text(this.serverName, ExTextColor.VALUE)));
+            sender.sendPluginMessage(
+                    Component.text("Switching to build-server ", ExTextColor.PERSONAL)
+                            .append(Component.text(this.serverName, ExTextColor.VALUE)));
         } else {
-            Server.getChannel().sendMessage(new ChannelUserMessage<>(user.getUniqueId(), MessageType.User.PROXY_COMMAND,
-                    "build " + this.name));
+            Server.getChannel().sendMessage(
+                    new ChannelUserMessage<>(user.getUniqueId(), MessageType.User.PROXY_COMMAND,
+                            "build " + this.name));
             user.closeInventory();
         }
     }
