@@ -12,7 +12,7 @@ import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.channel.util.message.ChannelUserMessage;
 import de.timesnake.channel.util.message.MessageType;
-import de.timesnake.library.basic.util.chat.ExTextColor;
+import de.timesnake.library.chat.ExTextColor;
 import de.timesnake.library.game.NonTmpGameInfo;
 import java.util.ArrayList;
 import java.util.List;

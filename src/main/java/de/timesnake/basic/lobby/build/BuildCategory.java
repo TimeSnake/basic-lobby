@@ -5,14 +5,14 @@
 package de.timesnake.basic.lobby.build;
 
 import de.timesnake.basic.bukkit.util.Server;
+import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
-import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
 import de.timesnake.library.basic.util.MultiKeyMap;
 import de.timesnake.library.basic.util.Tuple;
-import de.timesnake.library.basic.util.chat.ChatColor;
+import de.timesnake.library.chat.ChatColor;
 import java.util.Comparator;
 import java.util.TreeSet;
 import net.kyori.adventure.text.Component;
@@ -34,8 +34,9 @@ public class BuildCategory implements InventoryHolder, UserInventoryClickListene
 
     public BuildCategory(String name, Build build) {
         this.name = name;
-        this.displayItem = new ExItemStack(Material.GRAY_WOOL).setDisplayName(
-                ChatColor.BLUE + name);
+        this.displayItem = new ExItemStack(Material.GRAY_WOOL)
+                .setDisplayName(ChatColor.BLUE + name)
+                .onClick(event -> event.getUser().openInventory(this.getInventory()), true);
 
         this.inventory = new ExInventory(6 * 9, Component.text(this.name), this);
         Server.getInventoryEventManager().addClickListener(this, this);

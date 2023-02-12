@@ -10,9 +10,7 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.UserChatCommandListener;
 import de.timesnake.basic.bukkit.util.user.event.UserChatCommandEvent;
 import de.timesnake.basic.lobby.chat.Plugin;
-import de.timesnake.library.basic.util.chat.ExTextColor;
 import de.timesnake.library.extension.util.chat.Code;
-import net.kyori.adventure.text.Component;
 import org.bukkit.event.EventHandler;
 
 public class ServerPasswordCmd implements UserChatCommandListener {
@@ -32,21 +30,16 @@ public class ServerPasswordCmd implements UserChatCommandListener {
         String password = e.getMessage();
         Sender sender = user.asSender(Plugin.LOBBY);
 
-        sender.sendPluginMessage(Component.text("Password: ", ExTextColor.WARNING)
-                .append(Component.text("*".repeat(password.length()), ExTextColor.VALUE)));
+        sender.sendPluginTDMessage("§wPassword: §v" + "*".repeat(password.length()));
 
         if (e.getUser().hasPermission(PASSWORD_PERM, Plugin.LOBBY)) {
-            sender.sendPluginMessage(
-                    Component.text("Used permission, instead of password", ExTextColor.PERSONAL));
+            sender.sendPluginTDMessage("§wUsed permission, instead of password");
         } else if (!password.equals(server.getPassword())) {
-            sender.sendPluginMessage(
-                    Component.text("Wrong password, please select the server and try again",
-                            ExTextColor.WARNING));
+            sender.sendPluginTDMessage("§wWrong password, please select the server and try again");
             return;
         }
 
-        sender.sendPluginMessage(Component.text("Switching to server ", ExTextColor.PERSONAL)
-                .append(Component.text(this.server.getName(), ExTextColor.VALUE)));
+        sender.sendPluginTDMessage("§sSwitching to server §v" + this.server.getName());
         user.switchToServer(server.getPort());
 
         e.setCancelled(true);

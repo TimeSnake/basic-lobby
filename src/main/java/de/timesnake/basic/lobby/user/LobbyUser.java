@@ -8,9 +8,7 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.server.LobbyServer;
 import de.timesnake.library.basic.util.Status;
-import de.timesnake.library.basic.util.chat.ExTextColor;
 import de.timesnake.library.extension.util.chat.Chat;
-import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
@@ -51,9 +49,9 @@ public class LobbyUser extends User {
         if (!this.isService()) {
             this.setService(true);
             this.unlockInventory();
-            this.sendPluginMessage(Plugin.LOBBY, Component.text("Switched to buildmode!", ExTextColor.PERSONAL));
+            this.sendPluginTDMessage(Plugin.LOBBY, "§sSwitched to buildmode!");
         } else {
-            this.sendPluginMessage(Plugin.LOBBY, Component.text("Switched to lobbymode!", ExTextColor.PERSONAL));
+            this.sendPluginTDMessage(Plugin.LOBBY, "§sSwitched to lobbymode!");
             this.setService(false);
             this.joinLobby();
         }
@@ -82,7 +80,6 @@ public class LobbyUser extends User {
 
     public void openBuildInventory() {
         this.openInventory(LobbyServer.getBuild().getInventory());
-        //this.sendPluginMessage(Plugin.NETWORK, Component.text("Use ", ExTextColor.PERSONAL).append(Component.text("/build", ExTextColor.VALUE)));
     }
 
     public void joinLobby() {
