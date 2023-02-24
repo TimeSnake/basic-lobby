@@ -8,6 +8,7 @@ import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.ServerManager;
 import de.timesnake.basic.bukkit.util.user.event.UserJoinEvent;
 import de.timesnake.basic.bukkit.util.user.scoreboard.Sideboard;
+import de.timesnake.basic.bukkit.util.user.scoreboard.SideboardBuilder;
 import de.timesnake.basic.bukkit.util.world.ExWorld;
 import de.timesnake.basic.lobby.build.Build;
 import de.timesnake.basic.lobby.chat.Plugin;
@@ -87,16 +88,17 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
         Thread chatInfoThread = new Thread(new ChatInfoRepeater());
         chatInfoThread.start();
 
-        this.sideboard = Server.getScoreboardManager().registerSideboard("lobby", "§6§lLobby");
-        sideboard.setScore(7, "§1Online:");
-        this.sideboard.setScore(6, "§6" + Server.getNetwork().getPlayerAmount());
-        this.sideboard.setScore(5, "§r§f§f---------------§r");
-        this.sideboard.setScore(4, "§1TimeCoins: ");
-        //user time coins
-        this.sideboard.setScore(2, "§f§f---------------§r");
-        this.sideboard.setScore(1, "§8Server: ");
-        this.sideboard.setScore(0, "§7" + Server.getName());
-
+        this.sideboard = Server.getScoreboardManager().registerSideboard(new SideboardBuilder()
+                .name("lobby")
+                .title("§6§lLobby")
+                .setScore(7, "§1Online:")
+                .setScore(6, "§6" + Server.getNetwork().getPlayerAmount())
+                .setScore(5, "§r§f§f---------------§r")
+                .setScore(4, "§1TimeCoins: ")
+                // user time coins
+                .setScore(2, "§f§f---------------§r")
+                .setScore(1, "§8Server: ")
+                .setScore(0, "§7" + Server.getName()));
         this.waitingGameManager = new WaitingGameManager();
 
         Server.getWorldManager().getWorldBorderManager().setCustomBorders(false);
