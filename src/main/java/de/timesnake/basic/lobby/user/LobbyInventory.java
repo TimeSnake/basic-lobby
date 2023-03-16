@@ -9,6 +9,7 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.main.BasicLobby;
+import de.timesnake.library.chat.ExTextColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -33,13 +34,14 @@ public class LobbyInventory implements Listener {
             .setLore("§fClick to show the rules")
             .setMoveable(false)
             .setDropable(false)
-            .onClick(event -> event.getUser()
-                    .sendPluginMessage(Plugin.LOBBY, Component.text("https://timesnake.de/rules")
-                            .hoverEvent(HoverEvent.hoverEvent(Action.SHOW_TEXT,
-                                    Component.text("Click to open link")))
-                            .clickEvent(ClickEvent.openUrl("https://timesnake.de/rules"))), true)
-            .onInteract(event -> event.getUser()
-                    .sendPluginMessage(Plugin.LOBBY, Component.text("https://timesnake.de/rules")
+            .onClick(event -> event.getUser().sendPluginMessage(Plugin.LOBBY,
+                            Component.text("https://timesnake.de/rules", ExTextColor.PERSONAL)
+                                    .hoverEvent(HoverEvent.hoverEvent(Action.SHOW_TEXT,
+                                            Component.text("Click to open link")))
+                                    .clickEvent(ClickEvent.openUrl("https://timesnake.de/rules"))),
+                    true)
+            .onInteract(event -> event.getUser().sendPluginMessage(Plugin.LOBBY,
+                    Component.text("https://timesnake.de/rules", ExTextColor.PERSONAL)
                             .hoverEvent(HoverEvent.hoverEvent(Action.SHOW_TEXT,
                                     Component.text("Click to open link")))
                             .clickEvent(ClickEvent.openUrl("https://timesnake.de/rules"))), true);
