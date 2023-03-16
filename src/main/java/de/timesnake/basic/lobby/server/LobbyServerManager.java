@@ -58,6 +58,8 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
 
         this.userManager = new UserManager();
 
+        this.getWorldManager().setCacheWorldSpawns(true);
+
         this.lobbyWorld = Server.getWorld("world");
 
         int spawnX = this.lobbyWorld.getSpawnLocation().getChunk().getX();
@@ -70,7 +72,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
         }
 
         this.lobbyWorld.restrict(ExWorld.Restriction.ENTITY_EXPLODE, true);
-        this.lobbyWorld.restrict(ExWorld.Restriction.PLAYER_DAMAGE, false);
+        this.lobbyWorld.restrict(ExWorld.Restriction.NO_PLAYER_DAMAGE, false);
         this.lobbyWorld.restrict(ExWorld.Restriction.FOOD_CHANGE, true);
         this.lobbyWorld.restrict(ExWorld.Restriction.BLOCK_BURN_UP, true);
         this.lobbyWorld.restrict(ExWorld.Restriction.ENTITY_BLOCK_BREAK, true);

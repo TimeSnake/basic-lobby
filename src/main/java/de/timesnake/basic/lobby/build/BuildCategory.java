@@ -4,24 +4,17 @@
 
 package de.timesnake.basic.lobby.build;
 
-import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
 import de.timesnake.library.basic.util.MultiKeyMap;
 import de.timesnake.library.basic.util.Tuple;
 import de.timesnake.library.chat.ChatColor;
 import java.util.Comparator;
 import java.util.TreeSet;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.jetbrains.annotations.NotNull;
 
-public class BuildCategory implements InventoryHolder, UserInventoryClickListener {
+public class BuildCategory {
 
     private final String name;
     private final ExItemStack displayItem;
@@ -38,9 +31,7 @@ public class BuildCategory implements InventoryHolder, UserInventoryClickListene
                 .setDisplayName(ChatColor.BLUE + name)
                 .onClick(event -> event.getUser().openInventory(this.getInventory()), true);
 
-        this.inventory = new ExInventory(6 * 9, Component.text(this.name), this);
-        Server.getInventoryEventManager().addClickListener(this, this);
-
+        this.inventory = new ExInventory(6 * 9, this.name);
         this.build = build;
     }
 
@@ -108,23 +99,8 @@ public class BuildCategory implements InventoryHolder, UserInventoryClickListene
         this.build.updateInventory();
     }
 
-    @NotNull
-    @Override
     public Inventory getInventory() {
         return inventory.getInventory();
     }
 
-    @Override
-    public void onUserInventoryClick(UserInventoryClickEvent event) {
-        User user = event.getUser();
-        ExItemStack item = event.getClickedItem();
-
-        BuildWorld world = this.worldByNameOrItem.get2(item);
-
-        if (world != null) {
-            world.moveUser(user);
-        }
-
-        event.setCancelled(true);
-    }
 }
