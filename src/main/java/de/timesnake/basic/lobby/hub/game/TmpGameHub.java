@@ -5,7 +5,6 @@
 package de.timesnake.basic.lobby.hub.game;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.channel.util.listener.ChannelHandler;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.channel.util.listener.ListenerType;
@@ -17,6 +16,7 @@ import de.timesnake.database.util.server.DbLoungeServer;
 import de.timesnake.database.util.server.DbServer;
 import de.timesnake.database.util.server.DbTaskServer;
 import de.timesnake.database.util.server.DbTmpGameServer;
+import de.timesnake.library.basic.util.Loggers;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.game.TmpGameInfo;
 import java.util.HashMap;
@@ -34,7 +34,8 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
     }
 
     protected void loadServers() {
-        for (DbTmpGameServer server : Database.getServers().getServers(Type.Server.TEMP_GAME, this.gameInfo.getName())) {
+        for (DbTmpGameServer server : Database.getServers()
+                .getServers(Type.Server.TEMP_GAME, this.gameInfo.getName())) {
             if (!server.getType().equals(Type.Server.TEMP_GAME)) {
                 continue;
             }
@@ -48,10 +49,12 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
         DbLoungeServer loungeServer = server.getTwinServer();
         if (loungeServer != null && loungeServer.exists()) {
             Integer slot = this.getEmptySlot();
-            TmpGameServer gameServer = new TmpGameServer(super.getServerNumber(slot), this, loungeServer, slot);
+            TmpGameServer gameServer = new TmpGameServer(super.getServerNumber(slot), this,
+                    loungeServer, slot);
             this.servers.put(loungeServer.getName(), gameServer);
         } else {
-            Server.printWarning(Plugin.LOBBY, "Can not load game server " + server.getName() + ", lounge not found", "GameHub");
+            Loggers.LOBBY.warning(
+                    "Can not load game server " + server.getName() + ", lounge not found");
         }
     }
 
@@ -91,7 +94,6 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
 
         if (server.getType().equals(Type.Server.LOUNGE)) {
             DbTmpGameServer gameServer = ((DbLoungeServer) server).getTwinServer();
-
 
             if (gameServer == null || !gameServer.exists()) {
                 return;

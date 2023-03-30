@@ -7,13 +7,13 @@ package de.timesnake.basic.lobby.build;
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
-import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.channel.util.listener.ChannelHandler;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.channel.util.listener.ListenerType;
 import de.timesnake.channel.util.message.ChannelServerMessage;
 import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.database.util.object.Type;
+import de.timesnake.library.basic.util.Loggers;
 import de.timesnake.library.basic.util.MultiKeyMap;
 import org.bukkit.inventory.Inventory;
 
@@ -43,7 +43,7 @@ public class Build implements ChannelListener {
             category.addWorld(worldName, shortWorldName);
         }
 
-        Server.printText(Plugin.LOBBY, "Loaded build map-worlds", "Build");
+        Loggers.LOBBY.info("Loaded build map-worlds");
     }
 
     private void updateWorld(String worldName, String serverName) {

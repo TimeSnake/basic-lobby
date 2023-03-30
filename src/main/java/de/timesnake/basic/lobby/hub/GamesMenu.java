@@ -8,7 +8,6 @@ import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
-import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.hub.game.GameHub;
 import de.timesnake.basic.lobby.hub.game.NonTmpGameHub;
 import de.timesnake.basic.lobby.hub.game.OwnableNonTmpGameHubManager;
@@ -18,6 +17,7 @@ import de.timesnake.database.util.Database;
 import de.timesnake.database.util.game.DbGame;
 import de.timesnake.database.util.game.DbNonTmpGame;
 import de.timesnake.database.util.game.DbTmpGame;
+import de.timesnake.library.basic.util.Loggers;
 import java.util.HashMap;
 import net.kyori.adventure.text.Component;
 
@@ -36,6 +36,10 @@ public class GamesMenu implements UserInventoryClickListener {
         games.clear();
 
         for (DbGame game : Database.getGames().getGames()) {
+            if (!game.getInfo().isEnabled()) {
+                continue;
+            }
+
             GameHub<?> gameHub;
             if (game instanceof DbTmpGame) {
                 gameHub = new TmpGameHub(((DbTmpGame) game));
@@ -47,7 +51,7 @@ public class GamesMenu implements UserInventoryClickListener {
                 }
             }
             if (gameHub == null) {
-                Server.printWarning(Plugin.LOBBY, "Can not load game " + game.getInfo().getName());
+                Loggers.LOBBY.warning("Can not load game " + game.getInfo().getName());
             } else {
                 inventory.setItemStack(gameHub.getGameInfo().getSlot(), gameHub.getItem());
                 games.put(gameHub.getGameInfo().getSlot(), gameHub);
