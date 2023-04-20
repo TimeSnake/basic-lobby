@@ -63,7 +63,7 @@ public class GamesMenu implements UserInventoryClickListener {
     public void onUserInventoryClick(UserInventoryClickEvent e) {
         LobbyUser user = (LobbyUser) e.getUser();
         user.openGameHubInventory();
-        user.playSoundItemClicked();
+        user.playSoundItemClickSuccessful();
         e.setCancelled(true);
     }
 

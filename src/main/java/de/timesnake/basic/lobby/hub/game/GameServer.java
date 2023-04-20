@@ -184,7 +184,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
         LobbyUser user = (LobbyUser) e.getUser();
         ClickType clickType = e.getClickType();
 
-        user.playSoundItemClicked();
+        user.playSoundItemClickSuccessful();
         Sender sender = user.asSender(Plugin.LOBBY);
         if (this.queueing) {
             if (clickType.isRightClick()) {
