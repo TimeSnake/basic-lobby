@@ -5,9 +5,9 @@
 package de.timesnake.basic.lobby.hub.game;
 
 import de.timesnake.basic.bukkit.util.Server;
+import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
-import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
 import de.timesnake.basic.lobby.user.LobbyUser;
@@ -15,7 +15,8 @@ import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 
-public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInfo> implements UserInventoryClickListener {
+public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInfo> implements
+        UserInventoryClickListener {
 
     public static final ExItemStack BACK = new ExItemStack(Material.BLUE_BED, 1, "§cBack",
             List.of("§fClick to get back"));
@@ -48,7 +49,7 @@ public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInf
     @Override
     public void onUserInventoryClick(UserInventoryClickEvent event) {
         LobbyUser user = (LobbyUser) event.getUser();
-        user.playSoundItemClicked();
+        user.playSoundItemClickSuccessful();
         this.openServersInventory(user);
         event.setCancelled(true);
     }
