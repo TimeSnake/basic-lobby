@@ -73,7 +73,6 @@ public class BuildWorld {
                     Component.text("Switching to build-server ", ExTextColor.PERSONAL)
                             .append(Component.text(this.serverName, ExTextColor.VALUE)));
         } else {
-            System.out.println("click");
             Server.getChannel().sendMessage(
                     new ChannelUserMessage<>(user.getUniqueId(), MessageType.User.PROXY_COMMAND,
                             "build " + this.name));

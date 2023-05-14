@@ -7,18 +7,43 @@ package de.timesnake.basic.lobby.user;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.server.LobbyServer;
+import de.timesnake.database.util.Database;
+import de.timesnake.database.util.object.Type.Punishment;
+import de.timesnake.database.util.user.DbPunishment;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.extension.util.chat.Chat;
+import java.time.Duration;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 public class LobbyUser extends User {
+
+    private Duration jailDuration = null;
 
     public LobbyUser(Player p) {
         super(p);
         this.setTask(null);
         this.getDatabase().setTeam(null);
         this.getDatabase().setKit(null);
+
+        DbPunishment punishment = Database.getUsers().getUser(this.getUniqueId()).getPunishment();
+
+        if (punishment.getType() == Punishment.JAIL) {
+            this.jailDuration = punishment.getDuration();
+
+            if (this.jailDuration.toSeconds() == 0) {
+                punishment.delete();
+                this.jailDuration = null;
+            }
+        }
+    }
+
+    public Duration getJailDuration() {
+        return jailDuration;
+    }
+
+    public boolean isJailed() {
+        return jailDuration != null;
     }
 
     @Override
@@ -53,7 +78,7 @@ public class LobbyUser extends User {
         } else {
             this.sendPluginTDMessage(Plugin.LOBBY, "§sSwitched to lobbymode!");
             this.setService(false);
-            this.joinLobby();
+            this.joinLobby(false);
         }
 
     }
@@ -71,7 +96,7 @@ public class LobbyUser extends User {
     }
 
     public void teleportSpawn() {
-        this.getPlayer().teleport(this.getPlayer().getWorld().getSpawnLocation());
+        this.teleport(LobbyServer.getLobbyWorld().getSpawnLocation());
     }
 
     public void openGameHubInventory() {
@@ -82,7 +107,7 @@ public class LobbyUser extends User {
         this.openInventory(LobbyServer.getBuild().getInventory());
     }
 
-    public void joinLobby() {
+    public void joinLobby(boolean teleport) {
         this.setStatus(Status.User.ONLINE);
         this.clearInventory();
         this.setExp(0.0F);
@@ -94,15 +119,19 @@ public class LobbyUser extends User {
         this.setHealthScaled(false);
         this.setInvulnerable(false);
         this.setLobbyInventory();
-        if (this.getLocation().getWorld().equals(LobbyServer.getLobbyWorld().getBukkitWorld())) {
-            this.teleportSpawn();
-        }
         this.setLobbySideboard();
         this.setScoreboardCoins();
-
+        if (teleport) {
+            this.teleportSpawn();
+        }
     }
 
     public void setLobbySideboard() {
         this.setSideboard(LobbyServer.getLobbySideboard());
+    }
+
+    @Override
+    public boolean isMuted() {
+        return super.isMuted() || this.isJailed();
     }
 }
