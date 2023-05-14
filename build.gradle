@@ -23,6 +23,7 @@ dependencies {
 
     implementation project(':library-waitinggame')
     implementation project(':library-game')
+    implementation project(':library-plot')
 
     compileOnly project(':library-network')
     compileOnly project(':library-packets')

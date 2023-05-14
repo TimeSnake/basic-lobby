@@ -6,20 +6,25 @@ package de.timesnake.basic.lobby.server;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.ServerManager;
+import de.timesnake.basic.bukkit.util.chat.CommandManager;
+import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserJoinEvent;
 import de.timesnake.basic.bukkit.util.user.scoreboard.Sideboard;
 import de.timesnake.basic.bukkit.util.user.scoreboard.SideboardBuilder;
 import de.timesnake.basic.bukkit.util.world.ExWorld;
+import de.timesnake.basic.bukkit.util.world.ExWorld.Restriction;
 import de.timesnake.basic.lobby.build.Build;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.hub.GamesMenu;
 import de.timesnake.basic.lobby.main.BasicLobby;
+import de.timesnake.basic.lobby.user.JailManager;
 import de.timesnake.basic.lobby.user.LobbyInventory;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.basic.lobby.user.UserManager;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.chat.ExTextColor;
+import de.timesnake.library.plot.plots.PlotManager;
 import de.timesnake.library.waitinggames.WaitingGameManager;
 import java.util.Random;
 import net.kyori.adventure.text.Component;
@@ -28,9 +33,12 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.GameRule;
 import org.bukkit.Instrument;
 import org.bukkit.Note;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 
 public class LobbyServerManager extends ServerManager implements ChannelListener, Listener {
 
@@ -43,8 +51,10 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     private GamesMenu gamesMenu;
     private Sideboard sideboard;
     private ExWorld lobbyWorld;
+    private JailManager jailManager;
     private UserManager userManager;
     private WaitingGameManager waitingGameManager;
+    private PlotManager plotManager;
 
     @Override
     public LobbyUser loadUser(Player player) {
@@ -62,6 +72,8 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
 
         this.lobbyWorld = Server.getWorld("world");
 
+        this.jailManager = new JailManager();
+
         int spawnX = this.lobbyWorld.getSpawnLocation().getChunk().getX();
         int spawnZ = this.lobbyWorld.getSpawnLocation().getChunk().getZ();
 
@@ -71,16 +83,18 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
             }
         }
 
-        this.lobbyWorld.restrict(ExWorld.Restriction.ENTITY_EXPLODE, true);
-        this.lobbyWorld.restrict(ExWorld.Restriction.NO_PLAYER_DAMAGE, false);
-        this.lobbyWorld.restrict(ExWorld.Restriction.FOOD_CHANGE, true);
-        this.lobbyWorld.restrict(ExWorld.Restriction.BLOCK_BURN_UP, true);
-        this.lobbyWorld.restrict(ExWorld.Restriction.ENTITY_BLOCK_BREAK, true);
-        this.lobbyWorld.restrict(ExWorld.Restriction.DROP_PICK_ITEM, true);
-        this.lobbyWorld.restrict(ExWorld.Restriction.BLOCK_BREAK, true);
-        this.lobbyWorld.restrict(ExWorld.Restriction.PLACE_IN_BLOCK, true);
-        this.lobbyWorld.restrict(ExWorld.Restriction.FLINT_AND_STEEL, true);
-        this.lobbyWorld.restrict(ExWorld.Restriction.LIGHT_UP_INTERACTION, true);
+        this.lobbyWorld.restrict(Restriction.ENTITY_EXPLODE, true);
+        this.lobbyWorld.restrict(Restriction.FLUID_FLOW, true);
+        this.lobbyWorld.restrict(Restriction.NO_PLAYER_DAMAGE, false);
+        this.lobbyWorld.restrict(Restriction.FOOD_CHANGE, true);
+        this.lobbyWorld.restrict(Restriction.BLOCK_BURN_UP, true);
+        this.lobbyWorld.restrict(Restriction.ENTITY_BLOCK_BREAK, true);
+        this.lobbyWorld.restrict(Restriction.DROP_PICK_ITEM, true);
+        this.lobbyWorld.restrict(Restriction.BLOCK_BREAK, true);
+        this.lobbyWorld.restrict(Restriction.BLOCK_PLACE, true);
+        this.lobbyWorld.restrict(Restriction.PLACE_IN_BLOCK, true);
+        this.lobbyWorld.restrict(Restriction.FLINT_AND_STEEL, true);
+        this.lobbyWorld.restrict(Restriction.LIGHT_UP_INTERACTION, true);
         this.lobbyWorld.setExceptService(true);
         this.lobbyWorld.setPVP(true);
         this.lobbyWorld.setGameRule(GameRule.KEEP_INVENTORY, true);
@@ -102,6 +116,13 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
                 .setScore(1, "§8Server: ")
                 .setScore(0, "§7" + Server.getName()));
         this.waitingGameManager = new WaitingGameManager();
+        this.plotManager = new PlotManager(BasicLobby.getPlugin()) {
+            @Override
+            public void onBuildingUserLeave(User user) {
+                super.onBuildingUserLeave(user);
+                ((LobbyUser) user).joinLobby(false);
+            }
+        };
 
         Server.getWorldManager().getWorldBorderManager().setCustomBorders(false);
         Server.getWorldManager().getWorldBorderManager().allowEnderpearlThrouBorder(false);
@@ -109,6 +130,22 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
         Server.registerListener(this.lobbyInventory, BasicLobby.getPlugin());
 
         new ServerUpdater();
+    }
+
+    @Override
+    protected CommandManager initCommandManager() {
+        return new de.timesnake.basic.bukkit.core.chat.CommandManager() {
+            @Override
+            public boolean onCommand(@NotNull CommandSender cmdSender, Command cmd,
+                    @NotNull String label, String[] args) {
+                if (cmdSender instanceof Player player) {
+                    if (((LobbyUser) Server.getUser(player)).isJailed()) {
+                        return false;
+                    }
+                }
+                return super.onCommand(cmdSender, cmd, label, args);
+            }
+        };
     }
 
     public void broadcastInfoMessage() {
@@ -151,6 +188,10 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
         return lobbyWorld;
     }
 
+    public JailManager getJailManager() {
+        return jailManager;
+    }
+
     public Build getBuild() {
         return build;
     }
@@ -179,10 +220,15 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
             user.setStatus(Status.User.ONLINE);
         }
 
+        if (user.isJailed()) {
+            this.getJailManager().jailUser(user);
+            return;
+        }
+
         if (!user.agreedPrivacyPolicy()) {
             user.setDefault();
         } else {
-            user.joinLobby();
+            user.joinLobby(true);
         }
     }
 
