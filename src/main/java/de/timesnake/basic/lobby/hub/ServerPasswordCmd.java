@@ -15,33 +15,33 @@ import org.bukkit.event.EventHandler;
 
 public class ServerPasswordCmd implements UserChatCommandListener {
 
-    public static final Code PASSWORD_PERM = Plugin.LOBBY.createPermssionCode(
-            "lobby.gamehub.password");
+  public static final Code PASSWORD_PERM = Plugin.LOBBY.createPermssionCode(
+      "lobby.gamehub.password");
 
-    private final ServerInfo server;
+  private final ServerInfo server;
 
-    public ServerPasswordCmd(ServerInfo server) {
-        this.server = server;
+  public ServerPasswordCmd(ServerInfo server) {
+    this.server = server;
+  }
+
+  @EventHandler
+  public void onUserChatCommand(UserChatCommandEvent e) {
+    User user = e.getUser();
+    String password = e.getMessage();
+    Sender sender = user.asSender(Plugin.LOBBY);
+
+    sender.sendPluginTDMessage("§wPassword: §v" + "*".repeat(password.length()));
+
+    if (e.getUser().hasPermission(PASSWORD_PERM, Plugin.LOBBY)) {
+      sender.sendPluginTDMessage("§wUsed permission, instead of password");
+    } else if (!password.equals(server.getPassword())) {
+      sender.sendPluginTDMessage("§wWrong password, please select the server and try again");
+      return;
     }
 
-    @EventHandler
-    public void onUserChatCommand(UserChatCommandEvent e) {
-        User user = e.getUser();
-        String password = e.getMessage();
-        Sender sender = user.asSender(Plugin.LOBBY);
+    sender.sendPluginTDMessage("§sSwitching to server §v" + this.server.getName());
+    user.switchToServer(server.getPort());
 
-        sender.sendPluginTDMessage("§wPassword: §v" + "*".repeat(password.length()));
-
-        if (e.getUser().hasPermission(PASSWORD_PERM, Plugin.LOBBY)) {
-            sender.sendPluginTDMessage("§wUsed permission, instead of password");
-        } else if (!password.equals(server.getPassword())) {
-            sender.sendPluginTDMessage("§wWrong password, please select the server and try again");
-            return;
-        }
-
-        sender.sendPluginTDMessage("§sSwitching to server §v" + this.server.getName());
-        user.switchToServer(server.getPort());
-
-        e.setCancelled(true);
-    }
+    e.setCancelled(true);
+  }
 }

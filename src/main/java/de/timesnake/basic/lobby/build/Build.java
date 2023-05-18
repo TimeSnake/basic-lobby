@@ -19,81 +19,81 @@ import org.bukkit.inventory.Inventory;
 
 public class Build implements ChannelListener {
 
-    private final ExInventory inventory = new ExInventory(54, "Build-Worlds");
+  private final ExInventory inventory = new ExInventory(54, "Build-Worlds");
 
-    private final MultiKeyMap<String, ExItemStack, BuildCategory> categoryByNameOrItem = new MultiKeyMap<>();
+  private final MultiKeyMap<String, ExItemStack, BuildCategory> categoryByNameOrItem = new MultiKeyMap<>();
 
-    private int slotCounter = 0;
+  private int slotCounter = 0;
 
-    public Build() {
-        Server.getChannel().addListener(this);
-        this.loadExistingWorlds();
+  public Build() {
+    Server.getChannel().addListener(this);
+    this.loadExistingWorlds();
+  }
+
+  private void loadExistingWorlds() {
+    for (String worldName : Server.getNetwork().getWorldNames(Type.Server.BUILD, null)) {
+      String[] nameParts = worldName.split("_");
+      String categoryName = nameParts[0];
+      String shortWorldName = worldName.replaceFirst(categoryName + "_", "");
+      BuildCategory category = this.categoryByNameOrItem.get1(categoryName);
+      if (category == null) {
+        category = this.addCategory(categoryName);
+      }
+
+      category.addWorld(worldName, shortWorldName);
     }
 
-    private void loadExistingWorlds() {
-        for (String worldName : Server.getNetwork().getWorldNames(Type.Server.BUILD, null)) {
-            String[] nameParts = worldName.split("_");
-            String categoryName = nameParts[0];
-            String shortWorldName = worldName.replaceFirst(categoryName + "_", "");
-            BuildCategory category = this.categoryByNameOrItem.get1(categoryName);
-            if (category == null) {
-                category = this.addCategory(categoryName);
-            }
+    Loggers.LOBBY.info("Loaded build map-worlds");
+  }
 
-            category.addWorld(worldName, shortWorldName);
-        }
+  private void updateWorld(String worldName, String serverName) {
+    String categoryName = this.getCategoryFromWorldName(worldName);
+    BuildCategory category = this.categoryByNameOrItem.get1(categoryName);
 
-        Loggers.LOBBY.info("Loaded build map-worlds");
+    if (category == null) {
+      this.addCategory(categoryName);
     }
 
-    private void updateWorld(String worldName, String serverName) {
-        String categoryName = this.getCategoryFromWorldName(worldName);
-        BuildCategory category = this.categoryByNameOrItem.get1(categoryName);
+    category.updateWorld(worldName, serverName);
+  }
 
-        if (category == null) {
-            this.addCategory(categoryName);
-        }
+  private BuildCategory addCategory(String name) {
+    BuildCategory category = new BuildCategory(name, this);
+    this.categoryByNameOrItem.put(name, category.getDisplayItem(), category);
+    this.inventory.setItemStack(slotCounter, category.getDisplayItem());
+    slotCounter++;
 
-        category.updateWorld(worldName, serverName);
+    return category;
+  }
+
+  private String getCategoryFromWorldName(String worldName) {
+    return worldName.split("_", 2)[0];
+  }
+
+  private void removeServer(String serverName) {
+    this.categoryByNameOrItem.values().forEach(category -> category.removeServer(serverName));
+  }
+
+  public void updateInventory() {
+    int slot = 0;
+    for (BuildCategory category : this.categoryByNameOrItem.values()) {
+      this.inventory.setItemStack(slot, category.getDisplayItem());
+      slot++;
     }
+  }
 
-    private BuildCategory addCategory(String name) {
-        BuildCategory category = new BuildCategory(name, this);
-        this.categoryByNameOrItem.put(name, category.getDisplayItem(), category);
-        this.inventory.setItemStack(slotCounter, category.getDisplayItem());
-        slotCounter++;
+  public Inventory getInventory() {
+    return inventory.getInventory();
+  }
 
-        return category;
+  @ChannelHandler(type = {ListenerType.SERVER_LOAD_WORLD, ListenerType.SERVER_UNLOAD_WORLD,
+      ListenerType.SERVER_LOADED_WORLD, ListenerType.SERVER_UNLOADED_WORLD,
+      ListenerType.SERVER_UNLOADED_ALL_WORLDS})
+  public void onServerMessage(ChannelServerMessage<?> msg) {
+    if (msg.getMessageType().equals(MessageType.Server.UNLOADED_ALL_WORLDS)) {
+      this.removeServer(msg.getName());
+    } else {
+      this.updateWorld((String) msg.getValue(), msg.getName());
     }
-
-    private String getCategoryFromWorldName(String worldName) {
-        return worldName.split("_", 2)[0];
-    }
-
-    private void removeServer(String serverName) {
-        this.categoryByNameOrItem.values().forEach(category -> category.removeServer(serverName));
-    }
-
-    public void updateInventory() {
-        int slot = 0;
-        for (BuildCategory category : this.categoryByNameOrItem.values()) {
-            this.inventory.setItemStack(slot, category.getDisplayItem());
-            slot++;
-        }
-    }
-
-    public Inventory getInventory() {
-        return inventory.getInventory();
-    }
-
-    @ChannelHandler(type = {ListenerType.SERVER_LOAD_WORLD, ListenerType.SERVER_UNLOAD_WORLD,
-            ListenerType.SERVER_LOADED_WORLD, ListenerType.SERVER_UNLOADED_WORLD,
-            ListenerType.SERVER_UNLOADED_ALL_WORLDS})
-    public void onServerMessage(ChannelServerMessage<?> msg) {
-        if (msg.getMessageType().equals(MessageType.Server.UNLOADED_ALL_WORLDS)) {
-            this.removeServer(msg.getName());
-        } else {
-            this.updateWorld((String) msg.getValue(), msg.getName());
-        }
-    }
+  }
 }

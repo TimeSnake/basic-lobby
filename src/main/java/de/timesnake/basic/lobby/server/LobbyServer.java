@@ -14,34 +14,34 @@ import de.timesnake.library.waitinggames.WaitingGameManager;
 
 public class LobbyServer extends Server {
 
-    public static void msgHelp() {
-        server.broadcastInfoMessage();
-    }
+  public static void msgHelp() {
+    server.broadcastInfoMessage();
+  }
 
-    public static ExWorld getLobbyWorld() {
-        return server.getLobbyWorld();
-    }
+  public static ExWorld getLobbyWorld() {
+    return server.getLobbyWorld();
+  }
 
-    public static Build getBuild() {
-        return server.getBuild();
-    }
+  public static Build getBuild() {
+    return server.getBuild();
+  }
 
-    public static GamesMenu getGamesMenu() {
-        return server.getGamesMenu();
-    }
+  public static GamesMenu getGamesMenu() {
+    return server.getGamesMenu();
+  }
 
-    public static LobbyInventory getLobbyInventory() {
-        return server.getLobbyInventory();
-    }
+  public static LobbyInventory getLobbyInventory() {
+    return server.getLobbyInventory();
+  }
 
-    public static Sideboard getLobbySideboard() {
-        return server.getLobbySideboard();
-    }
+  public static Sideboard getLobbySideboard() {
+    return server.getLobbySideboard();
+  }
 
-    public static WaitingGameManager getWaitingGameManager() {
-        return server.getWaitingGameManager();
-    }
+  public static WaitingGameManager getWaitingGameManager() {
+    return server.getWaitingGameManager();
+  }
 
-    private static final LobbyServerManager server = LobbyServerManager.getInstance();
+  private static final LobbyServerManager server = LobbyServerManager.getInstance();
 
 }

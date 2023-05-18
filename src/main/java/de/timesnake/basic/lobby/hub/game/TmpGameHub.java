@@ -23,92 +23,92 @@ import java.util.HashMap;
 
 public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener {
 
-    protected final HashMap<String, GameServerBasis> servers = new HashMap<>();
+  protected final HashMap<String, GameServerBasis> servers = new HashMap<>();
 
-    public TmpGameHub(DbTmpGameInfo gameInfo) {
-        super(new TmpGameInfo(gameInfo));
+  public TmpGameHub(DbTmpGameInfo gameInfo) {
+    super(new TmpGameInfo(gameInfo));
 
-        this.loadServers();
+    this.loadServers();
 
-        Server.getChannel().addListener(this);
+    Server.getChannel().addListener(this);
+  }
+
+  protected void loadServers() {
+    for (DbTmpGameServer server : Database.getServers()
+        .getServers(Type.Server.TEMP_GAME, this.gameInfo.getName())) {
+      if (!server.getType().equals(Type.Server.TEMP_GAME)) {
+        continue;
+      }
+      if (server.getTwinServerName() != null) {
+        this.addGameServer(server);
+      }
+    }
+  }
+
+  protected void addGameServer(DbTmpGameServer server) {
+    DbLoungeServer loungeServer = server.getTwinServer();
+    if (loungeServer != null && loungeServer.exists()) {
+      Integer slot = this.getEmptySlot();
+      TmpGameServer gameServer = new TmpGameServer(super.getServerNumber(slot), this,
+          loungeServer, slot);
+      this.servers.put(loungeServer.getName(), gameServer);
+    } else {
+      Loggers.LOBBY.warning(
+          "Can not load game server " + server.getName() + ", lounge not found");
+    }
+  }
+
+  @Override
+  public void updateServer(GameServer<?> server) {
+    if (server.getStatus().equals(Status.Server.OFFLINE)) {
+      server.destroy();
+      this.removeServer(((TmpGameServer) server));
+    } else {
+      super.updateServer(server);
+    }
+  }
+
+  public void removeServer(TmpGameServer server) {
+    this.inventory.removeItemStack(server.getItem().getSlot());
+  }
+
+  @ChannelHandler(type = ListenerType.SERVER_STATUS)
+  public void onServerMessage(ChannelServerMessage<?> msg) {
+    DbServer server = Database.getServers().getServer(msg.getName());
+    if (!(server instanceof DbTmpGameServer || server instanceof DbLoungeServer)) {
+      return;
     }
 
-    protected void loadServers() {
-        for (DbTmpGameServer server : Database.getServers()
-                .getServers(Type.Server.TEMP_GAME, this.gameInfo.getName())) {
-            if (!server.getType().equals(Type.Server.TEMP_GAME)) {
-                continue;
-            }
-            if (server.getTwinServerName() != null) {
-                this.addGameServer(server);
-            }
-        }
+    String task = ((DbTaskServer) server).getTask();
+    if (task == null) {
+      return;
     }
 
-    protected void addGameServer(DbTmpGameServer server) {
-        DbLoungeServer loungeServer = server.getTwinServer();
-        if (loungeServer != null && loungeServer.exists()) {
-            Integer slot = this.getEmptySlot();
-            TmpGameServer gameServer = new TmpGameServer(super.getServerNumber(slot), this,
-                    loungeServer, slot);
-            this.servers.put(loungeServer.getName(), gameServer);
-        } else {
-            Loggers.LOBBY.warning(
-                    "Can not load game server " + server.getName() + ", lounge not found");
-        }
+    if (!task.equals(this.getGameInfo().getName())) {
+      return;
     }
 
-    @Override
-    public void updateServer(GameServer<?> server) {
-        if (server.getStatus().equals(Status.Server.OFFLINE)) {
-            server.destroy();
-            this.removeServer(((TmpGameServer) server));
-        } else {
-            super.updateServer(server);
-        }
+    if (this.servers.containsKey(server.getName())) {
+      return;
     }
 
-    public void removeServer(TmpGameServer server) {
-        this.inventory.removeItemStack(server.getItem().getSlot());
+    if (server.getType().equals(Type.Server.LOUNGE)) {
+      DbTmpGameServer gameServer = ((DbLoungeServer) server).getTwinServer();
+
+      if (gameServer == null || !gameServer.exists()) {
+        return;
+      }
+
+      if (gameServer.getName() == null) {
+        return;
+      }
+
+      if (this.servers.containsKey(gameServer.getName())) {
+        return;
+      }
+
+      this.addGameServer(gameServer);
+
     }
-
-    @ChannelHandler(type = ListenerType.SERVER_STATUS)
-    public void onServerMessage(ChannelServerMessage<?> msg) {
-        DbServer server = Database.getServers().getServer(msg.getName());
-        if (!(server instanceof DbTmpGameServer || server instanceof DbLoungeServer)) {
-            return;
-        }
-
-        String task = ((DbTaskServer) server).getTask();
-        if (task == null) {
-            return;
-        }
-
-        if (!task.equals(this.getGameInfo().getName())) {
-            return;
-        }
-
-        if (this.servers.containsKey(server.getName())) {
-            return;
-        }
-
-        if (server.getType().equals(Type.Server.LOUNGE)) {
-            DbTmpGameServer gameServer = ((DbLoungeServer) server).getTwinServer();
-
-            if (gameServer == null || !gameServer.exists()) {
-                return;
-            }
-
-            if (gameServer.getName() == null) {
-                return;
-            }
-
-            if (this.servers.containsKey(gameServer.getName())) {
-                return;
-            }
-
-            this.addGameServer(gameServer);
-
-        }
-    }
+  }
 }

@@ -19,59 +19,61 @@ import java.util.HashMap;
 
 public class NonTmpGameHub extends GameHub<NonTmpGameInfo> implements ChannelListener {
 
-    protected final HashMap<String, GameServerBasis> servers = new HashMap<>();
-    private final CreationRequestManager creationRequestManager;
+  protected final HashMap<String, GameServerBasis> servers = new HashMap<>();
+  private final CreationRequestManager creationRequestManager;
 
-    public NonTmpGameHub(DbNonTmpGameInfo gameInfo) {
-        super(new NonTmpGameInfo(gameInfo));
-        Server.getChannel().addListener(this);
+  public NonTmpGameHub(DbNonTmpGameInfo gameInfo) {
+    super(new NonTmpGameInfo(gameInfo));
+    Server.getChannel().addListener(this);
 
-        this.creationRequestManager = new CreationRequestManager(this);
-        this.inventory.setItemStack(1, this.creationRequestManager.getItem());
+    this.creationRequestManager = new CreationRequestManager(this);
+    this.inventory.setItemStack(1, this.creationRequestManager.getItem());
 
-        this.loadServers();
+    this.loadServers();
+  }
+
+  protected void loadServers() {
+    for (DbNonTmpGameServer server : Database.getServers()
+        .getServers(Type.Server.GAME, this.gameInfo.getName())) {
+      this.addGameServer(server);
+    }
+  }
+
+  public void removeServer(String name) {
+    if (this.servers.containsKey(name)) {
+      this.inventory.removeItemStack(this.servers.get(name).getItem().getSlot());
+      this.servers.remove(name);
+    }
+  }
+
+  protected void addGameServer(DbNonTmpGameServer server) {
+    Integer slot = this.getEmptySlot();
+    GameServer<NonTmpGameInfo> gameServer = new GameServer<>(
+        this.getGameInfo().getDisplayName() + " " +
+            this.getServerNumber(slot), this, server, slot, true);
+    this.servers.put(server.getName(), gameServer);
+  }
+
+  @ChannelHandler(type = ListenerType.SERVER_STATUS)
+  public void onServerMessage(ChannelServerMessage<?> msg) {
+    DbServer server = Database.getServers().getServer(msg.getName());
+    if (!(server instanceof DbNonTmpGameServer)) {
+      return;
     }
 
-    protected void loadServers() {
-        for (DbNonTmpGameServer server : Database.getServers().getServers(Type.Server.GAME, this.gameInfo.getName())) {
-            this.addGameServer(server);
-        }
+    String task = ((DbNonTmpGameServer) server).getTask();
+    if (task == null) {
+      return;
     }
 
-    public void removeServer(String name) {
-        if (this.servers.containsKey(name)) {
-            this.inventory.removeItemStack(this.servers.get(name).getItem().getSlot());
-            this.servers.remove(name);
-        }
+    if (!task.equals(this.gameInfo.getName())) {
+      return;
     }
 
-    protected void addGameServer(DbNonTmpGameServer server) {
-        Integer slot = this.getEmptySlot();
-        GameServer<NonTmpGameInfo> gameServer = new GameServer<>(this.getGameInfo().getDisplayName() + " " +
-                this.getServerNumber(slot), this, server, slot, true);
-        this.servers.put(server.getName(), gameServer);
+    if (this.servers.containsKey(server.getName())) {
+      return;
     }
 
-    @ChannelHandler(type = ListenerType.SERVER_STATUS)
-    public void onServerMessage(ChannelServerMessage<?> msg) {
-        DbServer server = Database.getServers().getServer(msg.getName());
-        if (!(server instanceof DbNonTmpGameServer)) {
-            return;
-        }
-
-        String task = ((DbNonTmpGameServer) server).getTask();
-        if (task == null) {
-            return;
-        }
-
-        if (!task.equals(this.gameInfo.getName())) {
-            return;
-        }
-
-        if (this.servers.containsKey(server.getName())) {
-            return;
-        }
-
-        this.addGameServer((DbNonTmpGameServer) server);
-    }
+    this.addGameServer((DbNonTmpGameServer) server);
+  }
 }

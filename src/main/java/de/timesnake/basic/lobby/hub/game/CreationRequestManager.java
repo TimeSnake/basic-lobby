@@ -5,8 +5,8 @@
 package de.timesnake.basic.lobby.hub.game;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.User;
+import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
 import de.timesnake.basic.lobby.chat.Plugin;
@@ -20,58 +20,58 @@ import org.bukkit.Material;
 
 public class CreationRequestManager implements UserInventoryClickListener {
 
-    public static final Code CREATION_PERM = Plugin.LOBBY.createPermssionCode(
-            "lobby.gamehub.creation_request");
+  public static final Code CREATION_PERM = Plugin.LOBBY.createPermssionCode(
+      "lobby.gamehub.creation_request");
 
-    private final ExItemStack item = new ExItemStack(Material.BLUE_WOOL).setDisplayName(
-                    "§9Request new server")
-            .setLore("", "§7Click to request a new server", "", "§cPunishable in case of abuse")
-            .setMoveable(false).setDropable(false).immutable();
+  private final ExItemStack item = new ExItemStack(Material.BLUE_WOOL).setDisplayName(
+          "§9Request new server")
+      .setLore("", "§7Click to request a new server", "", "§cPunishable in case of abuse")
+      .setMoveable(false).setDropable(false).immutable();
 
-    private final GameHub<?> hub;
+  private final GameHub<?> hub;
 
-    public CreationRequestManager(GameHub<?> hub) {
-        Server.getInventoryEventManager().addClickListener(this, this.item);
-        this.hub = hub;
+  public CreationRequestManager(GameHub<?> hub) {
+    Server.getInventoryEventManager().addClickListener(this, this.item);
+    this.hub = hub;
+  }
+
+  public ExItemStack getItem() {
+    return item;
+  }
+
+  @Override
+  public void onUserInventoryClick(UserInventoryClickEvent e) {
+    User user = e.getUser();
+
+    e.setCancelled(true);
+
+    if (!user.hasPermission(CREATION_PERM, Plugin.LOBBY)) {
+      return;
     }
 
-    public ExItemStack getItem() {
-        return item;
+    StringBuilder settings = new StringBuilder();
+
+    GameInfo info = this.hub.getGameInfo();
+
+    if (info.getMapAvailability().equals(Type.Availability.REQUIRED)) {
+      settings.append(" maps");
     }
 
-    @Override
-    public void onUserInventoryClick(UserInventoryClickEvent e) {
-        User user = e.getUser();
-
-        e.setCancelled(true);
-
-        if (!user.hasPermission(CREATION_PERM, Plugin.LOBBY)) {
-            return;
-        }
-
-        StringBuilder settings = new StringBuilder();
-
-        GameInfo info = this.hub.getGameInfo();
-
-        if (info.getMapAvailability().equals(Type.Availability.REQUIRED)) {
-            settings.append(" maps");
-        }
-
-        if (info.getKitAvailability().equals(Type.Availability.REQUIRED)) {
-            settings.append(" kits");
-        }
-
-        if (this.hub.getGameInfo() instanceof NonTmpGameInfo nonTmpInfo) {
-
-            if (nonTmpInfo.isOwnable()) {
-                // TODO own games
-            } else {
-                Server.getChannel().sendMessage(
-                        new ChannelUserMessage<>(user.getUniqueId(), MessageType.User.PROXY_COMMAND,
-                                "start game " + info.getName() + settings));
-            }
-        } else {
-            // TODO tmp games
-        }
+    if (info.getKitAvailability().equals(Type.Availability.REQUIRED)) {
+      settings.append(" kits");
     }
+
+    if (this.hub.getGameInfo() instanceof NonTmpGameInfo nonTmpInfo) {
+
+      if (nonTmpInfo.isOwnable()) {
+        // TODO own games
+      } else {
+        Server.getChannel().sendMessage(
+            new ChannelUserMessage<>(user.getUniqueId(), MessageType.User.PROXY_COMMAND,
+                "start game " + info.getName() + settings));
+      }
+    } else {
+      // TODO tmp games
+    }
+  }
 }
