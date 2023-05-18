@@ -16,65 +16,65 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 
 public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInfo> implements
-        UserInventoryClickListener {
+    UserInventoryClickListener {
 
-    public static final ExItemStack BACK = new ExItemStack(Material.BLUE_BED, 1, "§cBack",
-            List.of("§fClick to get back"));
+  public static final ExItemStack BACK = new ExItemStack(Material.BLUE_BED, 1, "§cBack",
+      List.of("§fClick to get back"));
 
-    public static final Integer SERVER_SLOTS_START = 9;
+  public static final Integer SERVER_SLOTS_START = 9;
 
-    protected final GameInfo gameInfo;
+  protected final GameInfo gameInfo;
 
-    protected final ExInventory inventory;
+  protected final ExInventory inventory;
 
-    protected final ExItemStack item;
+  protected final ExItemStack item;
 
-    public GameHub(GameInfo gameInfo) {
-        this.gameInfo = gameInfo;
-        this.inventory = new ExInventory(54, Component.text(this.gameInfo.getDisplayName()));
-        this.inventory.setItemStack(4, BACK);
-        this.item = new ExItemStack(this.gameInfo.getItem());
+  public GameHub(GameInfo gameInfo) {
+    this.gameInfo = gameInfo;
+    this.inventory = new ExInventory(54, Component.text(this.gameInfo.getDisplayName()));
+    this.inventory.setItemStack(4, BACK);
+    this.item = new ExItemStack(this.gameInfo.getItem());
 
-        Server.getInventoryEventManager().addClickListener(this, this.item);
-    }
+    Server.getInventoryEventManager().addClickListener(this, this.item);
+  }
 
-    protected Integer getServerNumber(Integer slot) {
-        return slot - SERVER_SLOTS_START;
-    }
+  protected Integer getServerNumber(Integer slot) {
+    return slot - SERVER_SLOTS_START;
+  }
 
-    public Integer getEmptySlot() {
-        return this.inventory.getFirstEmptySlot(SERVER_SLOTS_START);
-    }
+  public Integer getEmptySlot() {
+    return this.inventory.getFirstEmptySlot(SERVER_SLOTS_START);
+  }
 
-    @Override
-    public void onUserInventoryClick(UserInventoryClickEvent event) {
-        LobbyUser user = (LobbyUser) event.getUser();
-        user.playSoundItemClickSuccessful();
-        this.openServersInventory(user);
-        event.setCancelled(true);
-    }
+  @Override
+  public void onUserInventoryClick(UserInventoryClickEvent event) {
+    LobbyUser user = (LobbyUser) event.getUser();
+    user.playSoundItemClickSuccessful();
+    this.openServersInventory(user);
+    event.setCancelled(true);
+  }
 
-    public ExItemStack getInvItem() {
-        return this.item;
-    }
+  public ExItemStack getInvItem() {
+    return this.item;
+  }
 
-    public ExInventory getInventory() {
-        return this.inventory;
-    }
+  public ExInventory getInventory() {
+    return this.inventory;
+  }
 
-    public void openServersInventory(User user) {
-        user.openInventory(this.inventory);
-    }
+  public void openServersInventory(User user) {
+    user.openInventory(this.inventory);
+  }
 
-    public org.bukkit.inventory.ItemStack getItem() {
-        return this.item;
-    }
+  public org.bukkit.inventory.ItemStack getItem() {
+    return this.item;
+  }
 
-    public GameInfo getGameInfo() {
-        return gameInfo;
-    }
+  public GameInfo getGameInfo() {
+    return gameInfo;
+  }
 
-    public void updateServer(GameServer<?> server) {
-        this.inventory.setItemStack(server.getSlot(), server.getItem());
-    }
+  public void updateServer(GameServer<?> server) {
+    this.inventory.setItemStack(server.getSlot(), server.getItem());
+  }
 }

@@ -42,202 +42,202 @@ import org.jetbrains.annotations.NotNull;
 
 public class LobbyServerManager extends ServerManager implements ChannelListener, Listener {
 
-    public static LobbyServerManager getInstance() {
-        return (LobbyServerManager) ServerManager.getInstance();
+  public static LobbyServerManager getInstance() {
+    return (LobbyServerManager) ServerManager.getInstance();
+  }
+
+  private LobbyInventory lobbyInventory;
+  private Build build;
+  private GamesMenu gamesMenu;
+  private Sideboard sideboard;
+  private ExWorld lobbyWorld;
+  private JailManager jailManager;
+  private UserManager userManager;
+  private WaitingGameManager waitingGameManager;
+  private PlotManager plotManager;
+
+  @Override
+  public LobbyUser loadUser(Player player) {
+    return new LobbyUser(player);
+  }
+
+  public void onLobbyEnable() {
+    this.lobbyInventory = new LobbyInventory();
+    this.build = new Build();
+    this.gamesMenu = new GamesMenu();
+
+    this.userManager = new UserManager();
+
+    this.getWorldManager().setCacheWorldSpawns(true);
+
+    this.lobbyWorld = Server.getWorld("world");
+
+    this.jailManager = new JailManager();
+
+    int spawnX = this.lobbyWorld.getSpawnLocation().getChunk().getX();
+    int spawnZ = this.lobbyWorld.getSpawnLocation().getChunk().getZ();
+
+    for (int x = -2; x < 2; x++) {
+      for (int z = -2; z < 2; z++) {
+        this.lobbyWorld.getChunkAt(spawnX + x, spawnZ + z).setForceLoaded(true);
+      }
     }
 
-    private LobbyInventory lobbyInventory;
-    private Build build;
-    private GamesMenu gamesMenu;
-    private Sideboard sideboard;
-    private ExWorld lobbyWorld;
-    private JailManager jailManager;
-    private UserManager userManager;
-    private WaitingGameManager waitingGameManager;
-    private PlotManager plotManager;
+    this.lobbyWorld.restrict(Restriction.ENTITY_EXPLODE, true);
+    this.lobbyWorld.restrict(Restriction.FLUID_FLOW, true);
+    this.lobbyWorld.restrict(Restriction.NO_PLAYER_DAMAGE, false);
+    this.lobbyWorld.restrict(Restriction.FOOD_CHANGE, true);
+    this.lobbyWorld.restrict(Restriction.BLOCK_BURN_UP, true);
+    this.lobbyWorld.restrict(Restriction.ENTITY_BLOCK_BREAK, true);
+    this.lobbyWorld.restrict(Restriction.DROP_PICK_ITEM, true);
+    this.lobbyWorld.restrict(Restriction.BLOCK_BREAK, true);
+    this.lobbyWorld.restrict(Restriction.BLOCK_PLACE, true);
+    this.lobbyWorld.restrict(Restriction.PLACE_IN_BLOCK, true);
+    this.lobbyWorld.restrict(Restriction.FLINT_AND_STEEL, true);
+    this.lobbyWorld.restrict(Restriction.LIGHT_UP_INTERACTION, true);
+    this.lobbyWorld.setExceptService(true);
+    this.lobbyWorld.setPVP(true);
+    this.lobbyWorld.setGameRule(GameRule.KEEP_INVENTORY, true);
+    this.lobbyWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+    this.lobbyWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
 
-    @Override
-    public LobbyUser loadUser(Player player) {
-        return new LobbyUser(player);
-    }
+    Thread chatInfoThread = new Thread(new ChatInfoRepeater());
+    chatInfoThread.start();
 
-    public void onLobbyEnable() {
-        this.lobbyInventory = new LobbyInventory();
-        this.build = new Build();
-        this.gamesMenu = new GamesMenu();
+    this.sideboard = Server.getScoreboardManager().registerSideboard(new SideboardBuilder()
+        .name("lobby")
+        .title("§6§lLobby")
+        .setScore(7, "§1Online:")
+        .setScore(6, "§6" + Server.getNetwork().getPlayerAmount())
+        .setScore(5, "§r§f§f---------------§r")
+        .setScore(4, "§1TimeCoins: ")
+        // user time coins
+        .setScore(2, "§f§f---------------§r")
+        .setScore(1, "§8Server: ")
+        .setScore(0, "§7" + Server.getName()));
+    this.waitingGameManager = new WaitingGameManager();
+    this.plotManager = new PlotManager(BasicLobby.getPlugin()) {
+      @Override
+      public void onBuildingUserLeave(User user) {
+        super.onBuildingUserLeave(user);
+        ((LobbyUser) user).joinLobby(false);
+      }
+    };
 
-        this.userManager = new UserManager();
+    Server.getWorldManager().getWorldBorderManager().setCustomBorders(false);
+    Server.getWorldManager().getWorldBorderManager().allowEnderpearlThrouBorder(false);
 
-        this.getWorldManager().setCacheWorldSpawns(true);
+    Server.registerListener(this.lobbyInventory, BasicLobby.getPlugin());
 
-        this.lobbyWorld = Server.getWorld("world");
+    new ServerUpdater();
+  }
 
-        this.jailManager = new JailManager();
-
-        int spawnX = this.lobbyWorld.getSpawnLocation().getChunk().getX();
-        int spawnZ = this.lobbyWorld.getSpawnLocation().getChunk().getZ();
-
-        for (int x = -2; x < 2; x++) {
-            for (int z = -2; z < 2; z++) {
-                this.lobbyWorld.getChunkAt(spawnX + x, spawnZ + z).setForceLoaded(true);
-            }
+  @Override
+  protected CommandManager initCommandManager() {
+    return new de.timesnake.basic.bukkit.core.chat.CommandManager() {
+      @Override
+      public boolean onCommand(@NotNull CommandSender cmdSender, Command cmd,
+          @NotNull String label, String[] args) {
+        if (cmdSender instanceof Player player) {
+          if (((LobbyUser) Server.getUser(player)).isJailed()) {
+            return false;
+          }
         }
+        return super.onCommand(cmdSender, cmd, label, args);
+      }
+    };
+  }
 
-        this.lobbyWorld.restrict(Restriction.ENTITY_EXPLODE, true);
-        this.lobbyWorld.restrict(Restriction.FLUID_FLOW, true);
-        this.lobbyWorld.restrict(Restriction.NO_PLAYER_DAMAGE, false);
-        this.lobbyWorld.restrict(Restriction.FOOD_CHANGE, true);
-        this.lobbyWorld.restrict(Restriction.BLOCK_BURN_UP, true);
-        this.lobbyWorld.restrict(Restriction.ENTITY_BLOCK_BREAK, true);
-        this.lobbyWorld.restrict(Restriction.DROP_PICK_ITEM, true);
-        this.lobbyWorld.restrict(Restriction.BLOCK_BREAK, true);
-        this.lobbyWorld.restrict(Restriction.BLOCK_PLACE, true);
-        this.lobbyWorld.restrict(Restriction.PLACE_IN_BLOCK, true);
-        this.lobbyWorld.restrict(Restriction.FLINT_AND_STEEL, true);
-        this.lobbyWorld.restrict(Restriction.LIGHT_UP_INTERACTION, true);
-        this.lobbyWorld.setExceptService(true);
-        this.lobbyWorld.setPVP(true);
-        this.lobbyWorld.setGameRule(GameRule.KEEP_INVENTORY, true);
-        this.lobbyWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-        this.lobbyWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+  public void broadcastInfoMessage() {
+    switch (new Random().nextInt(6)) {
+      case 0 -> Server.broadcastTDMessage(Plugin.INFO, "§pDo you need help? Use §v/support");
+      case 1 -> Server.broadcastClickableMessage(Plugin.INFO,
+          Component.text("Want to support the server? Donate via ", ExTextColor.PUBLIC)
+              .append(Component.text("Patreon", ExTextColor.PUBLIC,
+                  TextDecoration.UNDERLINED)),
+          Server.PATREON_LINK, Component.text("Click to open the link"),
+          ClickEvent.Action.OPEN_URL);
+      case 2 -> Server.broadcastClickableMessage(Plugin.INFO,
+          Component.text("Join our ", ExTextColor.PUBLIC)
+              .append(Component.text("discord", ExTextColor.PUBLIC,
+                  TextDecoration.UNDERLINED))
+              .append(Component.text(" and meet our community", ExTextColor.PUBLIC)),
+          Server.DISCORD_LINK, Component.text("Click to open the link"),
+          ClickEvent.Action.OPEN_URL);
+      case 3 -> Server.broadcastClickableMessage(Plugin.INFO,
+          Component.text("Visit our ", ExTextColor.PUBLIC)
+              .append(Component.text("website", ExTextColor.PUBLIC,
+                  TextDecoration.UNDERLINED))
+              .append(Component.text(" to find out more about the server",
+                  ExTextColor.PUBLIC)),
+          Server.WEBSITE_LINK,
+          Component.text("Click to open the link", ExTextColor.PUBLIC),
+          ClickEvent.Action.OPEN_URL);
+      case 4 -> Server.broadcastMessage(Plugin.INFO,
+          Component.text("Invite new members to gain", ExTextColor.PUBLIC)
+              .append(Component.text(" 100 TimeCoins", ExTextColor.GOLD))
+              .append(Component.text(" (if the new player reached 100 TimeCoins)",
+                  ExTextColor.QUICK_INFO)));
+      case 5 -> Server.broadcastTDMessage(Plugin.INFO,
+          "§wTrampling on turtle eggs is forbidden!");
+    }
+    Server.broadcastNote(Instrument.PLING, Note.natural(1, Note.Tone.C));
+  }
 
-        Thread chatInfoThread = new Thread(new ChatInfoRepeater());
-        chatInfoThread.start();
+  public ExWorld getLobbyWorld() {
+    return lobbyWorld;
+  }
 
-        this.sideboard = Server.getScoreboardManager().registerSideboard(new SideboardBuilder()
-                .name("lobby")
-                .title("§6§lLobby")
-                .setScore(7, "§1Online:")
-                .setScore(6, "§6" + Server.getNetwork().getPlayerAmount())
-                .setScore(5, "§r§f§f---------------§r")
-                .setScore(4, "§1TimeCoins: ")
-                // user time coins
-                .setScore(2, "§f§f---------------§r")
-                .setScore(1, "§8Server: ")
-                .setScore(0, "§7" + Server.getName()));
-        this.waitingGameManager = new WaitingGameManager();
-        this.plotManager = new PlotManager(BasicLobby.getPlugin()) {
-            @Override
-            public void onBuildingUserLeave(User user) {
-                super.onBuildingUserLeave(user);
-                ((LobbyUser) user).joinLobby(false);
-            }
-        };
+  public JailManager getJailManager() {
+    return jailManager;
+  }
 
-        Server.getWorldManager().getWorldBorderManager().setCustomBorders(false);
-        Server.getWorldManager().getWorldBorderManager().allowEnderpearlThrouBorder(false);
+  public Build getBuild() {
+    return build;
+  }
 
-        Server.registerListener(this.lobbyInventory, BasicLobby.getPlugin());
+  public GamesMenu getGamesMenu() {
+    return gamesMenu;
+  }
 
-        new ServerUpdater();
+  public LobbyInventory getLobbyInventory() {
+    return lobbyInventory;
+  }
+
+  public Sideboard getLobbySideboard() {
+    return sideboard;
+  }
+
+  public WaitingGameManager getWaitingGameManager() {
+    return waitingGameManager;
+  }
+
+  @EventHandler
+  public void onUserJoin(UserJoinEvent e) {
+    LobbyUser user = (LobbyUser) e.getUser();
+    if (user.isService()) {
+      user.sendPluginTDMessage(Plugin.LOBBY, "§sSwitched to lobby-mode!");
+      user.setStatus(Status.User.ONLINE);
     }
 
-    @Override
-    protected CommandManager initCommandManager() {
-        return new de.timesnake.basic.bukkit.core.chat.CommandManager() {
-            @Override
-            public boolean onCommand(@NotNull CommandSender cmdSender, Command cmd,
-                    @NotNull String label, String[] args) {
-                if (cmdSender instanceof Player player) {
-                    if (((LobbyUser) Server.getUser(player)).isJailed()) {
-                        return false;
-                    }
-                }
-                return super.onCommand(cmdSender, cmd, label, args);
-            }
-        };
+    if (user.isJailed()) {
+      this.getJailManager().jailUser(user);
+      return;
     }
 
-    public void broadcastInfoMessage() {
-        switch (new Random().nextInt(6)) {
-            case 0 -> Server.broadcastTDMessage(Plugin.INFO, "§pDo you need help? Use §v/support");
-            case 1 -> Server.broadcastClickableMessage(Plugin.INFO,
-                    Component.text("Want to support the server? Donate via ", ExTextColor.PUBLIC)
-                            .append(Component.text("Patreon", ExTextColor.PUBLIC,
-                                    TextDecoration.UNDERLINED)),
-                    Server.PATREON_LINK, Component.text("Click to open the link"),
-                    ClickEvent.Action.OPEN_URL);
-            case 2 -> Server.broadcastClickableMessage(Plugin.INFO,
-                    Component.text("Join our ", ExTextColor.PUBLIC)
-                            .append(Component.text("discord", ExTextColor.PUBLIC,
-                                    TextDecoration.UNDERLINED))
-                            .append(Component.text(" and meet our community", ExTextColor.PUBLIC)),
-                    Server.DISCORD_LINK, Component.text("Click to open the link"),
-                    ClickEvent.Action.OPEN_URL);
-            case 3 -> Server.broadcastClickableMessage(Plugin.INFO,
-                    Component.text("Visit our ", ExTextColor.PUBLIC)
-                            .append(Component.text("website", ExTextColor.PUBLIC,
-                                    TextDecoration.UNDERLINED))
-                            .append(Component.text(" to find out more about the server",
-                                    ExTextColor.PUBLIC)),
-                    Server.WEBSITE_LINK,
-                    Component.text("Click to open the link", ExTextColor.PUBLIC),
-                    ClickEvent.Action.OPEN_URL);
-            case 4 -> Server.broadcastMessage(Plugin.INFO,
-                    Component.text("Invite new members to gain", ExTextColor.PUBLIC)
-                            .append(Component.text(" 100 TimeCoins", ExTextColor.GOLD))
-                            .append(Component.text(" (if the new player reached 100 TimeCoins)",
-                                    ExTextColor.QUICK_INFO)));
-            case 5 -> Server.broadcastTDMessage(Plugin.INFO,
-                    "§wTrampling on turtle eggs is forbidden!");
-        }
-        Server.broadcastNote(Instrument.PLING, Note.natural(1, Note.Tone.C));
+    if (!user.agreedPrivacyPolicy()) {
+      user.setDefault();
+    } else {
+      user.joinLobby(true);
     }
+  }
 
-    public ExWorld getLobbyWorld() {
-        return lobbyWorld;
+  private class ChatInfoRepeater implements Runnable {
+
+    public void run() {
+      Server.runTaskTimerSynchrony(LobbyServerManager.this::broadcastInfoMessage, 0,
+          20 * 60 * 3,
+          BasicLobby.getPlugin());
     }
-
-    public JailManager getJailManager() {
-        return jailManager;
-    }
-
-    public Build getBuild() {
-        return build;
-    }
-
-    public GamesMenu getGamesMenu() {
-        return gamesMenu;
-    }
-
-    public LobbyInventory getLobbyInventory() {
-        return lobbyInventory;
-    }
-
-    public Sideboard getLobbySideboard() {
-        return sideboard;
-    }
-
-    public WaitingGameManager getWaitingGameManager() {
-        return waitingGameManager;
-    }
-
-    @EventHandler
-    public void onUserJoin(UserJoinEvent e) {
-        LobbyUser user = (LobbyUser) e.getUser();
-        if (user.isService()) {
-            user.sendPluginTDMessage(Plugin.LOBBY, "§sSwitched to lobby-mode!");
-            user.setStatus(Status.User.ONLINE);
-        }
-
-        if (user.isJailed()) {
-            this.getJailManager().jailUser(user);
-            return;
-        }
-
-        if (!user.agreedPrivacyPolicy()) {
-            user.setDefault();
-        } else {
-            user.joinLobby(true);
-        }
-    }
-
-    private class ChatInfoRepeater implements Runnable {
-
-        public void run() {
-            Server.runTaskTimerSynchrony(LobbyServerManager.this::broadcastInfoMessage, 0,
-                    20 * 60 * 3,
-                    BasicLobby.getPlugin());
-        }
-    }
+  }
 }

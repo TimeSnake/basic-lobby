@@ -16,91 +16,91 @@ import org.bukkit.inventory.Inventory;
 
 public class BuildCategory {
 
-    private final String name;
-    private final ExItemStack displayItem;
+  private final String name;
+  private final ExItemStack displayItem;
 
-    private final ExInventory inventory;
+  private final ExInventory inventory;
 
-    private final Build build;
+  private final Build build;
 
-    private final MultiKeyMap<String, ExItemStack, BuildWorld> worldByNameOrItem = new MultiKeyMap<>();
+  private final MultiKeyMap<String, ExItemStack, BuildWorld> worldByNameOrItem = new MultiKeyMap<>();
 
-    public BuildCategory(String name, Build build) {
-        this.name = name;
-        this.displayItem = new ExItemStack(Material.GRAY_WOOL)
-                .setDisplayName(ChatColor.BLUE + name)
-                .onClick(event -> event.getUser().openInventory(this.getInventory()), true);
+  public BuildCategory(String name, Build build) {
+    this.name = name;
+    this.displayItem = new ExItemStack(Material.GRAY_WOOL)
+        .setDisplayName(ChatColor.BLUE + name)
+        .onClick(event -> event.getUser().openInventory(this.getInventory()), true);
 
-        this.inventory = new ExInventory(6 * 9, this.name);
-        this.build = build;
-    }
+    this.inventory = new ExInventory(6 * 9, this.name);
+    this.build = build;
+  }
 
-    public ExItemStack getDisplayItem() {
-        return displayItem;
-    }
+  public ExItemStack getDisplayItem() {
+    return displayItem;
+  }
 
-    public void addWorld(String worldName, String shortWorldName) {
-        BuildWorld world = new BuildWorld(worldName, shortWorldName);
-        this.worldByNameOrItem.put(world.getName(), world.getItem(), world);
+  public void addWorld(String worldName, String shortWorldName) {
+    BuildWorld world = new BuildWorld(worldName, shortWorldName);
+    this.worldByNameOrItem.put(world.getName(), world.getItem(), world);
+    this.updateInventory();
+  }
+
+  public void updateWorld(String worldName, String serverName) {
+    BuildWorld buildWorld = this.worldByNameOrItem.get1(worldName);
+    if (buildWorld != null) {
+      boolean result = buildWorld.update(serverName);
+      if (result) {
         this.updateInventory();
+      }
+    } else {
+      this.addWorld(worldName, worldName.split("_", 2)[1]);
+    }
+  }
+
+  public void removeServer(String serverName) {
+    boolean update = false;
+    for (BuildWorld world : this.worldByNameOrItem.values()) {
+      if (world.removeIfServer(serverName)) {
+        update = true;
+      }
     }
 
-    public void updateWorld(String worldName, String serverName) {
-        BuildWorld buildWorld = this.worldByNameOrItem.get1(worldName);
-        if (buildWorld != null) {
-            boolean result = buildWorld.update(serverName);
-            if (result) {
-                this.updateInventory();
-            }
-        } else {
-            this.addWorld(worldName, worldName.split("_", 2)[1]);
-        }
+    if (update) {
+      this.updateInventory();
+    }
+  }
+
+  private void updateInventory() {
+    TreeSet<Tuple<String, ExItemStack>> sortedItems = new TreeSet<>(
+        Comparator.comparing(Tuple::getA));
+
+    for (BuildWorld world : this.worldByNameOrItem.values()) {
+      sortedItems.add(new Tuple<>(world.getName(), world.getItem()));
     }
 
-    public void removeServer(String serverName) {
-        boolean update = false;
-        for (BuildWorld world : this.worldByNameOrItem.values()) {
-            if (world.removeIfServer(serverName)) {
-                update = true;
-            }
-        }
-
-        if (update) {
-            this.updateInventory();
-        }
+    int slot = 0;
+    for (Tuple<String, ExItemStack> element : sortedItems) {
+      this.inventory.setItemStack(slot, element.getB());
+      slot++;
     }
 
-    private void updateInventory() {
-        TreeSet<Tuple<String, ExItemStack>> sortedItems = new TreeSet<>(
-                Comparator.comparing(Tuple::getA));
+    long loadedWorlds = this.worldByNameOrItem.values().stream().filter(BuildWorld::isLoaded)
+        .count();
 
-        for (BuildWorld world : this.worldByNameOrItem.values()) {
-            sortedItems.add(new Tuple<>(world.getName(), world.getItem()));
-        }
-
-        int slot = 0;
-        for (Tuple<String, ExItemStack> element : sortedItems) {
-            this.inventory.setItemStack(slot, element.getB());
-            slot++;
-        }
-
-        long loadedWorlds = this.worldByNameOrItem.values().stream().filter(BuildWorld::isLoaded)
-                .count();
-
-        if (loadedWorlds == 0) {
-            this.displayItem.setType(Material.GRAY_WOOL);
-            this.displayItem.setAmount(1);
-        } else if (loadedWorlds >= 1) {
-            this.displayItem.setType(Material.GREEN_WOOL);
-            this.displayItem.setAmount((int) loadedWorlds);
-        }
-
-        this.displayItem.setLore("", "§7" + loadedWorlds + " worlds loaded");
-        this.build.updateInventory();
+    if (loadedWorlds == 0) {
+      this.displayItem.setType(Material.GRAY_WOOL);
+      this.displayItem.setAmount(1);
+    } else if (loadedWorlds >= 1) {
+      this.displayItem.setType(Material.GREEN_WOOL);
+      this.displayItem.setAmount((int) loadedWorlds);
     }
 
-    public Inventory getInventory() {
-        return inventory.getInventory();
-    }
+    this.displayItem.setLore("", "§7" + loadedWorlds + " worlds loaded");
+    this.build.updateInventory();
+  }
+
+  public Inventory getInventory() {
+    return inventory.getInventory();
+  }
 
 }

@@ -23,53 +23,53 @@ import net.kyori.adventure.text.Component;
 
 public class GamesMenu implements UserInventoryClickListener {
 
-    private final ExInventory inventory = new ExInventory(54, Component.text("Gamehub"));
-    private final HashMap<Integer, GameHub<?>> games = new HashMap<>();
+  private final ExInventory inventory = new ExInventory(54, Component.text("Gamehub"));
+  private final HashMap<Integer, GameHub<?>> games = new HashMap<>();
 
-    public GamesMenu() {
-        Server.getInventoryEventManager().addClickListener(this, GameHub.BACK);
-        this.updateInventory();
-    }
+  public GamesMenu() {
+    Server.getInventoryEventManager().addClickListener(this, GameHub.BACK);
+    this.updateInventory();
+  }
 
-    public void updateInventory() {
-        inventory.getInventory().clear();
-        games.clear();
+  public void updateInventory() {
+    inventory.getInventory().clear();
+    games.clear();
 
-        for (DbGame game : Database.getGames().getGames()) {
-            if (!game.getInfo().isEnabled()) {
-                continue;
-            }
+    for (DbGame game : Database.getGames().getGames()) {
+      if (!game.getInfo().isEnabled()) {
+        continue;
+      }
 
-            GameHub<?> gameHub;
-            if (game instanceof DbTmpGame) {
-                gameHub = new TmpGameHub(((DbTmpGame) game));
-            } else {
-                if (((DbNonTmpGame) game).isOwnable()) {
-                    gameHub = new OwnableNonTmpGameHubManager(((DbNonTmpGame) game));
-                } else {
-                    gameHub = new NonTmpGameHub(((DbNonTmpGame) game));
-                }
-            }
-            if (gameHub == null) {
-                Loggers.LOBBY.warning("Can not load game " + game.getInfo().getName());
-            } else {
-                inventory.setItemStack(gameHub.getGameInfo().getSlot(), gameHub.getItem());
-                games.put(gameHub.getGameInfo().getSlot(), gameHub);
-            }
+      GameHub<?> gameHub;
+      if (game instanceof DbTmpGame) {
+        gameHub = new TmpGameHub(((DbTmpGame) game));
+      } else {
+        if (((DbNonTmpGame) game).isOwnable()) {
+          gameHub = new OwnableNonTmpGameHubManager(((DbNonTmpGame) game));
+        } else {
+          gameHub = new NonTmpGameHub(((DbNonTmpGame) game));
         }
+      }
+      if (gameHub == null) {
+        Loggers.LOBBY.warning("Can not load game " + game.getInfo().getName());
+      } else {
+        inventory.setItemStack(gameHub.getGameInfo().getSlot(), gameHub.getItem());
+        games.put(gameHub.getGameInfo().getSlot(), gameHub);
+      }
     }
+  }
 
-    @Override
-    public void onUserInventoryClick(UserInventoryClickEvent e) {
-        LobbyUser user = (LobbyUser) e.getUser();
-        user.openGameHubInventory();
-        user.playSoundItemClickSuccessful();
-        e.setCancelled(true);
-    }
+  @Override
+  public void onUserInventoryClick(UserInventoryClickEvent e) {
+    LobbyUser user = (LobbyUser) e.getUser();
+    user.openGameHubInventory();
+    user.playSoundItemClickSuccessful();
+    e.setCancelled(true);
+  }
 
 
-    public ExInventory getInventory() {
-        return inventory;
-    }
+  public ExInventory getInventory() {
+    return inventory;
+  }
 
 }

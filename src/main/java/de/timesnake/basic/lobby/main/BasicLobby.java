@@ -14,25 +14,25 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class BasicLobby extends JavaPlugin {
 
 
-    public static BasicLobby getPlugin() {
-        return plugin;
-    }
+  public static BasicLobby getPlugin() {
+    return plugin;
+  }
 
-    private static BasicLobby plugin;
+  private static BasicLobby plugin;
 
-    @Override
-    public void onLoad() {
-        ServerManager.setInstance(new LobbyServerManager());
-    }
+  @Override
+  public void onLoad() {
+    ServerManager.setInstance(new LobbyServerManager());
+  }
 
-    @Override
-    public void onEnable() {
-        plugin = this;
+  @Override
+  public void onEnable() {
+    plugin = this;
 
-        Server.getCommandManager().addCommand(this, "lobbybuild", new LobbyCmd(), Plugin.LOBBY);
-        Server.registerListener(LobbyServerManager.getInstance(), this);
+    Server.getCommandManager().addCommand(this, "lobbybuild", new LobbyCmd(), Plugin.LOBBY);
+    Server.registerListener(LobbyServerManager.getInstance(), this);
 
-        LobbyServerManager.getInstance().onLobbyEnable();
+    LobbyServerManager.getInstance().onLobbyEnable();
 
-    }
+  }
 }

@@ -9,12 +9,13 @@ import de.timesnake.library.game.NonTmpGameInfo;
 
 public class NonTmpGameServer extends GameServer<NonTmpGameInfo> {
 
-    protected String gameInfo;
+  protected String gameInfo;
 
-    public NonTmpGameServer(GameHub<NonTmpGameInfo> hubGame, DbNonTmpGameServer server, String displayName, int slot) {
-        super(displayName, hubGame, server, slot, false);
-        this.gameInfo = server.getGameInfo();
-        this.updateItem();
-    }
+  public NonTmpGameServer(GameHub<NonTmpGameInfo> hubGame, DbNonTmpGameServer server,
+      String displayName, int slot) {
+    super(displayName, hubGame, server, slot, false);
+    this.gameInfo = server.getGameInfo();
+    this.updateItem();
+  }
 
 }
