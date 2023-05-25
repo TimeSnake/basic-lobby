@@ -15,7 +15,7 @@ public class ServerUpdater implements ChannelListener {
 
   public ServerUpdater() {
     Server.getChannel()
-        .addListener(this, () -> Collections.singleton(Server.getNetwork().getName()));
+        .addListener(this, () -> Collections.singleton(Server.getNetwork().getProxyName()));
   }
 
   @ChannelHandler(type = ListenerType.SERVER_ONLINE_PLAYERS, filtered = true)
