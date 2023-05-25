@@ -24,6 +24,7 @@ import de.timesnake.basic.lobby.user.UserManager;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.chat.ExTextColor;
+import de.timesnake.library.extension.util.NetworkVariables;
 import de.timesnake.library.plot.plots.PlotManager;
 import de.timesnake.library.waitinggames.WaitingGameManager;
 import java.util.Random;
@@ -149,36 +150,46 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
   }
 
   public void broadcastInfoMessage() {
-    switch (new Random().nextInt(6)) {
+    NetworkVariables variables = Server.getNetwork().getVariables();
+    switch (new Random().nextInt(5)) {
       case 0 -> Server.broadcastTDMessage(Plugin.INFO, "§pDo you need help? Use §v/support");
-      case 1 -> Server.broadcastClickableMessage(Plugin.INFO,
-          Component.text("Want to support the server? Donate via ", ExTextColor.PUBLIC)
-              .append(Component.text("Patreon", ExTextColor.PUBLIC,
-                  TextDecoration.UNDERLINED)),
-          Server.PATREON_LINK, Component.text("Click to open the link"),
-          ClickEvent.Action.OPEN_URL);
-      case 2 -> Server.broadcastClickableMessage(Plugin.INFO,
-          Component.text("Join our ", ExTextColor.PUBLIC)
-              .append(Component.text("discord", ExTextColor.PUBLIC,
-                  TextDecoration.UNDERLINED))
-              .append(Component.text(" and meet our community", ExTextColor.PUBLIC)),
-          Server.DISCORD_LINK, Component.text("Click to open the link"),
-          ClickEvent.Action.OPEN_URL);
-      case 3 -> Server.broadcastClickableMessage(Plugin.INFO,
-          Component.text("Visit our ", ExTextColor.PUBLIC)
-              .append(Component.text("website", ExTextColor.PUBLIC,
-                  TextDecoration.UNDERLINED))
-              .append(Component.text(" to find out more about the server",
-                  ExTextColor.PUBLIC)),
-          Server.WEBSITE_LINK,
-          Component.text("Click to open the link", ExTextColor.PUBLIC),
-          ClickEvent.Action.OPEN_URL);
-      case 4 -> Server.broadcastMessage(Plugin.INFO,
-          Component.text("Invite new members to gain", ExTextColor.PUBLIC)
-              .append(Component.text(" 100 TimeCoins", ExTextColor.GOLD))
-              .append(Component.text(" (if the new player reached 100 TimeCoins)",
-                  ExTextColor.QUICK_INFO)));
-      case 5 -> Server.broadcastTDMessage(Plugin.INFO,
+      case 1 -> {
+        if (variables.getValue(NetworkVariables.PATREON_LINK) != null) {
+          Server.broadcastClickableMessage(Plugin.INFO,
+              Component.text("Want to support the server? Donate via ", ExTextColor.PUBLIC)
+                  .append(Component.text("Patreon", ExTextColor.PUBLIC,
+                      TextDecoration.UNDERLINED)),
+              variables.getValue(NetworkVariables.PATREON_LINK),
+              Component.text("Click to open the link"),
+              ClickEvent.Action.OPEN_URL);
+        }
+      }
+      case 2 -> {
+        if (variables.getValue(NetworkVariables.DISCORD_LINK) != null) {
+          Server.broadcastClickableMessage(Plugin.INFO,
+              Component.text("Join our ", ExTextColor.PUBLIC)
+                  .append(Component.text("discord", ExTextColor.PUBLIC,
+                      TextDecoration.UNDERLINED))
+                  .append(Component.text(" and meet our community", ExTextColor.PUBLIC)),
+              variables.getValue(NetworkVariables.DISCORD_LINK),
+              Component.text("Click to open the link"),
+              ClickEvent.Action.OPEN_URL);
+        }
+      }
+      case 3 -> {
+        if (variables.getValue(NetworkVariables.WEBSITE_LINK) != null) {
+          Server.broadcastClickableMessage(Plugin.INFO,
+              Component.text("Visit our ", ExTextColor.PUBLIC)
+                  .append(Component.text("website", ExTextColor.PUBLIC,
+                      TextDecoration.UNDERLINED))
+                  .append(Component.text(" to find out more about the server",
+                      ExTextColor.PUBLIC)),
+              variables.getValue(NetworkVariables.WEBSITE_LINK),
+              Component.text("Click to open the link", ExTextColor.PUBLIC),
+              ClickEvent.Action.OPEN_URL);
+        }
+      }
+      case 4 -> Server.broadcastTDMessage(Plugin.INFO,
           "§wTrampling on turtle eggs is forbidden!");
     }
     Server.broadcastNote(Instrument.PLING, Note.natural(1, Note.Tone.C));
