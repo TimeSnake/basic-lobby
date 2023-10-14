@@ -68,7 +68,7 @@ tasks {
   }
 
   reobfJar {
-    outputJar.set(layout.buildDirectory.file("${timesnakePluginDir}${project.name}-${project.version}.jar"))
+    outputJar.set(layout.buildDirectory.file("${timesnakePluginDir}/${project.name}-${project.version}.jar"))
   }
 }
 
@@ -80,7 +80,6 @@ publishing {
         username = timesnakeDeployUser
         password = timesnakeDeployKey
       }
-
     }
   }
 
