@@ -25,6 +25,7 @@ import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.chat.ExTextColor;
 import de.timesnake.library.extension.util.NetworkVariables;
+import de.timesnake.library.pets.PetManager;
 import de.timesnake.library.plot.plots.PlotManager;
 import de.timesnake.library.waitinggames.WaitingGameManager;
 import net.kyori.adventure.text.Component;
@@ -57,6 +58,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
   private UserManager userManager;
   private WaitingGameManager waitingGameManager;
   private PlotManager plotManager;
+  private PetManager petManager;
 
   @Override
   public LobbyUser loadUser(Player player) {
@@ -126,6 +128,8 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
         ((LobbyUser) user).joinLobby(false);
       }
     };
+
+    this.petManager = new PetManager(BasicLobby.getPlugin());
 
     Server.getWorldManager().getWorldBorderManager().setCustomBorders(false);
     Server.getWorldManager().getWorldBorderManager().allowEnderpearlThrouBorder(false);
