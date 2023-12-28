@@ -1,5 +1,5 @@
 main: de.timesnake.basic.lobby.main.BasicLobby
-version: 2.5
+version: 1.2
 name: basic-lobby
 author: Mn
 softdepend: [ basic-bukkit ]
