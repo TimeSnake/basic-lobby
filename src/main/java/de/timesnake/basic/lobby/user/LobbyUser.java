@@ -10,8 +10,8 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.server.LobbyServer;
 import de.timesnake.database.util.Database;
-import de.timesnake.database.util.object.Type.Punishment;
 import de.timesnake.database.util.user.DbPunishment;
+import de.timesnake.library.basic.util.PunishType;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.extension.util.chat.Chat;
 import org.bukkit.GameMode;
@@ -31,7 +31,7 @@ public class LobbyUser extends User {
 
     DbPunishment punishment = Database.getUsers().getUser(this.getUniqueId()).getPunishment();
 
-    if (punishment.getType() == Punishment.JAIL) {
+    if (punishment.getType() == PunishType.JAIL) {
       this.jailDuration = punishment.getDuration();
 
       if (this.jailDuration.toSeconds() == 0) {

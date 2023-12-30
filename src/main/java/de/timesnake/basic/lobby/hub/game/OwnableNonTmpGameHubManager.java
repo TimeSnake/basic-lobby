@@ -13,11 +13,12 @@ import de.timesnake.channel.util.listener.ListenerType;
 import de.timesnake.channel.util.message.ChannelServerMessage;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.game.DbNonTmpGameInfo;
-import de.timesnake.database.util.object.Type;
 import de.timesnake.database.util.server.DbNonTmpGameServer;
 import de.timesnake.database.util.server.DbServer;
 import de.timesnake.library.basic.util.MultiKeyMap;
+import de.timesnake.library.basic.util.ServerType;
 import de.timesnake.library.game.NonTmpGameInfo;
+
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -37,7 +38,7 @@ public class OwnableNonTmpGameHubManager extends GameHub<NonTmpGameInfo> impleme
   protected void loadPublicServers() {
     int slot = 9;
     for (String name : Server.getNetwork()
-        .getPublicPlayerServerNames(Type.Server.GAME, this.getGameInfo().getName())) {
+        .getPublicPlayerServerNames(ServerType.GAME, this.getGameInfo().getName())) {
       this.publicServersByNameOrSlot.put(name, slot,
           new UnloadedNonTmpGameServer(this, name, name, name, null, null, slot, true));
       slot++;

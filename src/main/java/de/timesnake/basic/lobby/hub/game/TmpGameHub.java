@@ -11,14 +11,15 @@ import de.timesnake.channel.util.listener.ListenerType;
 import de.timesnake.channel.util.message.ChannelServerMessage;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.game.DbTmpGameInfo;
-import de.timesnake.database.util.object.Type;
 import de.timesnake.database.util.server.DbLoungeServer;
 import de.timesnake.database.util.server.DbServer;
 import de.timesnake.database.util.server.DbTaskServer;
 import de.timesnake.database.util.server.DbTmpGameServer;
 import de.timesnake.library.basic.util.Loggers;
+import de.timesnake.library.basic.util.ServerType;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.game.TmpGameInfo;
+
 import java.util.HashMap;
 
 public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener {
@@ -34,13 +35,12 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
   }
 
   protected void loadServers() {
-    for (DbTmpGameServer server : Database.getServers()
-        .getServers(Type.Server.TEMP_GAME, this.gameInfo.getName())) {
-      if (!server.getType().equals(Type.Server.TEMP_GAME)) {
+    for (DbServer server : Database.getServers().getServers(ServerType.TEMP_GAME, this.gameInfo.getName())) {
+      if (!server.getType().equals(ServerType.TEMP_GAME)) {
         continue;
       }
-      if (server.getTwinServerName() != null) {
-        this.addGameServer(server);
+      if (((DbTmpGameServer) server).getTwinServerName() != null) {
+        this.addGameServer(((DbTmpGameServer) server));
       }
     }
   }
@@ -92,16 +92,14 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
       return;
     }
 
-    if (server.getType().equals(Type.Server.LOUNGE)) {
+    if (server.getType().equals(ServerType.LOUNGE)) {
       DbTmpGameServer gameServer = ((DbLoungeServer) server).getTwinServer();
 
       if (gameServer == null || !gameServer.exists()) {
         return;
       }
 
-      if (gameServer.getName() == null) {
-        return;
-      }
+      gameServer.getName();
 
       if (this.servers.containsKey(gameServer.getName())) {
         return;
