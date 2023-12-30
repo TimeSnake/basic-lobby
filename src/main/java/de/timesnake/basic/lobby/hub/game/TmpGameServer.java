@@ -6,14 +6,15 @@ package de.timesnake.basic.lobby.hub.game;
 
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
 import de.timesnake.basic.lobby.user.LobbyUser;
-import de.timesnake.database.util.object.Type;
 import de.timesnake.database.util.server.DbLoungeServer;
 import de.timesnake.database.util.server.DbTmpGameServer;
+import de.timesnake.library.basic.util.Availability;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.game.TmpGameInfo;
+import org.bukkit.event.inventory.ClickType;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.event.inventory.ClickType;
 
 public class TmpGameServer extends GameServer<TmpGameInfo> {
 
@@ -33,12 +34,12 @@ public class TmpGameServer extends GameServer<TmpGameInfo> {
     this.tempGameServer = server.getTwinServer();
     this.tempGameServerName = this.tempGameServer.getName();
 
-    if (gameHub.getGameInfo().getKitAvailability().equals(Type.Availability.ALLOWED)) {
+    if (gameHub.getGameInfo().getKitAvailability().equals(Availability.ALLOWED)) {
       this.kitsEnabled = this.tempGameServer.areKitsEnabled();
     } else {
       this.kitsEnabled = false;
     }
-    if (gameHub.getGameInfo().getMapAvailability().equals(Type.Availability.ALLOWED)) {
+    if (gameHub.getGameInfo().getMapAvailability().equals(Availability.ALLOWED)) {
       this.mapsEnabled = this.tempGameServer.areMapsEnabled();
     } else {
       this.mapsEnabled = false;

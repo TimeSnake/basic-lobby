@@ -11,10 +11,11 @@ import de.timesnake.channel.util.listener.ListenerType;
 import de.timesnake.channel.util.message.ChannelServerMessage;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.game.DbNonTmpGameInfo;
-import de.timesnake.database.util.object.Type;
 import de.timesnake.database.util.server.DbNonTmpGameServer;
 import de.timesnake.database.util.server.DbServer;
+import de.timesnake.library.basic.util.ServerType;
 import de.timesnake.library.game.NonTmpGameInfo;
+
 import java.util.HashMap;
 
 public class NonTmpGameHub extends GameHub<NonTmpGameInfo> implements ChannelListener {
@@ -33,9 +34,8 @@ public class NonTmpGameHub extends GameHub<NonTmpGameInfo> implements ChannelLis
   }
 
   protected void loadServers() {
-    for (DbNonTmpGameServer server : Database.getServers()
-        .getServers(Type.Server.GAME, this.gameInfo.getName())) {
-      this.addGameServer(server);
+    for (DbServer server : Database.getServers().getServers(ServerType.GAME, this.gameInfo.getName())) {
+      this.addGameServer(((DbNonTmpGameServer) server));
     }
   }
 

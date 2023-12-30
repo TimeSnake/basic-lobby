@@ -12,7 +12,7 @@ import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.channel.util.message.ChannelUserMessage;
 import de.timesnake.channel.util.message.MessageType;
-import de.timesnake.database.util.object.Type;
+import de.timesnake.library.basic.util.Availability;
 import de.timesnake.library.extension.util.chat.Code;
 import de.timesnake.library.game.GameInfo;
 import de.timesnake.library.game.NonTmpGameInfo;
@@ -53,11 +53,11 @@ public class CreationRequestManager implements UserInventoryClickListener {
 
     GameInfo info = this.hub.getGameInfo();
 
-    if (info.getMapAvailability().equals(Type.Availability.REQUIRED)) {
+    if (info.getMapAvailability().equals(Availability.REQUIRED)) {
       settings.append(" maps");
     }
 
-    if (info.getKitAvailability().equals(Type.Availability.REQUIRED)) {
+    if (info.getKitAvailability().equals(Availability.REQUIRED)) {
       settings.append(" kits");
     }
 
