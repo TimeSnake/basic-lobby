@@ -1,13 +1,12 @@
 main: de.timesnake.basic.lobby.main.BasicLobby
 version: 1.2
 name: basic-lobby
-author: Mn
+author: timesnake
 softdepend: [ basic-bukkit ]
 api-version: 1.13
 
 commands:
 
   lobbybuild:
-  realtime:
   plot:
 

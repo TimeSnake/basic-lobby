@@ -4,24 +4,23 @@
 
 package de.timesnake.basic.lobby.user;
 
-import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.chat.Argument;
-import de.timesnake.basic.bukkit.util.chat.CommandListener;
-import de.timesnake.basic.bukkit.util.chat.Sender;
+import de.timesnake.basic.bukkit.util.chat.cmd.Argument;
+import de.timesnake.basic.bukkit.util.chat.cmd.CommandListener;
+import de.timesnake.basic.bukkit.util.chat.cmd.Completion;
+import de.timesnake.basic.bukkit.util.chat.cmd.Sender;
+import de.timesnake.basic.lobby.chat.Plugin;
+import de.timesnake.library.commands.PluginCommand;
+import de.timesnake.library.commands.simple.Arguments;
 import de.timesnake.library.extension.util.chat.Code;
-import de.timesnake.library.extension.util.chat.Plugin;
-import de.timesnake.library.extension.util.cmd.Arguments;
-import de.timesnake.library.extension.util.cmd.ExCommand;
-import java.util.List;
 
 public class LobbyCmd implements CommandListener {
 
-  private Code buildPerm;
+  private final Code perm = Plugin.LOBBY.createPermssionCode("lobby.build");
 
-  public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd,
-      Arguments<Argument> args) {
+  @Override
+  public void onCommand(Sender sender, PluginCommand cmd, Arguments<Argument> args) {
     if (sender.isPlayer(false)) {
-      sender.hasPermissionElseExit(this.buildPerm);
+      sender.hasPermissionElseExit(this.perm);
 
       LobbyUser user = (LobbyUser) sender.getUser();
       if (args.isLengthEquals(0, false)) {
@@ -42,16 +41,13 @@ public class LobbyCmd implements CommandListener {
   }
 
   @Override
-  public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd,
-      Arguments<Argument> args) {
-    if (args.isLengthEquals(1, false)) {
-      return Server.getCommandManager().getTabCompleter().getPlayerNames();
-    }
-    return List.of();
+  public Completion getTabCompletion() {
+    return new Completion(this.perm)
+        .addArgument(Completion.ofPlayerNames());
   }
 
   @Override
-  public void loadCodes(Plugin plugin) {
-    this.buildPerm = plugin.createPermssionCode("lobby.build");
+  public String getPermission() {
+    return this.perm.getPermission();
   }
 }

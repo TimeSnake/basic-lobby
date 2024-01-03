@@ -5,16 +5,17 @@
 package de.timesnake.basic.lobby.build;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.chat.Sender;
+import de.timesnake.basic.bukkit.util.chat.cmd.Sender;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.channel.util.message.ChannelUserMessage;
 import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.library.chat.ExTextColor;
-import java.util.Objects;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+
+import java.util.Objects;
 
 public class BuildWorld {
 
