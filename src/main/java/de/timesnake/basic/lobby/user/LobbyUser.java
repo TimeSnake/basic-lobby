@@ -13,7 +13,7 @@ import de.timesnake.database.util.Database;
 import de.timesnake.database.util.user.DbPunishment;
 import de.timesnake.library.basic.util.PunishType;
 import de.timesnake.library.basic.util.Status;
-import de.timesnake.library.extension.util.chat.Chat;
+import de.timesnake.library.chat.Chat;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 

@@ -10,7 +10,7 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.UserChatCommandListener;
 import de.timesnake.basic.bukkit.util.user.event.UserChatCommandEvent;
 import de.timesnake.basic.lobby.chat.Plugin;
-import de.timesnake.library.extension.util.chat.Code;
+import de.timesnake.library.chat.Code;
 import org.bukkit.event.EventHandler;
 
 public class ServerPasswordCmd implements UserChatCommandListener {

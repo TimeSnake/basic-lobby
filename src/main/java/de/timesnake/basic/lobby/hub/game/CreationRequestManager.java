@@ -13,7 +13,7 @@ import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.channel.util.message.ChannelUserMessage;
 import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.library.basic.util.Availability;
-import de.timesnake.library.extension.util.chat.Code;
+import de.timesnake.library.chat.Code;
 import de.timesnake.library.game.GameInfo;
 import de.timesnake.library.game.NonTmpGameInfo;
 import org.bukkit.Material;
