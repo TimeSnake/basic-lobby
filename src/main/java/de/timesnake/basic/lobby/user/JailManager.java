@@ -12,8 +12,7 @@ import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.database.util.user.DbPunishment;
 import de.timesnake.library.basic.util.Loggers;
 import de.timesnake.library.basic.util.Tuple;
-import de.timesnake.library.extension.util.player.UserMap;
-import java.time.Duration;
+import de.timesnake.library.basic.util.UserMap;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -21,6 +20,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent.Cause;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.time.Duration;
 
 public class JailManager implements Listener {
 

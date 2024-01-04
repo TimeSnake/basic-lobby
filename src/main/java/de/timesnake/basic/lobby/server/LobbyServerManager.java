@@ -24,7 +24,7 @@ import de.timesnake.basic.lobby.user.UserManager;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.chat.ExTextColor;
-import de.timesnake.library.extension.util.NetworkVariables;
+import de.timesnake.library.network.NetworkVariables;
 import de.timesnake.library.pets.PetManager;
 import de.timesnake.library.plot.plots.PlotManager;
 import de.timesnake.library.waitinggames.WaitingGameManager;
