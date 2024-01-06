@@ -40,7 +40,7 @@ dependencies {
 
   implementation "de.timesnake:library-waitinggame:1.1"
   implementation "de.timesnake:library-plot:1.0"
-  implementation "de.timesnake:library-pets:1.0"
+  implementation "de.timesnake:library-pets:1.1"
 
   implementation "de.timesnake:library-game:1.2"
 
