@@ -4,8 +4,6 @@
 
 package de.timesnake.basic.lobby.user;
 
-import de.timesnake.basic.bukkit.core.main.BasicBukkit;
-import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.server.LobbyServer;
@@ -92,12 +90,9 @@ public class LobbyUser extends User {
     this.setItem(LobbyInventory.SPEED.cloneWithId());
     this.setItem(LobbyInventory.GAMES_HUB.cloneWithId());
     this.setItem(LobbyInventory.SPAWN.cloneWithId());
-    // TODO fix permission load
-    Server.runTaskLaterSynchrony(() -> {
-      if (this.hasPermission("lobby.build.inventory")) {
-        this.setItem(LobbyInventory.BUILD_SERVER.cloneWithId());
-      }
-    }, 20 * 2, BasicBukkit.getPlugin());
+    if (this.hasPermission("lobby.build.inventory")) {
+      this.setItem(LobbyInventory.BUILD_SERVER.cloneWithId());
+    }
 
   }
 
