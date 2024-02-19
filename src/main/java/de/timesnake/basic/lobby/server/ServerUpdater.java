@@ -9,13 +9,13 @@ import de.timesnake.channel.util.listener.ChannelHandler;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.channel.util.listener.ListenerType;
 import de.timesnake.channel.util.message.ChannelServerMessage;
+
 import java.util.Collections;
 
 public class ServerUpdater implements ChannelListener {
 
   public ServerUpdater() {
-    Server.getChannel()
-        .addListener(this, () -> Collections.singleton(Server.getNetwork().getProxyName()));
+    Server.getChannel().addListener(this, Collections.singleton(Server.getNetwork().getProxyName()));
   }
 
   @ChannelHandler(type = ListenerType.SERVER_ONLINE_PLAYERS, filtered = true)

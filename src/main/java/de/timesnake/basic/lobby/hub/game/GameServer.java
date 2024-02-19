@@ -64,7 +64,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
 
     Server.getInventoryEventManager().addClickListener(this, this.item);
 
-    Server.getChannel().addListener(this, () -> Collections.singleton(this.name));
+    Server.getChannel().addListener(this, Collections.singleton(this.name));
   }
 
   public String getServerName() {
