@@ -17,9 +17,9 @@ import de.timesnake.database.util.Database;
 import de.timesnake.database.util.game.DbGame;
 import de.timesnake.database.util.game.DbNonTmpGame;
 import de.timesnake.database.util.game.DbTmpGame;
-import de.timesnake.library.basic.util.Loggers;
-import java.util.HashMap;
 import net.kyori.adventure.text.Component;
+
+import java.util.HashMap;
 
 public class GamesMenu implements UserInventoryClickListener {
 
@@ -50,12 +50,8 @@ public class GamesMenu implements UserInventoryClickListener {
           gameHub = new NonTmpGameHub(((DbNonTmpGame) game));
         }
       }
-      if (gameHub == null) {
-        Loggers.LOBBY.warning("Can not load game " + game.getInfo().getName());
-      } else {
-        inventory.setItemStack(gameHub.getGameInfo().getSlot(), gameHub.getItem());
-        games.put(gameHub.getGameInfo().getSlot(), gameHub);
-      }
+      inventory.setItemStack(gameHub.getGameInfo().getSlot(), gameHub.getItem());
+      games.put(gameHub.getGameInfo().getSlot(), gameHub);
     }
   }
 
