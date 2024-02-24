@@ -10,10 +10,11 @@ import de.timesnake.basic.bukkit.util.world.ExWorld;
 import de.timesnake.basic.bukkit.util.world.ExWorld.Restriction;
 import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.database.util.user.DbPunishment;
-import de.timesnake.library.basic.util.Loggers;
 import de.timesnake.library.basic.util.Tuple;
 import de.timesnake.library.basic.util.UserMap;
 import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,6 +27,8 @@ import java.time.Duration;
 public class JailManager implements Listener {
 
   private static final int CHECK_PERIOD_TICKS = 20 * 20;
+
+  private final Logger logger = LogManager.getLogger("logger.jail-manager");
 
   private final ExWorld jailWorld;
   private final UserMap<LobbyUser, BukkitTask> taskByUser = new UserMap<>();
@@ -102,7 +105,7 @@ public class JailManager implements Listener {
     DbPunishment punishment = user.getDatabase().getPunishment();
     Duration neededDuration = punishment.getDuration();
 
-    if (neededDuration == null || neededDuration.toSeconds() == 0) {
+    if (neededDuration.toSeconds() == 0) {
       return;
     }
 
@@ -112,8 +115,7 @@ public class JailManager implements Listener {
     } else if (update) {
       Duration leftDuration = neededDuration.minusSeconds(duration.toSeconds());
       punishment.setDuration(leftDuration);
-      Loggers.LOBBY.info("Updated jail duration of " + user.getName() + " to "
-          + leftDuration.toSeconds() + "s");
+      this.logger.info("Updated jail duration of {} to {}s", user.getName(), leftDuration.toSeconds());
     }
   }
 

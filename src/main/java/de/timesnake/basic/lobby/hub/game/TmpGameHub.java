@@ -15,14 +15,17 @@ import de.timesnake.database.util.server.DbLoungeServer;
 import de.timesnake.database.util.server.DbServer;
 import de.timesnake.database.util.server.DbTaskServer;
 import de.timesnake.database.util.server.DbTmpGameServer;
-import de.timesnake.library.basic.util.Loggers;
 import de.timesnake.library.basic.util.ServerType;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.game.TmpGameInfo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 
 public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener {
+
+  private final Logger logger = LogManager.getLogger("lobby.gamehub");
 
   protected final HashMap<String, GameServerBasis> servers = new HashMap<>();
 
@@ -53,8 +56,7 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
           loungeServer, slot);
       this.servers.put(loungeServer.getName(), gameServer);
     } else {
-      Loggers.LOBBY.warning(
-          "Can not load game server " + server.getName() + ", lounge not found");
+      this.logger.warn("Can not load game server {}, lounge not found", server.getName());
     }
   }
 

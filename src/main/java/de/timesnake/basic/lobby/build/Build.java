@@ -12,12 +12,15 @@ import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.channel.util.listener.ListenerType;
 import de.timesnake.channel.util.message.ChannelServerMessage;
 import de.timesnake.channel.util.message.MessageType;
-import de.timesnake.library.basic.util.Loggers;
 import de.timesnake.library.basic.util.MultiKeyMap;
 import de.timesnake.library.basic.util.ServerType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.inventory.Inventory;
 
 public class Build implements ChannelListener {
+
+  private final Logger logger = LogManager.getLogger("lobby.build");
 
   private final ExInventory inventory = new ExInventory(54, "Build-Worlds");
 
@@ -43,7 +46,7 @@ public class Build implements ChannelListener {
       category.addWorld(worldName, shortWorldName);
     }
 
-    Loggers.LOBBY.info("Loaded build map-worlds");
+    this.logger.info("Loaded build map-worlds");
   }
 
   private void updateWorld(String worldName, String serverName) {
