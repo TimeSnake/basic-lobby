@@ -5,8 +5,6 @@
 package de.timesnake.basic.lobby.hub.game;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.chat.cmd.Sender;
-import de.timesnake.basic.bukkit.util.server.ServerInfo;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserQuitEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
@@ -16,45 +14,51 @@ import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.hub.ServerPasswordCmd;
 import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.basic.lobby.user.LobbyUser;
-import de.timesnake.channel.util.listener.ChannelHandler;
 import de.timesnake.channel.util.listener.ChannelListener;
-import de.timesnake.channel.util.listener.ListenerType;
-import de.timesnake.channel.util.message.ChannelServerMessage;
-import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.database.util.server.DbTaskServer;
 import de.timesnake.library.basic.util.Status;
-import de.timesnake.library.chat.ExTextColor;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
-public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> extends ServerInfo
+public abstract class GameServer<GameInfo extends de.timesnake.library.game.GameInfo>
     implements ChannelListener, UserInventoryClickListener, Listener, GameServerBasis {
 
   protected final String displayName;
+
   protected final String task;
+  protected Status.Server status;
+  protected Integer onlinePlayers;
+  protected Integer maxPlayers;
+  protected String password;
+
   protected final ExItemStack item;
   protected final GameHub<GameInfo> gameHub;
-  protected final Queue<User> queue = new LinkedList<>();
-  private final int slot;
-  protected String serverName;
-  protected boolean queueing;
 
-  public GameServer(String displayName, GameHub<GameInfo> gameHub, DbTaskServer server, int slot,
-      boolean updateItem) {
-    super(server);
+  protected boolean queueing;
+  protected final Queue<User> queue = new LinkedList<>();
+
+  private final int slot;
+
+  public GameServer(String displayName, GameHub<GameInfo> gameHub, DbTaskServer server, int slot, boolean updateItem) {
     this.displayName = displayName;
-    this.serverName = server.getName();
-    this.slot = slot;
+
     this.task = server.getTask();
+    this.status = server.getStatus();
+    this.onlinePlayers = server.getOnlinePlayers();
+    this.maxPlayers = server.getMaxPlayers();
+    this.password = server.getPassword();
+
+    this.slot = slot;
     this.gameHub = gameHub;
 
-    this.item = new ExItemStack(Material.WHITE_WOOL,
-        SERVER_TITLE_COLOR + this.displayName).setSlot(slot);
+    this.item = new ExItemStack(Material.WHITE_WOOL, "§6" + this.displayName).setSlot(slot);
 
     this.updateItemAmount();
     this.updateItemDescription();
@@ -63,23 +67,9 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
     }
 
     Server.getInventoryEventManager().addClickListener(this, this.item);
-
-    Server.getChannel().addListener(this, Collections.singleton(this.name));
   }
 
-  public String getServerName() {
-    return serverName;
-  }
-
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  public int getSlot() {
-    return slot;
-  }
-
-  protected void initUpdate() {
+  protected void update() {
     this.updateItemAmount();
     this.updateItemDescription();
     this.updateQueue();
@@ -99,7 +89,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
     lore.add("");
 
     if (this.status == null) {
-      this.setStatus(Status.Server.OFFLINE);
+      this.status = Status.Server.OFFLINE;
     }
 
     if (Status.Server.ONLINE.equals(this.status)) {
@@ -113,8 +103,7 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
       lore.add(ONLINE_TEXT);
       lore.add("");
       lore.add(PLAYER_TEXT + " §f" + this.onlinePlayers + " §8/ §f" + this.maxPlayers);
-    } else if (Status.Server.OFFLINE.equals(this.status) || Status.Server.LAUNCHING.equals(
-        this.status)) {
+    } else if (!this.status.isRunning()) {
       this.item.setAmount(1);
       this.item.setType(OFFLINE);
       lore.add(OFFLINE_TEXT);
@@ -124,11 +113,16 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
       this.item.setType(STARTING);
       lore.add(STARTING_TEXT);
       this.queueing = true;
-    } else if (Status.Server.IN_GAME.equals(this.status) || Status.Server.PRE_GAME.equals(
-        this.status)
-        || Status.Server.POST_GAME.equals(this.status)) {
+    } else if (this.status.isGameState()) {
       this.item.setType(IN_GAME);
-      lore.add(INGAME_TEXT);
+
+      if (this.status.equals(Status.Server.IN_GAME)) {
+        lore.add(IN_GAME_TEXT);
+      } else if (this.status.equals(Status.Server.PRE_GAME)) {
+        lore.add(PRE_GAME_TEXT);
+      } else if (this.status.equals(Status.Server.POST_GAME)) {
+        lore.add(POST_GAME_TEXT);
+      }
       this.queueing = true;
     } else {
       this.item.setType(SERVICE);
@@ -141,8 +135,6 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
     lore.addAll(this.getSpectatorLore());
 
     lore.addAll(this.getQueueLore());
-
-    lore.addAll(this.getServerNameLore());
 
     this.item.setExLore(lore);
   }
@@ -168,10 +160,6 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
     return List.of();
   }
 
-  public List<String> getServerNameLore() {
-    return List.of("", SERVER_NAME_COLOR + this.serverName);
-  }
-
   protected void updateItem() {
     gameHub.updateServer(this);
   }
@@ -181,29 +169,28 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
     LobbyUser user = (LobbyUser) e.getUser();
     ClickType clickType = e.getClickType();
 
+    this.onClick(user, clickType);
+    e.setCancelled(true);
+  }
+
+  protected void onClick(User user, ClickType type) {
     user.playSoundItemClickSuccessful();
-    Sender sender = user.asSender(Plugin.LOBBY);
+
     if (this.queueing) {
-      if (clickType.isRightClick()) {
+      if (type.isRightClick()) {
         if (this.queue.contains(user)) {
           this.queue.remove(user);
-          sender.sendPluginMessage(
-              Component.text("Left queue of server ", ExTextColor.PERSONAL)
-                  .append(Component.text(this.displayName, ExTextColor.VALUE)));
+          user.sendPluginTDMessage(Plugin.LOBBY, "§sLeft queue of server §v" + this.displayName);
         } else {
           this.queue.add(user);
-          sender.sendPluginMessage(
-              Component.text("Joined queue of server ", ExTextColor.PERSONAL)
-                  .append(Component.text(this.displayName, ExTextColor.VALUE)));
+          user.sendPluginTDMessage(Plugin.LOBBY, "§Joined queue of server §v" + this.displayName);
         }
         user.closeInventory();
-        e.setCancelled(true);
         return;
       }
     }
 
-    this.moveUserToServer(user);
-    e.setCancelled(true);
+    this.tryMoveUserToServer(user);
   }
 
   @EventHandler
@@ -211,63 +198,67 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
     this.queue.remove(e.getUser());
   }
 
-  public void moveUserToServer(User user) {
-    Sender sender = user.asSender(Plugin.LOBBY);
-
+  public void tryMoveUserToServer(User user) {
     if (this.hasPassword()) {
       user.closeInventory();
-      sender.sendPluginMessage(
-          Component.text("Enter server-password:", ExTextColor.PERSONAL));
-      Server.getUserEventManager().addUserChatCommand(user, new ServerPasswordCmd(this));
+      user.sendPluginTDMessage(Plugin.LOBBY, "§sEnter server-password:");
+      Server.getUserEventManager().addUserChatCommand(user, new ServerPasswordCmd(this.getServerName(), this.password));
       return;
     }
 
     if (this.status.equals(Status.Server.ONLINE)) {
-      if (this.isFull()) {
-        sender.sendPluginMessage(FULL_MESSAGE);
-      } else {
-        user.setTask(this.getTask());
-        user.switchToServer(this.port);
-      }
+      this.tryMoveUserToOnlineServer(user);
     } else if (this.status.equals(Status.Server.SERVICE)) {
-      if (user.hasPermission("lobby.gamehub.join.service")) {
-        user.setTask(this.getTask());
-        user.switchToServer(this.port);
-      } else {
-        sender.sendPluginMessage(SERVICE_MESSAGE);
-      }
-    } else {
-      sender.sendPluginMessage(INGAME_OFFLINE_MESSAGE);
+      this.tryMoveUserToServiceServer(user);
+    } else if (this.status.isGameState()) {
+      this.tryMoveUserToGameStateServer(user);
     }
+  }
+
+  protected void tryMoveUserToOnlineServer(User user) {
+    if (this.isFull()) {
+      user.sendPluginTDMessage(Plugin.LOBBY, FULL_MESSAGE);
+    } else {
+      user.setTask(this.getTask());
+      user.switchToServer(this.getServerName());
+    }
+  }
+
+  protected void tryMoveUserToServiceServer(User user) {
+    if (user.hasPermission("lobby.gamehub.join.service")) {
+      user.setTask(this.getTask());
+      user.switchToServer(this.getServerName());
+    } else {
+      user.sendPluginTDMessage(Plugin.LOBBY, SERVICE_MESSAGE);
+    }
+  }
+
+  protected void tryMoveUserToGameStateServer(User user) {
+    user.sendPluginTDMessage(Plugin.LOBBY, IN_GAME_OFFLINE_MESSAGE);
   }
 
   public void updateQueue() {
     if (this.status.equals(Status.Server.ONLINE)) {
       Server.runTaskLaterSynchrony(() -> {
-        for (int i = this.onlinePlayers; i <= this.maxPlayers && !this.queue.isEmpty();
-            i++) {
-          this.moveUserToServer(this.queue.poll());
+        for (int i = this.onlinePlayers; i <= this.maxPlayers && !this.queue.isEmpty(); i++) {
+          this.tryMoveUserToServer(this.queue.poll());
         }
         for (User user : this.queue) {
-          user.asSender(Plugin.LOBBY)
-              .sendPluginMessage(Component.text("Server ", ExTextColor.WARNING)
-                  .append(Component.text(this.displayName, ExTextColor.VALUE))
-                  .append(Component.text(
-                      " is full. Right click on server to leave queue.",
-                      ExTextColor.WARNING)));
+          user.sendPluginTDMessage(Plugin.LOBBY, "§wServer §v" + this.displayName + "§w is full. " +
+              "Right click on server to leave queue.");
         }
       }, 2 * 20, BasicLobby.getPlugin());
 
     } else if (this.status.equals(Status.Server.OFFLINE)) {
       for (User user : this.queue) {
-        user.sendPluginMessage(Plugin.LOBBY, Component.text("Server ", ExTextColor.WARNING)
-            .append(Component.text(this.displayName, ExTextColor.VALUE))
-            .append(Component.text(" has gone offline. Removed from queue.",
-                ExTextColor.WARNING)));
+        user.sendPluginTDMessage(Plugin.LOBBY, "§wServer §v" + this.displayName + " has gone offline. " +
+            "Removed from queue.");
       }
       this.queue.clear();
     }
   }
+
+  public abstract String getServerName();
 
   public String getTask() {
     return this.task;
@@ -286,6 +277,18 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
     return this.onlinePlayers >= this.maxPlayers;
   }
 
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  public int getSlot() {
+    return slot;
+  }
+
+  public Status.Server getStatus() {
+    return status;
+  }
+
   @Override
   public void destroy() {
     Server.getChannel().removeListener(this);
@@ -293,36 +296,4 @@ public class GameServer<GameInfo extends de.timesnake.library.game.GameInfo> ext
     Server.getInventoryEventManager().removeClickListener(this);
   }
 
-  @ChannelHandler(type = {ListenerType.SERVER_PASSWORD, ListenerType.SERVER_STATUS,
-      ListenerType.SERVER_MAX_PLAYERS
-      , ListenerType.SERVER_ONLINE_PLAYERS}, filtered = true)
-  public void onChannelMessage(ChannelServerMessage<?> msg) {
-
-    if (!msg.getName().equals(this.name)) {
-      return;
-    }
-
-    MessageType<?> type = msg.getMessageType();
-
-    if (type.equals(MessageType.Server.PASSWORD)) {
-      this.password = this.database.getPassword();
-      this.updateItemDescription();
-      this.updateItem();
-    } else if (type.equals(MessageType.Server.STATUS)) {
-      this.status = this.database.getStatus();
-      this.onlinePlayers = this.database.getOnlinePlayers();
-      this.initUpdate();
-    } else if (type.equals(MessageType.Server.MAX_PLAYERS) || type.equals(
-        MessageType.Server.ONLINE_PLAYERS)) {
-      this.onlinePlayers = this.database.getOnlinePlayers();
-      if (this.onlinePlayers == null) {
-        this.onlinePlayers = 0;
-      }
-      this.maxPlayers = this.database.getMaxPlayers();
-      if (this.maxPlayers == null) {
-        this.maxPlayers = 0;
-      }
-      this.initUpdate();
-    }
-  }
 }

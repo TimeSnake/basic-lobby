@@ -88,7 +88,7 @@ public class OwnableNonTmpGameHub extends GameHub<NonTmpGameInfo> implements Cha
         DbServer dbServer = Database.getServers().getServer(ServerType.GAME, fullName);
         if (dbServer != null) {
           Status.Server status = dbServer.getStatus();
-          if (status != null && status.isRunning()) {
+          if (status.isRunning()) {
             this.addMemberServer(ownerUuid, name);
           }
         }
@@ -143,19 +143,19 @@ public class OwnableNonTmpGameHub extends GameHub<NonTmpGameInfo> implements Cha
   }
 
   public void addMemberServer(OwnNonTmpGameServer server) {
-    Integer oldSlot = this.removeServer(server.getName());
+    Integer oldSlot = this.removeServer(server.getServerName());
     int slot = oldSlot != null ? oldSlot : this.getEmptySlot();
 
     UUID ownerUuid = server.getOwner();
     String ownerName = server.getOwnerName();
 
-    String shortServerName = server.getName().replaceFirst(ownerUuid.hashCode() + "_", "");
+    String shortServerName = server.getServerName().replaceFirst(ownerUuid.hashCode() + "_", "");
 
     NonTmpGameServer memberGameServer = new OwnNonTmpGameServer(this,
-        ((DbNonTmpGameServer) server.getDatabase()),
+        Database.getServers().getServer(server.getServerName()),
         getFullMemberDisplayName(ownerName, shortServerName), slot, ownerUuid, ownerName);
 
-    this.serverByName.put(memberGameServer.getName(), memberGameServer);
+    this.serverByName.put(memberGameServer.getServerName(), memberGameServer);
     this.updateServer(memberGameServer);
   }
 
@@ -169,12 +169,12 @@ public class OwnableNonTmpGameHub extends GameHub<NonTmpGameInfo> implements Cha
         Database.getServers().getServer(ServerType.GAME, getFullServerName(ownerUuid, shortName)),
         getFullMemberDisplayName(ownerName, shortName), slot, ownerUuid, ownerName);
 
-    this.serverByName.put(memberGameServer.getName(), memberGameServer);
+    this.serverByName.put(memberGameServer.getServerName(), memberGameServer);
     this.updateServer(memberGameServer);
   }
 
   public void updateMemberServer(OwnNonTmpGameServer baseServer) {
-    GameServerBasis server = this.serverByName.get(baseServer.getName());
+    GameServerBasis server = this.serverByName.get(baseServer.getServerName());
     if (server == null || server instanceof UnloadedNonTmpGameServer) {
       this.addMemberServer(baseServer);
     }
@@ -219,7 +219,7 @@ public class OwnableNonTmpGameHub extends GameHub<NonTmpGameInfo> implements Cha
       return;
     }
 
-    if (this.serverByName.values().stream().anyMatch(s -> s.getName().equals(serverName)
+    if (this.serverByName.values().stream().anyMatch(s -> s.getServerName().equals(serverName)
         && !(s instanceof UnloadedNonTmpGameServer))) {
       return;
     }

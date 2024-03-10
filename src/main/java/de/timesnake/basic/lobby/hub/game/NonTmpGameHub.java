@@ -48,9 +48,8 @@ public class NonTmpGameHub extends GameHub<NonTmpGameInfo> implements ChannelLis
 
   protected void addGameServer(DbNonTmpGameServer server) {
     Integer slot = this.getEmptySlot();
-    GameServer<NonTmpGameInfo> gameServer = new GameServer<>(
-        this.getGameInfo().getDisplayName() + " " +
-            this.getServerNumber(slot), this, server, slot, true);
+    GameServer<NonTmpGameInfo> gameServer = new NonTmpGameServer(this, server,
+        this.getGameInfo().getDisplayName() + " " + this.getServerNumber(slot), slot);
     this.servers.put(server.getName(), gameServer);
   }
 
