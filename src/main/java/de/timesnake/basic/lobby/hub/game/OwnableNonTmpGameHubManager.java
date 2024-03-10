@@ -55,7 +55,7 @@ public class OwnableNonTmpGameHubManager extends GameHub<NonTmpGameInfo> impleme
 
     NonTmpGameServer gameServer = new PublicNonTmpGameServer(this, server, server.getName(), slot);
 
-    this.publicServersByNameOrSlot.put(gameServer.getName(), slot, gameServer);
+    this.publicServersByNameOrSlot.put(gameServer.getServerName(), slot, gameServer);
     this.hubByUuid.values().forEach(h -> h.updateServer(gameServer));
   }
 

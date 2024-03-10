@@ -5,7 +5,6 @@
 package de.timesnake.basic.lobby.hub;
 
 import de.timesnake.basic.bukkit.util.chat.cmd.Sender;
-import de.timesnake.basic.bukkit.util.server.ServerInfo;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.UserChatCommandListener;
 import de.timesnake.basic.bukkit.util.user.event.UserChatCommandEvent;
@@ -18,10 +17,12 @@ public class ServerPasswordCmd implements UserChatCommandListener {
   public static final Code PASSWORD_PERM = Plugin.LOBBY.createPermssionCode(
       "lobby.gamehub.password");
 
-  private final ServerInfo server;
+  private final String serverName;
+  private final String password;
 
-  public ServerPasswordCmd(ServerInfo server) {
-    this.server = server;
+  public ServerPasswordCmd(String serverName, String password) {
+    this.serverName = serverName;
+    this.password = password;
   }
 
   @EventHandler
@@ -34,13 +35,13 @@ public class ServerPasswordCmd implements UserChatCommandListener {
 
     if (e.getUser().hasPermission(PASSWORD_PERM, Plugin.LOBBY)) {
       sender.sendPluginTDMessage("§wUsed permission, instead of password");
-    } else if (!password.equals(server.getPassword())) {
+    } else if (!password.equals(this.password)) {
       sender.sendPluginTDMessage("§wWrong password, please select the server and try again");
       return;
     }
 
-    sender.sendPluginTDMessage("§sSwitching to server §v" + this.server.getName());
-    user.switchToServer(server.getPort());
+    sender.sendPluginTDMessage("§sSwitching to server §v" + this.serverName);
+    user.switchToServer(this.serverName);
 
     e.setCancelled(true);
   }

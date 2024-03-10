@@ -14,10 +14,11 @@ import de.timesnake.channel.util.message.ChannelUserMessage;
 import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.library.chat.ExTextColor;
 import de.timesnake.library.game.NonTmpGameInfo;
+import net.kyori.adventure.text.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import net.kyori.adventure.text.Component;
 
 public class UnloadedNonTmpGameServer implements GameServerBasis, UserInventoryClickListener {
 
@@ -46,7 +47,7 @@ public class UnloadedNonTmpGameServer implements GameServerBasis, UserInventoryC
     this.isPublic = isPublic;
     this.owner = owner;
     this.ownerName = ownerName;
-    this.item = new ExItemStack(slot, OFFLINE, SERVER_TITLE_COLOR + this.displayName);
+    this.item = new ExItemStack(slot, OFFLINE, "§6" + this.displayName);
 
     List<String> lore = new ArrayList<>();
     lore.add("");
@@ -80,7 +81,7 @@ public class UnloadedNonTmpGameServer implements GameServerBasis, UserInventoryC
   }
 
   @Override
-  public String getName() {
+  public String getServerName() {
     return name;
   }
 

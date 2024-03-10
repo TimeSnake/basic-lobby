@@ -4,66 +4,57 @@
 
 package de.timesnake.basic.lobby.hub.game;
 
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
-import de.timesnake.basic.lobby.user.LobbyUser;
+import de.timesnake.basic.bukkit.util.Server;
+import de.timesnake.basic.bukkit.util.user.User;
+import de.timesnake.channel.util.listener.ChannelHandler;
+import de.timesnake.channel.util.listener.ListenerType;
+import de.timesnake.channel.util.message.ChannelServerMessage;
+import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.database.util.server.DbLoungeServer;
 import de.timesnake.database.util.server.DbTmpGameServer;
 import de.timesnake.library.basic.util.Availability;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.game.TmpGameInfo;
-import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class TmpGameServer extends GameServer<TmpGameInfo> {
 
-  protected final DbTmpGameServer tempGameServer;
-  protected final String tempGameServerName;
+  private final String loungeServerName;
+  private final String gameServerName;
 
   protected final boolean kitsEnabled;
-  protected final boolean mapsEnabled; // only true if maps are allowed
+  protected final boolean mapsEnabled;
   protected final boolean oldPvP;
   protected final Integer maxPlayersPerTeam;
   protected final Integer teamAmount;
 
   public TmpGameServer(Integer serverNumber, TmpGameHub gameHub, DbLoungeServer server, int slot) {
-
     super(gameHub.getGameInfo().getDisplayName() + " " + serverNumber, gameHub, server, slot, true);
 
-    this.tempGameServer = server.getTwinServer();
-    this.tempGameServerName = this.tempGameServer.getName();
+    this.loungeServerName = server.getName();
 
-    if (gameHub.getGameInfo().getKitAvailability().equals(Availability.ALLOWED)) {
-      this.kitsEnabled = this.tempGameServer.areKitsEnabled();
-    } else {
-      this.kitsEnabled = false;
-    }
-    if (gameHub.getGameInfo().getMapAvailability().equals(Availability.ALLOWED)) {
-      this.mapsEnabled = this.tempGameServer.areMapsEnabled();
-    } else {
-      this.mapsEnabled = false;
-    }
+    DbTmpGameServer gameServer = server.getTwinServer();
+    this.gameServerName = gameServer.getName();
 
-    this.oldPvP = this.tempGameServer.isOldPvP();
+    this.kitsEnabled = gameServer.areKitsEnabled();
+    this.mapsEnabled = gameServer.areMapsEnabled();
 
-    this.maxPlayersPerTeam = this.tempGameServer.getMaxPlayersPerTeam();
+    this.oldPvP = gameServer.isOldPvP();
 
-    Integer teamAmount = this.tempGameServer.getTeamAmount();
+    this.maxPlayersPerTeam = gameServer.getMaxPlayersPerTeam();
+
+    Integer teamAmount = gameServer.getTeamAmount();
     if (gameHub.getGameInfo().getTeamSizes().size() > 1) {
       this.teamAmount = teamAmount;
     } else {
       this.teamAmount = null;
     }
-  }
 
-  @Override
-  protected void initUpdate() {
-    DbTmpGameServer twinServer = ((DbLoungeServer) super.getDatabase()).getTwinServer();
-    if (twinServer != null) {
-      super.serverName = twinServer.getName() + " " + this.name;
-    }
-    super.initUpdate();
+    Server.getChannel().addListener(this, Set.of(this.getServerName(), gameServerName));
   }
 
   @Override
@@ -72,46 +63,96 @@ public class TmpGameServer extends GameServer<TmpGameInfo> {
     lore.addAll(this.getKitLore());
     lore.addAll(this.getMapLore());
     lore.addAll(this.getPvPLore());
-    lore.addAll(this.getPlayersPerTeamLore());
-    lore.addAll(this.getTeamAmount());
+    lore.addAll(this.getTeamLore());
     lore.addAll(super.getPasswordLore());
     return lore;
   }
 
   public List<String> getKitLore() {
-    return this.kitsEnabled ? List.of("", KIT_TEXT) : List.of();
+    if (this.kitsEnabled && this.gameHub.getGameInfo().getKitAvailability().equals(Availability.ALLOWED)) {
+      return List.of("", KIT_TEXT);
+    }
+    return List.of();
   }
 
   public List<String> getMapLore() {
-    return this.mapsEnabled ? List.of("", MAP_TEXT) : List.of();
+    if (this.mapsEnabled && this.gameHub.getGameInfo().getMapAvailability().equals(Availability.ALLOWED)) {
+      return List.of("", MAP_TEXT);
+    }
+    return List.of();
   }
 
   public List<String> getPvPLore() {
     return this.oldPvP ? List.of("", OLD_PVP_TEXT) : List.of();
   }
 
-  public List<String> getPlayersPerTeamLore() {
-    return this.maxPlayersPerTeam != null ? List.of("",
-        PLAYERS_PER_TEAM_TEXT + this.maxPlayersPerTeam) : List.of();
-  }
+  public List<String> getTeamLore() {
+    if (this.maxPlayersPerTeam == null || this.teamAmount == null || this.teamAmount <= 1) {
+      return List.of();
+    }
 
-  public List<String> getTeamAmount() {
-    return this.teamAmount != null && this.teamAmount > 1 ? List.of(TEAM_AMOUNT + this.teamAmount)
-        : List.of();
+    return List.of(TEAM_AMOUNT + String.join(" vs ",
+        Collections.nCopies(this.teamAmount, String.valueOf(this.maxPlayersPerTeam))));
   }
 
   @Override
-  public void onUserInventoryClick(UserInventoryClickEvent e) {
-    LobbyUser user = (LobbyUser) e.getUser();
-    ClickType clickType = e.getClickType();
+  protected void tryMoveUserToGameStateServer(User user) {
     if (this.status.equals(Status.Server.IN_GAME)) {
-      if (clickType.isLeftClick()) {
-        user.setTask(this.getTask());
-        user.setStatus(Status.User.SPECTATOR);
-        user.switchToServer(((DbLoungeServer) this.database).getTwinServer().getPort());
-        e.setCancelled(true);
+      user.setTask(this.getTask());
+      user.setStatus(Status.User.SPECTATOR);
+      user.switchToServer(gameServerName);
+    }
+
+    super.tryMoveUserToGameStateServer(user);
+  }
+
+  @ChannelHandler(type = {ListenerType.SERVER_PASSWORD, ListenerType.SERVER_STATUS,
+      ListenerType.SERVER_MAX_PLAYERS, ListenerType.SERVER_ONLINE_PLAYERS}, filtered = true)
+  public void onChannelMessage(ChannelServerMessage<?> msg) {
+    MessageType<?> type = msg.getMessageType();
+    if (this.status.isGameState() && msg.getIdentifier().equals(this.gameServerName)) {
+      if (type.equals(MessageType.Server.STATUS)) {
+        this.status = ((Status.Server) msg.getValue());
+        this.update();
+      } else if (type.equals(MessageType.Server.MAX_PLAYERS)) {
+        this.maxPlayers = (Integer) msg.getValue();
+        if (this.maxPlayers == null) {
+          this.maxPlayers = 0;
+        }
+        this.update();
+      } else if (type.equals(MessageType.Server.ONLINE_PLAYERS)) {
+        this.onlinePlayers = (Integer) msg.getValue();
+        if (this.onlinePlayers == null) {
+          this.onlinePlayers = 0;
+        }
+        this.update();
+      }
+    } else if (msg.getIdentifier().equals(this.loungeServerName)) {
+      if (type.equals(MessageType.Server.PASSWORD)) {
+        this.password = (String) msg.getValue();
+        this.updateItemDescription();
+        this.updateItem();
+      } else if (type.equals(MessageType.Server.STATUS)) {
+        this.status = (Status.Server) msg.getValue();
+        this.update();
+      } else if (type.equals(MessageType.Server.MAX_PLAYERS)) {
+        this.maxPlayers = (Integer) msg.getValue();
+        if (this.maxPlayers == null) {
+          this.maxPlayers = 0;
+        }
+        this.update();
+      } else if (type.equals(MessageType.Server.ONLINE_PLAYERS)) {
+        this.onlinePlayers = (Integer) msg.getValue();
+        if (this.onlinePlayers == null) {
+          this.onlinePlayers = 0;
+        }
+        this.update();
       }
     }
-    super.onUserInventoryClick(e);
+  }
+
+  @Override
+  public String getServerName() {
+    return this.status.equals(Status.Server.IN_GAME) ? this.gameServerName : this.loungeServerName;
   }
 }
