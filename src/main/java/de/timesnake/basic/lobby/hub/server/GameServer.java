@@ -2,7 +2,7 @@
  * Copyright (C) 2023 timesnake
  */
 
-package de.timesnake.basic.lobby.hub.game;
+package de.timesnake.basic.lobby.hub.server;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
@@ -12,6 +12,7 @@ import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.hub.ServerPasswordCmd;
+import de.timesnake.basic.lobby.hub.game.GameHub;
 import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.channel.util.listener.ChannelListener;

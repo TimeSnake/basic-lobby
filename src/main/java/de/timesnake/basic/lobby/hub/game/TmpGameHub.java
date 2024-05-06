@@ -5,6 +5,9 @@
 package de.timesnake.basic.lobby.hub.game;
 
 import de.timesnake.basic.bukkit.util.Server;
+import de.timesnake.basic.lobby.hub.server.GameServer;
+import de.timesnake.basic.lobby.hub.server.GameServerBasis;
+import de.timesnake.basic.lobby.hub.server.TmpGameServer;
 import de.timesnake.channel.util.listener.ChannelHandler;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.channel.util.listener.ListenerType;

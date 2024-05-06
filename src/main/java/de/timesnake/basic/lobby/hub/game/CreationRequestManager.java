@@ -23,8 +23,8 @@ public class CreationRequestManager implements UserInventoryClickListener {
   public static final Code CREATION_PERM = Plugin.LOBBY.createPermssionCode(
       "lobby.gamehub.creation_request");
 
-  private final ExItemStack item = new ExItemStack(Material.BLUE_WOOL).setDisplayName(
-          "§9Request new server")
+  private final ExItemStack item = new ExItemStack(Material.BLUE_WOOL)
+      .setDisplayName("§9Request new server")
       .setLore("", "§7Click to request a new server", "", "§cPunishable in case of abuse")
       .setMoveable(false).setDropable(false).immutable();
 
