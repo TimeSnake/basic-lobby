@@ -2,7 +2,7 @@
  * Copyright (C) 2023 timesnake
  */
 
-package de.timesnake.basic.lobby.hub.game;
+package de.timesnake.basic.lobby.hub.server;
 
 import de.timesnake.basic.bukkit.util.chat.ChatColor;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;

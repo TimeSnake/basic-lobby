@@ -2,9 +2,10 @@
  * Copyright (C) 2023 timesnake
  */
 
-package de.timesnake.basic.lobby.hub.game;
+package de.timesnake.basic.lobby.hub.server;
 
 import de.timesnake.basic.bukkit.util.Server;
+import de.timesnake.basic.lobby.hub.game.GameHub;
 import de.timesnake.channel.util.listener.ChannelHandler;
 import de.timesnake.channel.util.listener.ListenerType;
 import de.timesnake.channel.util.message.ChannelServerMessage;

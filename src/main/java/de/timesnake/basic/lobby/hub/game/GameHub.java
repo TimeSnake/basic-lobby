@@ -10,10 +10,12 @@ import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
+import de.timesnake.basic.lobby.hub.server.GameServer;
 import de.timesnake.basic.lobby.user.LobbyUser;
-import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+
+import java.util.List;
 
 public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInfo> implements
     UserInventoryClickListener {

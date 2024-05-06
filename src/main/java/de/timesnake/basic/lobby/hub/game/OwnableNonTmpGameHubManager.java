@@ -6,7 +6,7 @@ package de.timesnake.basic.lobby.hub.game;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
-import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
+import de.timesnake.basic.lobby.hub.server.*;
 import de.timesnake.channel.util.listener.ChannelHandler;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.channel.util.listener.ListenerType;
@@ -77,12 +77,6 @@ public class OwnableNonTmpGameHubManager extends GameHub<NonTmpGameInfo> impleme
       return server.getSlot();
     }
     return null;
-  }
-
-  @Override
-  @Deprecated
-  public ExInventory getInventory() {
-    return super.getInventory();
   }
 
   @Override

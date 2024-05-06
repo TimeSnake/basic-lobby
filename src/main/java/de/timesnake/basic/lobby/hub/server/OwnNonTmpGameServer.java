@@ -2,10 +2,12 @@
  * Copyright (C) 2023 timesnake
  */
 
-package de.timesnake.basic.lobby.hub.game;
+package de.timesnake.basic.lobby.hub.server;
 
+import de.timesnake.basic.lobby.hub.game.GameHub;
 import de.timesnake.database.util.server.DbNonTmpGameServer;
 import de.timesnake.library.game.NonTmpGameInfo;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +18,7 @@ public class OwnNonTmpGameServer extends NonTmpGameServer {
   private final String ownerName;
 
   public OwnNonTmpGameServer(GameHub<NonTmpGameInfo> hubGame, DbNonTmpGameServer server,
-      String displayName, int slot, UUID owner, String ownerName) {
+                             String displayName, int slot, UUID owner, String ownerName) {
     super(hubGame, server, displayName, slot);
     this.owner = owner;
     this.ownerName = ownerName;
