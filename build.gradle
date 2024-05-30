@@ -38,7 +38,7 @@ dependencies {
   compileOnly "de.timesnake:channel-bukkit:4.+"
   compileOnly "de.timesnake:channel-api:4.+"
 
-  implementation "de.timesnake:library-waitinggame:1.+"
+  implementation "de.timesnake:library-waitinggame:2.+"
   implementation "de.timesnake:library-plot:1.+"
   implementation "de.timesnake:library-pets:1.+"
 
