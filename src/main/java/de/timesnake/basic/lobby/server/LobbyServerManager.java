@@ -139,6 +139,11 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     new ServerUpdater();
   }
 
+  public void onLobbyDisable() {
+    this.waitingGameManager.onDisable();
+    this.petManager.onDisable();
+  }
+
   @Override
   protected CommandManager initCommandManager() {
     return new de.timesnake.basic.bukkit.core.chat.CommandManager() {

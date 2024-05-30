@@ -12,7 +12,6 @@ import de.timesnake.basic.bukkit.util.user.event.UserDeathEvent;
 import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.basic.lobby.server.LobbyServer;
-import de.timesnake.library.waitinggames.WaitingGameManager;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,6 +50,10 @@ public class UserManager implements Listener {
 
   @EventHandler
   public void onUserDamage(UserDamageEvent e) {
+    if (LobbyServer.getWaitingGameManager().onUserDamage(e)) {
+      return;
+    }
+
     if (!e.getDamageCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)
         && !e.getDamageCause().equals(EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK)) {
       e.setCancelled(true);
@@ -59,23 +62,21 @@ public class UserManager implements Listener {
 
   @EventHandler
   public void onUserDamageByUser(UserDamageByUserEvent e) {
-    WaitingGameManager waitingGameManager = LobbyServer.getWaitingGameManager();
-
-    boolean gameManaged = waitingGameManager.onUserDamage(e);
-
-    if (!gameManaged) {
-      e.setCancelled(true);
+    if (LobbyServer.getWaitingGameManager().onUserDamageByUser(e)) {
+      return;
     }
+
+    e.setCancelled(true);
   }
 
   @EventHandler
   public void onInventoryInteract(PlayerInteractEvent e) {
-    if (e.getAction().equals(Action.PHYSICAL) && e.getClickedBlock() != null
+    if (e.getAction().equals(Action.PHYSICAL)
+        && e.getClickedBlock() != null
         && e.getClickedBlock().getType().equals(Material.TURTLE_EGG)) {
       User user = Server.getUser(e.getPlayer());
       user.removeCoins(10, true);
-      Server.broadcastTDMessage(Plugin.LOBBY,
-          user.getChatName() + "§w trampled on turtle eggs!");
+      Server.broadcastTDMessage(Plugin.LOBBY, user.getTDChatName() + "§w trampled on turtle eggs!");
     }
   }
 }
