@@ -1,3 +1,5 @@
+import io.papermc.paperweight.userdev.ReobfArtifactConfiguration
+
 plugins {
   id 'java'
   id 'java-base'
@@ -10,7 +12,7 @@ plugins {
 
 
 group = "de.timesnake"
-version = '1.4.0'
+version = '2.0.0'
 var projectId = 51
 
 repositories {
@@ -30,27 +32,27 @@ repositories {
 }
 
 dependencies {
-  compileOnly "de.timesnake:basic-bukkit:3.+"
+  compileOnly "de.timesnake:basic-bukkit:4.+"
 
-  compileOnly "de.timesnake:database-bukkit:2.+"
-  compileOnly "de.timesnake:database-api:2.+"
+  compileOnly "de.timesnake:database-bukkit:3.+"
+  compileOnly "de.timesnake:database-api:3.+"
 
-  compileOnly "de.timesnake:channel-bukkit:4.+"
-  compileOnly "de.timesnake:channel-api:4.+"
+  compileOnly "de.timesnake:channel-bukkit:5.+"
+  compileOnly "de.timesnake:channel-api:5.+"
 
-  implementation "de.timesnake:library-waitinggame:2.+"
-  implementation "de.timesnake:library-plot:1.+"
-  implementation "de.timesnake:library-pets:1.+"
+  implementation "de.timesnake:library-waitinggame:3.+"
+  implementation "de.timesnake:library-plot:2.+"
+  implementation "de.timesnake:library-pets:2.+"
 
-  implementation "de.timesnake:library-game:1.+"
+  implementation "de.timesnake:library-game:2.+"
 
-  compileOnly "de.timesnake:library-packets:2.+"
+  compileOnly "de.timesnake:library-packets:3.+"
 
-  compileOnly "de.timesnake:library-network:1.+"
-  compileOnly "de.timesnake:library-commands:1.+"
-  compileOnly "de.timesnake:library-permissions:1.+"
-  compileOnly "de.timesnake:library-basic:1.+"
-  compileOnly "de.timesnake:library-chat:1.+"
+  compileOnly "de.timesnake:library-network:2.+"
+  compileOnly "de.timesnake:library-commands:2.+"
+  compileOnly "de.timesnake:library-permissions:2.+"
+  compileOnly "de.timesnake:library-basic:2.+"
+  compileOnly "de.timesnake:library-chat:2.+"
 
   paperweight.paperDevBundle("1.21-R0.1-SNAPSHOT")
 }
@@ -109,18 +111,22 @@ publishing {
   publications {
     mavenJava(MavenPublication) {
       from components.java
-
-      artifact "$buildDir/libs/${archivesBaseName}-${project.version}.jar"
     }
   }
 }
 
-tasks.withType(JavaCompile).configureEach {
-  options.encoding = 'UTF-8'
+tasks {
+  compileJava {
+    options.encoding = "UTF-8"
+    options.release = 21
+  }
 }
 
 java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(21)
+  }
   withSourcesJar()
 }
 
-paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
+paperweight.reobfArtifactConfiguration = ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
