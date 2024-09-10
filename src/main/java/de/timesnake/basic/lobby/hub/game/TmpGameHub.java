@@ -74,7 +74,7 @@ public class TmpGameHub extends GameHub<TmpGameInfo> implements ChannelListener 
   }
 
   public void removeServer(TmpGameServer server) {
-    this.inventory.removeItemStack(server.getItem().getSlot());
+    this.inventory.removeItemStack(server.getItem());
   }
 
   @ChannelHandler(type = ListenerType.SERVER_STATUS)

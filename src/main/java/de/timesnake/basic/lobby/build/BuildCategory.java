@@ -9,15 +9,16 @@ import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.library.basic.util.MultiKeyMap;
 import de.timesnake.library.basic.util.Tuple;
 import de.timesnake.library.chat.ChatColor;
-import java.util.Comparator;
-import java.util.TreeSet;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
+
+import java.util.Comparator;
+import java.util.TreeSet;
 
 public class BuildCategory {
 
   private final String name;
-  private final ExItemStack displayItem;
+  private ExItemStack displayItem;
 
   private final ExInventory inventory;
 
@@ -88,10 +89,10 @@ public class BuildCategory {
         .count();
 
     if (loadedWorlds == 0) {
-      this.displayItem.setType(Material.GRAY_WOOL);
+      this.displayItem = this.displayItem.withType(Material.GRAY_WOOL);
       this.displayItem.setAmount(1);
-    } else if (loadedWorlds >= 1) {
-      this.displayItem.setType(Material.GREEN_WOOL);
+    } else {
+      this.displayItem = this.displayItem.withType(Material.GREEN_WOOL);
       this.displayItem.setAmount((int) loadedWorlds);
     }
 

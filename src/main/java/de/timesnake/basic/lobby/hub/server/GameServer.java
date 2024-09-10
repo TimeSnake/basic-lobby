@@ -39,7 +39,7 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
   protected Integer maxPlayers;
   protected String password;
 
-  protected final ExItemStack item;
+  protected ExItemStack item;
   protected final GameHub<GameInfo> gameHub;
 
   protected boolean queueing;
@@ -95,10 +95,10 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
 
     if (Status.Server.ONLINE.equals(this.status)) {
       if (this.onlinePlayers >= this.maxPlayers) {
-        this.item.setType(ONLINE_FULL);
+        this.item = this.item.withType(ONLINE_FULL);
         this.queueing = true;
       } else {
-        this.item.setType(ONLINE);
+        this.item = this.item.withType(ONLINE);
         this.queueing = false;
       }
       lore.add(ONLINE_TEXT);
@@ -106,16 +106,16 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
       lore.add(PLAYER_TEXT + " §f" + this.onlinePlayers + " §8/ §f" + this.maxPlayers);
     } else if (!this.status.isRunning()) {
       this.item.setAmount(1);
-      this.item.setType(OFFLINE);
+      this.item = this.item.withType(OFFLINE);
       lore.add(OFFLINE_TEXT);
       this.queueing = false;
     } else if (Status.Server.LOADING.equals(this.status)) {
       this.item.setAmount(1);
-      this.item.setType(STARTING);
+      this.item = this.item.withType(STARTING);
       lore.add(STARTING_TEXT);
       this.queueing = true;
     } else if (this.status.isGameState()) {
-      this.item.setType(IN_GAME);
+      this.item = this.item.withType(IN_GAME);
 
       if (this.status.equals(Status.Server.IN_GAME)) {
         lore.add(IN_GAME_TEXT);
@@ -126,7 +126,7 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
       }
       this.queueing = true;
     } else {
-      this.item.setType(SERVICE);
+      this.item = this.item.withType(SERVICE);
       lore.add(SERVICE_TEXT);
       this.queueing = false;
     }

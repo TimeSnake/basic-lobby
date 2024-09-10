@@ -4,15 +4,11 @@
 
 package de.timesnake.basic.lobby.hub;
 
-import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
 import de.timesnake.basic.lobby.hub.game.GameHub;
 import de.timesnake.basic.lobby.hub.game.NonTmpGameHub;
 import de.timesnake.basic.lobby.hub.game.OwnableNonTmpGameHubManager;
 import de.timesnake.basic.lobby.hub.game.TmpGameHub;
-import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.game.DbGame;
 import de.timesnake.database.util.game.DbNonTmpGame;
@@ -21,13 +17,12 @@ import net.kyori.adventure.text.Component;
 
 import java.util.HashMap;
 
-public class GamesMenu implements UserInventoryClickListener {
+public class GamesMenu {
 
   private final ExInventory inventory = new ExInventory(54, Component.text("Gamehub"));
   private final HashMap<Integer, GameHub<?>> games = new HashMap<>();
 
   public GamesMenu() {
-    Server.getInventoryEventManager().addClickListener(this, GameHub.BACK);
     this.updateInventory();
   }
 
@@ -54,15 +49,6 @@ public class GamesMenu implements UserInventoryClickListener {
       games.put(gameHub.getGameInfo().getSlot(), gameHub);
     }
   }
-
-  @Override
-  public void onUserInventoryClick(UserInventoryClickEvent e) {
-    LobbyUser user = (LobbyUser) e.getUser();
-    user.openGameHubInventory();
-    user.playSoundItemClickSuccessful();
-    e.setCancelled(true);
-  }
-
 
   public ExInventory getInventory() {
     return inventory;
