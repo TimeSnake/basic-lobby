@@ -24,7 +24,7 @@ public class BuildWorld {
 
 
   private final String name;
-  private final ExItemStack item;
+  private ExItemStack item;
 
   private String serverName;
 
@@ -47,10 +47,10 @@ public class BuildWorld {
     this.serverName = serverName;
 
     if (this.serverName != null) {
-      this.item.setType(ONLINE);
+      this.item = this.item.withType(ONLINE);
       this.item.setLore("", "§2Loaded", "§7Click to teleport", "§8" + this.serverName);
     } else {
-      this.item.setType(OFFLINE);
+      this.item = this.item.withType(OFFLINE);
       this.item.setLore("", "§cUnloaded", "§7Click to load");
     }
 

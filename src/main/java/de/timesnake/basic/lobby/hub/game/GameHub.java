@@ -4,24 +4,25 @@
 
 package de.timesnake.basic.lobby.hub.game;
 
-import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
 import de.timesnake.basic.lobby.hub.server.GameServer;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 
-import java.util.List;
+public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInfo> {
 
-public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInfo> implements
-    UserInventoryClickListener {
-
-  public static final ExItemStack BACK = new ExItemStack(Material.BLUE_BED, 1, "§cBack",
-      List.of("§fClick to get back"));
+  public static final ExItemStack BACK = new ExItemStack(Material.BLUE_BED)
+      .setDisplayName("§cBack")
+      .setLore("§fClick to get back")
+      .immutable()
+      .onClick(event -> {
+        LobbyUser user = (LobbyUser) event.getUser();
+        user.openGameHubInventory();
+        user.playSoundItemClickSuccessful();
+      }, true);
 
   public static final Integer SERVER_SLOTS_START = 9;
 
@@ -35,9 +36,12 @@ public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInf
     this.gameInfo = gameInfo;
     this.inventory = new ExInventory(54, Component.text(this.gameInfo.getDisplayName()));
     this.inventory.setItemStack(4, BACK);
-    this.item = new ExItemStack(this.gameInfo.getItem());
-
-    Server.getInventoryEventManager().addClickListener(this, this.item);
+    this.item = new ExItemStack(this.gameInfo.getItem())
+        .onClick(event -> {
+          LobbyUser user = (LobbyUser) event.getUser();
+          user.playSoundItemClickSuccessful();
+          this.openServersInventory(user);
+        }, true);
   }
 
   protected Integer getServerNumber(Integer slot) {
@@ -46,14 +50,6 @@ public abstract class GameHub<GameInfo extends de.timesnake.library.game.GameInf
 
   public Integer getEmptySlot() {
     return this.inventory.getFirstEmptySlot(SERVER_SLOTS_START);
-  }
-
-  @Override
-  public void onUserInventoryClick(UserInventoryClickEvent event) {
-    LobbyUser user = (LobbyUser) event.getUser();
-    user.playSoundItemClickSuccessful();
-    this.openServersInventory(user);
-    event.setCancelled(true);
   }
 
   public ExItemStack getInvItem() {
