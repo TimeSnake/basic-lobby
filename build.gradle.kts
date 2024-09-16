@@ -40,6 +40,7 @@ dependencies {
     implementation("de.timesnake:library-waitinggame:3.+")
     implementation("de.timesnake:library-plot:2.+")
     implementation("de.timesnake:library-pets:2.+")
+    implementation("de.timesnake:library-shop:0.+")
 
     implementation("de.timesnake:library-game:2.+")
 
@@ -68,6 +69,7 @@ configurations.configureEach {
             substitute(module("de.timesnake:library-waitinggame")).using(project(":libraries-mc:library-waitinggame"))
             substitute(module("de.timesnake:library-plot")).using(project(":libraries-mc:library-plot"))
             substitute(module("de.timesnake:library-pets")).using(project(":libraries-mc:library-pets"))
+            substitute(module("de.timesnake:library-shop")).using(project(":libraries-mc:library-shop"))
 
             substitute(module("de.timesnake:library-game")).using(project(":libraries:library-game"))
 

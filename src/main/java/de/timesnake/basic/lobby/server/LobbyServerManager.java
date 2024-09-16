@@ -27,6 +27,7 @@ import de.timesnake.library.chat.ExTextColor;
 import de.timesnake.library.network.NetworkVariables;
 import de.timesnake.library.pets.PetManager;
 import de.timesnake.library.plot.plots.PlotManager;
+import de.timesnake.library.shop.ShopManager;
 import de.timesnake.library.waitinggames.WaitingGameManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -59,6 +60,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
   private WaitingGameManager waitingGameManager;
   private PlotManager plotManager;
   private PetManager petManager;
+  private ShopManager shopManager;
 
   @Override
   public LobbyUser loadUser(Player player) {
@@ -130,6 +132,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     };
 
     this.petManager = new PetManager(BasicLobby.getPlugin());
+    this.shopManager = new ShopManager(BasicLobby.getPlugin(), this.petManager, 7);
 
     Server.getWorldManager().getWorldBorderManager().setCustomBorders(false);
     Server.getWorldManager().getWorldBorderManager().allowEnderpearlThrouBorder(false);
