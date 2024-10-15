@@ -89,7 +89,6 @@ public class LobbyUser extends User {
     this.setItem(LobbyInventory.TELEPORTER.cloneWithId());
     this.setItem(LobbyInventory.SPEED.cloneWithId());
     this.setItem(LobbyInventory.GAMES_HUB.cloneWithId());
-    this.setItem(LobbyInventory.SPAWN.cloneWithId());
     if (this.hasPermission("lobby.build.inventory")) {
       this.setItem(LobbyInventory.BUILD_SERVER.cloneWithId());
     }
@@ -116,7 +115,7 @@ public class LobbyUser extends User {
     this.setWalkSpeed(0.2F);
     this.setFlySpeed(0.2F);
     this.setFlying(false);
-    this.setGameMode(GameMode.ADVENTURE);
+    this.setGameMode(GameMode.SURVIVAL);
     this.setHealthScaled(false);
     this.setInvulnerable(false);
     this.setLobbyInventory();
