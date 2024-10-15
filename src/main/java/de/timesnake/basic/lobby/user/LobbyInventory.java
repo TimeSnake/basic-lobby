@@ -57,13 +57,6 @@ public class LobbyInventory implements Listener {
       .setDropable(false)
       .onClick(event -> ((LobbyUser) event.getUser()).openGameHubInventory(), true)
       .onInteract(event -> ((LobbyUser) event.getUser()).openGameHubInventory(), true);
-  public static final ExItemStack SPAWN = new ExItemStack(6, Material.BEACON)
-      .setDisplayName("§6Spawn")
-      .setLore("§fClick to teleport to spawn")
-      .setMoveable(false)
-      .setDropable(false)
-      .onClick(event -> ((LobbyUser) event.getUser()).teleportSpawn(), true)
-      .onInteract(event -> ((LobbyUser) event.getUser()).teleportSpawn(), true);
   public static final ExItemStack BUILD_SERVER = new ExItemStack(8, Material.STONE_PICKAXE)
       .setDisplayName("§3BUILD")
       .setLore("§fClick to switch mode")

@@ -132,7 +132,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     };
 
     this.petManager = new PetManager(BasicLobby.getPlugin());
-    this.shopManager = new ShopManager(BasicLobby.getPlugin(), this.petManager, 7);
+    this.shopManager = new ShopManager(BasicLobby.getPlugin(), this.petManager, 6, 7);
 
     Server.getWorldManager().getWorldBorderManager().setCustomBorders(false);
     Server.getWorldManager().getWorldBorderManager().allowEnderpearlThrouBorder(false);
