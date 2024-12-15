@@ -29,14 +29,14 @@ public class LobbyCmd implements CommandListener {
           && args.get(0).isPlayerName(true)) {
         LobbyUser user1 = (LobbyUser) args.get(0).toUser();
         user1.switchMode();
-        sender.sendPluginTDMessage(user1.getChatName() + "§s switched mode!");
+        sender.sendPluginTDMessage(user1.getTDChatName() + "§s switched mode!");
       }
     } else if (sender.isConsole(false)
         && args.isLengthEquals(1, true)
         && args.get(0).isPlayerName(true)) {
       LobbyUser user = (LobbyUser) args.get(0).toUser();
       user.switchMode();
-      sender.sendPluginTDMessage(user.getChatName() + "§s switched mode!");
+      sender.sendPluginTDMessage(user.getTDChatName() + "§s switched mode!");
     }
   }
 
