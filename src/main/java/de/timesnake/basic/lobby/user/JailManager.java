@@ -44,7 +44,8 @@ public class JailManager implements Listener {
   }
 
   public void jailUser(LobbyUser user) {
-    user.setDefault();
+    user.clearInventory();
+    user.resetPlayerProperties();
     user.resetSideboard();
     user.teleport(this.jailWorld.getSpawnLocation());
     user.addPotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 1, false);

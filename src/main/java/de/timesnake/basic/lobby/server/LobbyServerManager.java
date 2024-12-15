@@ -252,7 +252,9 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
 
     if (Server.getNetwork().getVariables().getValue(NetworkVariables.PRIVACY_POLICY_LINK) != null
         && !user.agreedPrivacyPolicy()) {
-      user.setDefault();
+      user.unlockAll();
+      user.clearInventory();
+      user.resetPlayerProperties();
     } else {
       user.joinLobby(true);
     }
