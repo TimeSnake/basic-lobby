@@ -13,8 +13,8 @@ import java.util.List;
 
 public class PublicNonTmpGameServer extends NonTmpGameServer {
 
-  public PublicNonTmpGameServer(GameHub<NonTmpGameInfo> hubGame, DbNonTmpGameServer server,
-                                String displayName, int slot) {
+  public PublicNonTmpGameServer(GameHub<NonTmpGameInfo> hubGame, DbNonTmpGameServer server, String displayName,
+                                int slot) {
     super(hubGame, server, displayName, slot);
   }
 

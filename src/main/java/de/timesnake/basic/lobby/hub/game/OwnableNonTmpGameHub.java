@@ -16,30 +16,19 @@ import de.timesnake.database.util.server.DbNonTmpGameServer;
 import de.timesnake.database.util.server.DbServer;
 import de.timesnake.database.util.user.DbUser;
 import de.timesnake.library.basic.util.ServerType;
-import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.game.NonTmpGameInfo;
-import net.kyori.adventure.text.Component;
+import de.timesnake.library.network.NetworkServer;
 import org.bukkit.Material;
 
 import java.util.*;
 
 public class OwnableNonTmpGameHub extends GameHub<NonTmpGameInfo> implements ChannelListener {
 
-  private static String getFullServerName(UUID ownerUuid, String name) {
-    return ownerUuid.hashCode() + "_" + name;
-  }
-
-  private static String getFullOwnerDisplayName(String serverName) {
-    return serverName;
-  }
-
-  private static String getFullMemberDisplayName(String ownerName, String serverName) {
-    return ownerName + " - " + serverName;
-  }
-
-  private static final ExItemStack SEPARATOR = new ExItemStack(
-      Material.GRAY_STAINED_GLASS_PANE).setMoveable(false)
-      .setDropable(false).setDisplayName(Component.empty()).immutable();
+  private static final ExItemStack SEPARATOR = new ExItemStack(Material.GRAY_STAINED_GLASS_PANE)
+      .setMoveable(false)
+      .setDropable(false)
+      .setDisplayName("")
+      .immutable();
 
   private final OwnableNonTmpGameHubManager manager;
 
@@ -47,7 +36,7 @@ public class OwnableNonTmpGameHub extends GameHub<NonTmpGameInfo> implements Cha
   private final HashMap<String, GameServerBasis> serverByName = new HashMap<>();
 
   public OwnableNonTmpGameHub(NonTmpGameInfo gameInfo, OwnableNonTmpGameHubManager manager,
-                              UUID holder, Collection<GameServerBasis> publicServers) {
+                              UUID holder, Collection<GameServerBasis> publicSavesAndServers) {
     super(gameInfo);
     this.manager = manager;
     this.holder = holder;
@@ -58,44 +47,44 @@ public class OwnableNonTmpGameHub extends GameHub<NonTmpGameInfo> implements Cha
 
     Server.getChannel().addListener(this);
 
-    for (GameServerBasis server : publicServers) {
+    this.loadPublicSavesAndServers(publicSavesAndServers);
+    this.loadPrivateSavesAndServers();
+  }
+
+  private void loadPublicSavesAndServers(Collection<GameServerBasis> savesAndServers) {
+    for (GameServerBasis server : savesAndServers) {
       this.inventory.setItemStack(server.getSlot(), server.getItem());
     }
+  }
 
+  private void loadPrivateSavesAndServers() {
     DbUser owner = Database.getUsers().getUser(this.holder);
     String ownerName = owner != null && owner.exists() ? owner.getName() : "unknown";
 
-    for (String name : Server.getNetwork()
-        .getOwnerServerNames(this.holder, ServerType.GAME, this.getGameInfo().getName())) {
-      String fullName = getFullServerName(this.holder, name);
-      String fullDisplayName = getFullOwnerDisplayName(name);
-      UnloadedNonTmpGameServer server = new UnloadedNonTmpGameServer(this, fullName, name,
-          fullDisplayName,
-          this.holder, ownerName, this.getEmptySlot(), false);
-      this.serverByName.put(fullName, server);
-      this.inventory.setItemStack(server.getSlot(), server.getItem());
+    for (String name : Server.getNetwork().getPrivateSaveNames(this.holder, ServerType.GAME,
+        this.getGameInfo().getName())) {
+      String serverName = NetworkServer.getPrivateSaveServerName(this.getGameInfo().getName(), this.holder, name);
+      NonTmpGameSave server = new NonTmpGameSave(this, name, name, this.holder, ownerName, this.getEmptySlot(), false);
+      this.serverByName.put(serverName, server);
 
-      if (Database.getServers().containsServer(ServerType.GAME, fullName)) {
-        this.addGameServer(Database.getServers().getServer(ServerType.GAME, fullName));
+      if (Database.getServers().containsServer(ServerType.GAME, serverName)) {
+        this.addOwnedPrivateServer(Database.getServers().getServer(ServerType.GAME, serverName));
       }
     }
 
-    for (Map.Entry<UUID, List<String>> namesByOwnerUuid : Server.getNetwork()
-        .getMemberServerNames(this.holder,
-            ServerType.GAME, this.getGameInfo().getName()).entrySet()) {
+    for (Map.Entry<UUID, List<String>> namesByOwnerUuid : Server.getNetwork().getMemberSaveNames(this.holder,
+        ServerType.GAME, this.getGameInfo().getName()).entrySet()) {
       UUID ownerUuid = namesByOwnerUuid.getKey();
+
       for (String name : namesByOwnerUuid.getValue()) {
-        String fullName = getFullServerName(namesByOwnerUuid.getKey(), name);
-        DbServer dbServer = Database.getServers().getServer(ServerType.GAME, fullName);
-        if (dbServer != null) {
-          Status.Server status = dbServer.getStatus();
-          if (status.isRunning()) {
-            this.addMemberServer(ownerUuid, name);
+        String serverName = NetworkServer.getPrivateSaveServerName(this.getGameInfo().getName(), ownerUuid, name);
+        DbServer server = Database.getServers().getServer(ServerType.GAME, serverName);
+        if (server != null) {
+          if (server.getStatus().isRunning()) {
+            this.addMemberServer((DbNonTmpGameServer) server, ownerUuid, name);
           }
         }
-
       }
-
     }
   }
 
@@ -113,7 +102,7 @@ public class OwnableNonTmpGameHub extends GameHub<NonTmpGameInfo> implements Cha
     return slot;
   }
 
-  protected void addGameServer(DbNonTmpGameServer server) {
+  protected void addOwnedPrivateServer(DbNonTmpGameServer server) {
     String serverName = server.getName();
 
     Integer oldSlot = this.removeServer(serverName);
@@ -123,16 +112,16 @@ public class OwnableNonTmpGameHub extends GameHub<NonTmpGameInfo> implements Cha
     DbUser owner = Database.getUsers().getUser(ownerUuid);
     String ownerName = owner != null && owner.exists() ? owner.getName() : "unknown";
 
-    String shortName = serverName.replaceFirst(ownerUuid.hashCode() + "_", "");
-    String displayName = getFullOwnerDisplayName(shortName);
+    assert ownerUuid != null;
+    String name = NetworkServer.getPrivateSaveNameFromServerName(serverName, ownerUuid);
 
-    List<UUID> memberUuids = Server.getNetwork().getPlayerServerMembers(ownerUuid, ServerType.GAME,
-        this.getGameInfo().getName(), shortName);
+    List<UUID> memberUuids = Server.getNetwork().getPrivateSaveMembers(ownerUuid, ServerType.GAME,
+        this.getGameInfo().getName(), name);
 
-    OwnNonTmpGameServer gameServer = new OwnNonTmpGameServer(this, server, displayName, slot,
+    OwnNonTmpGameServer gameServer = new OwnNonTmpGameServer(this, server, name, slot,
         ownerUuid, ownerName);
 
-    this.serverByName.put(server.getName(), gameServer);
+    this.serverByName.put(serverName, gameServer);
 
     this.updateServer(gameServer);
 
@@ -143,32 +132,30 @@ public class OwnableNonTmpGameHub extends GameHub<NonTmpGameInfo> implements Cha
     }
   }
 
-  public void addMemberServer(OwnNonTmpGameServer server) {
-    Integer oldSlot = this.removeServer(server.getServerName());
+  public void addMemberServer(OwnNonTmpGameServer ownerServer) {
+    Integer oldSlot = this.removeServer(ownerServer.getServerName());
     int slot = oldSlot != null ? oldSlot : this.getEmptySlot();
 
-    UUID ownerUuid = server.getOwner();
-    String ownerName = server.getOwnerName();
+    UUID ownerUuid = ownerServer.getOwner();
+    String ownerName = ownerServer.getOwnerName();
 
-    String shortServerName = server.getServerName().replaceFirst(ownerUuid.hashCode() + "_", "");
+    String displayName = ownerName + " - " + ownerServer.getDisplayName();
 
-    NonTmpGameServer memberGameServer = new OwnNonTmpGameServer(this,
-        Database.getServers().getServer(server.getServerName()),
-        getFullMemberDisplayName(ownerName, shortServerName), slot, ownerUuid, ownerName);
+    NonTmpGameServer server = new OwnNonTmpGameServer(this, (DbNonTmpGameServer) ownerServer.getDatabase(),
+        displayName, slot, ownerUuid, ownerName);
 
-    this.serverByName.put(memberGameServer.getServerName(), memberGameServer);
-    this.updateServer(memberGameServer);
+    this.serverByName.put(server.getServerName(), server);
+    this.updateServer(server);
   }
 
-  private void addMemberServer(UUID ownerUuid, String shortName) {
+  private void addMemberServer(DbNonTmpGameServer server, UUID ownerUuid, String name) {
     int slot = this.getEmptySlot();
 
     DbUser owner = Database.getUsers().getUser(ownerUuid);
     String ownerName = owner != null && owner.exists() ? owner.getName() : "unknown";
 
-    NonTmpGameServer memberGameServer = new OwnNonTmpGameServer(this,
-        Database.getServers().getServer(ServerType.GAME, getFullServerName(ownerUuid, shortName)),
-        getFullMemberDisplayName(ownerName, shortName), slot, ownerUuid, ownerName);
+    NonTmpGameServer memberGameServer = new OwnNonTmpGameServer(this, server,
+        ownerName + " - " + name, slot, ownerUuid, ownerName);
 
     this.serverByName.put(memberGameServer.getServerName(), memberGameServer);
     this.updateServer(memberGameServer);
@@ -176,7 +163,7 @@ public class OwnableNonTmpGameHub extends GameHub<NonTmpGameInfo> implements Cha
 
   public void updateMemberServer(OwnNonTmpGameServer baseServer) {
     GameServerBasis server = this.serverByName.get(baseServer.getServerName());
-    if (server == null || server instanceof UnloadedNonTmpGameServer) {
+    if (server == null || server instanceof NonTmpGameSave) {
       this.addMemberServer(baseServer);
     }
   }
@@ -221,10 +208,10 @@ public class OwnableNonTmpGameHub extends GameHub<NonTmpGameInfo> implements Cha
     }
 
     if (this.serverByName.values().stream().anyMatch(s -> s.getServerName().equals(serverName)
-        && !(s instanceof UnloadedNonTmpGameServer))) {
+                                                          && !(s instanceof NonTmpGameSave))) {
       return;
     }
 
-    this.addGameServer((DbNonTmpGameServer) server);
+    this.addOwnedPrivateServer((DbNonTmpGameServer) server);
   }
 }

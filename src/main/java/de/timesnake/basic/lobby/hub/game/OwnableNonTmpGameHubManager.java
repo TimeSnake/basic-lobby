@@ -18,6 +18,7 @@ import de.timesnake.database.util.server.DbServer;
 import de.timesnake.library.basic.util.MultiKeyMap;
 import de.timesnake.library.basic.util.ServerType;
 import de.timesnake.library.game.NonTmpGameInfo;
+import de.timesnake.library.network.NetworkServer;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -32,15 +33,15 @@ public class OwnableNonTmpGameHubManager extends GameHub<NonTmpGameInfo> impleme
     super(new NonTmpGameInfo(gameInfo));
 
     Server.getChannel().addListener(this);
-    this.loadPublicServers();
+    this.loadPublicSaves();
   }
 
-  protected void loadPublicServers() {
+  protected void loadPublicSaves() {
     int slot = 9;
-    for (String name : Server.getNetwork()
-        .getPublicPlayerServerNames(ServerType.GAME, this.getGameInfo().getName())) {
-      this.publicServersByNameOrSlot.put(name, slot,
-          new UnloadedNonTmpGameServer(this, name, name, name, null, null, slot, true));
+    for (String name : Server.getNetwork().getPublicSaveNames(ServerType.GAME, this.getGameInfo().getName())) {
+      String serverName = NetworkServer.getPublicSaveServerName(this.getGameInfo().getName(), name);
+      this.publicServersByNameOrSlot.put(serverName, slot,
+          new NonTmpGameSave(this, name, name, null, null, slot, true));
       slot++;
 
       if (slot % 9 >= 4) {
@@ -53,10 +54,11 @@ public class OwnableNonTmpGameHubManager extends GameHub<NonTmpGameInfo> impleme
     Integer oldSlot = this.removeServer(server.getName());
     int slot = oldSlot != null ? oldSlot : this.getEmptySlot();
 
-    NonTmpGameServer gameServer = new PublicNonTmpGameServer(this, server, server.getName(), slot);
+    String name = NetworkServer.getPublicSaveNameFromServerName(server.getName(), this.getGameInfo().getName());
+    NonTmpGameServer gameServer = new PublicNonTmpGameServer(this, server, name, slot);
 
     this.publicServersByNameOrSlot.put(gameServer.getServerName(), slot, gameServer);
-    this.hubByUuid.values().forEach(h -> h.updateServer(gameServer));
+    this.updateServer(gameServer);
   }
 
   @Override
@@ -101,7 +103,7 @@ public class OwnableNonTmpGameHubManager extends GameHub<NonTmpGameInfo> impleme
     String serverName = server.getName();
 
     if (this.publicServersByNameOrSlot.containsKey1(serverName)
-        && !(this.publicServersByNameOrSlot.get1(serverName) instanceof UnloadedNonTmpGameServer)) {
+        && !(this.publicServersByNameOrSlot.get1(serverName) instanceof NonTmpGameSave)) {
       return;
     }
 
