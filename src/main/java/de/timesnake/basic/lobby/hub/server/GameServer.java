@@ -31,6 +31,8 @@ import java.util.Queue;
 public abstract class GameServer<GameInfo extends de.timesnake.library.game.GameInfo>
     implements ChannelListener, UserInventoryClickListener, Listener, GameServerBasis {
 
+  protected final DbTaskServer database;
+
   protected final String displayName;
 
   protected final String task;
@@ -48,6 +50,7 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
   private final int slot;
 
   public GameServer(String displayName, GameHub<GameInfo> gameHub, DbTaskServer server, int slot, boolean updateItem) {
+    this.database = server;
     this.displayName = displayName;
 
     this.task = server.getTask();
@@ -59,7 +62,9 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
     this.slot = slot;
     this.gameHub = gameHub;
 
-    this.item = new ExItemStack(Material.WHITE_WOOL, "§6" + this.displayName).setSlot(slot);
+    this.item = new ExItemStack(Material.WHITE_WOOL)
+        .setDisplayName("§6" + this.displayName)
+        .setSlot(slot);
 
     this.updateItemAmount();
     this.updateItemDescription();
@@ -259,7 +264,9 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
     }
   }
 
-  public abstract String getServerName();
+  public DbTaskServer getDatabase() {
+    return database;
+  }
 
   public String getTask() {
     return this.task;

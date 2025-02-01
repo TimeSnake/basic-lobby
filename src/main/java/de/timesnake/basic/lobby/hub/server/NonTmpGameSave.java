@@ -21,13 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class UnloadedNonTmpGameServer implements GameServerBasis, UserInventoryClickListener {
+public class NonTmpGameSave implements GameServerBasis, UserInventoryClickListener {
 
   private static final String START_TEXT = "§cClick to start the server";
 
   private final String name;
   private final int slot;
-  private final String shortName;
   private final String displayName;
   private final ExItemStack item;
 
@@ -37,34 +36,28 @@ public class UnloadedNonTmpGameServer implements GameServerBasis, UserInventoryC
   private final UUID owner;
   private final String ownerName;
 
-  public UnloadedNonTmpGameServer(GameHub<NonTmpGameInfo> hub, String name, String shortName,
-      String displayName,
-      UUID owner, String ownerName, int slot, boolean isPublic) {
+  public NonTmpGameSave(GameHub<NonTmpGameInfo> hub, String name, String displayName,
+                        UUID owner, String ownerName, int slot, boolean isPublic) {
     this.gameHub = hub;
     this.name = name;
     this.slot = slot;
-    this.shortName = shortName;
     this.displayName = displayName;
     this.isPublic = isPublic;
     this.owner = owner;
     this.ownerName = ownerName;
-    this.item = new ExItemStack(slot, OFFLINE, "§6" + this.displayName);
+    this.item = new ExItemStack(slot, OFFLINE).setDisplayName("§6" + this.displayName);
 
     List<String> lore = new ArrayList<>();
     lore.add("");
-
     lore.add(OFFLINE_TEXT);
     lore.add("");
     lore.add(START_TEXT);
-
     lore.addAll(this.getServerOwnerLore());
     lore.addAll(this.getServerNameLore());
 
     this.item.setExLore(lore);
 
-    if (this.isPublic) {
-      this.gameHub.getInventory().setItemStack(this.item);
-    }
+    this.gameHub.getInventory().setItemStack(this.slot, this.item);
 
     Server.getInventoryEventManager().addClickListener(this, this.item);
   }
@@ -81,13 +74,13 @@ public class UnloadedNonTmpGameServer implements GameServerBasis, UserInventoryC
     return List.of("", SERVER_NAME_COLOR + this.name);
   }
 
-  @Override
-  public String getServerName() {
+  public String getName() {
     return name;
   }
 
-  public String getShortName() {
-    return shortName;
+  @Override
+  public String getServerName() {
+    return name;
   }
 
   public String getDisplayName() {
@@ -129,11 +122,11 @@ public class UnloadedNonTmpGameServer implements GameServerBasis, UserInventoryC
     if (this.isPublic) {
       Server.getChannel()
           .sendMessage(new ChannelUserMessage<>(user.getUniqueId(), MessageType.User.PROXY_COMMAND,
-              "start public_game " + this.gameHub.getGameInfo().getName() + " " + this.shortName));
+              "start public_game " + this.gameHub.getGameInfo().getName() + " " + this.name));
     } else {
       Server.getChannel()
           .sendMessage(new ChannelUserMessage<>(user.getUniqueId(), MessageType.User.PROXY_COMMAND,
-              "start own_game " + this.gameHub.getGameInfo().getName() + " " + this.shortName));
+              "start own_game " + this.gameHub.getGameInfo().getName() + " " + this.name));
     }
     user.closeInventory();
   }
