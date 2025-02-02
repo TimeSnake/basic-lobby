@@ -8,8 +8,8 @@ import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
-import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.hub.game.GameHub;
+import de.timesnake.basic.lobby.server.LobbyServer;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.channel.util.message.ChannelUserMessage;
 import de.timesnake.channel.util.message.MessageType;
@@ -113,7 +113,7 @@ public class NonTmpGameSave implements GameServerBasis, UserInventoryClickListen
     e.setCancelled(true);
 
     if (this.owner != null && !user.getUniqueId().equals(this.owner)) {
-      user.sendPluginMessage(Plugin.LOBBY,
+      user.sendPluginMessage(LobbyServer.PLUGIN,
           Component.text("Only the owner can start the server", ExTextColor.WARNING));
       user.closeInventory();
       return;

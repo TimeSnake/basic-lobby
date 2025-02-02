@@ -8,7 +8,7 @@ import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.chat.cmd.Sender;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
-import de.timesnake.basic.lobby.chat.Plugin;
+import de.timesnake.basic.lobby.server.LobbyServer;
 import de.timesnake.channel.util.message.ChannelUserMessage;
 import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.library.chat.ExTextColor;
@@ -66,7 +66,7 @@ public class BuildWorld {
   }
 
   public void moveUser(User user) {
-    Sender sender = user.asSender(Plugin.LOBBY);
+    Sender sender = user.asSender(LobbyServer.PLUGIN);
 
     if (this.isLoaded()) {
       user.switchToServer(this.serverName);

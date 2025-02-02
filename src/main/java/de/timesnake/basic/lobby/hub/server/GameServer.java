@@ -10,10 +10,10 @@ import de.timesnake.basic.bukkit.util.user.event.UserQuitEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
-import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.hub.ServerPasswordCmd;
 import de.timesnake.basic.lobby.hub.game.GameHub;
 import de.timesnake.basic.lobby.main.BasicLobby;
+import de.timesnake.basic.lobby.server.LobbyServer;
 import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.database.util.server.DbTaskServer;
@@ -186,10 +186,10 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
       if (type.isRightClick()) {
         if (this.queue.contains(user)) {
           this.queue.remove(user);
-          user.sendPluginTDMessage(Plugin.LOBBY, "§sLeft queue of server §v" + this.displayName);
+          user.sendPluginTDMessage(LobbyServer.PLUGIN, "§sLeft queue of server §v" + this.displayName);
         } else {
           this.queue.add(user);
-          user.sendPluginTDMessage(Plugin.LOBBY, "§Joined queue of server §v" + this.displayName);
+          user.sendPluginTDMessage(LobbyServer.PLUGIN, "§Joined queue of server §v" + this.displayName);
         }
         user.closeInventory();
         return;
@@ -207,7 +207,7 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
   public void tryMoveUserToServer(User user) {
     if (this.hasPassword()) {
       user.closeInventory();
-      user.sendPluginTDMessage(Plugin.LOBBY, "§sEnter server-password:");
+      user.sendPluginTDMessage(LobbyServer.PLUGIN, "§sEnter server-password:");
       Server.getUserEventManager().addUserChatCommand(user, new ServerPasswordCmd(this.getServerName(), this.password));
       return;
     }
@@ -223,7 +223,7 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
 
   protected void tryMoveUserToOnlineServer(User user) {
     if (this.isFull()) {
-      user.sendPluginTDMessage(Plugin.LOBBY, FULL_MESSAGE);
+      user.sendPluginTDMessage(LobbyServer.PLUGIN, FULL_MESSAGE);
     } else {
       user.setTask(this.getTask());
       user.switchToServer(this.getServerName());
@@ -235,12 +235,12 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
       user.setTask(this.getTask());
       user.switchToServer(this.getServerName());
     } else {
-      user.sendPluginTDMessage(Plugin.LOBBY, SERVICE_MESSAGE);
+      user.sendPluginTDMessage(LobbyServer.PLUGIN, SERVICE_MESSAGE);
     }
   }
 
   protected void tryMoveUserToGameStateServer(User user) {
-    user.sendPluginTDMessage(Plugin.LOBBY, IN_GAME_OFFLINE_MESSAGE);
+    user.sendPluginTDMessage(LobbyServer.PLUGIN, IN_GAME_OFFLINE_MESSAGE);
   }
 
   public void updateQueue() {
@@ -250,15 +250,15 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
           this.tryMoveUserToServer(this.queue.poll());
         }
         for (User user : this.queue) {
-          user.sendPluginTDMessage(Plugin.LOBBY, "§wServer §v" + this.displayName + "§w is full. " +
-              "Right click on server to leave queue.");
+          user.sendPluginTDMessage(LobbyServer.PLUGIN, "§wServer §v" + this.displayName + "§w is full. " +
+                                                       "Right click on server to leave queue.");
         }
       }, 2 * 20, BasicLobby.getPlugin());
 
     } else if (this.status.equals(Status.Server.OFFLINE)) {
       for (User user : this.queue) {
-        user.sendPluginTDMessage(Plugin.LOBBY, "§wServer §v" + this.displayName + " has gone offline. " +
-            "Removed from queue.");
+        user.sendPluginTDMessage(LobbyServer.PLUGIN, "§wServer §v" + this.displayName + " has gone offline. " +
+                                                     "Removed from queue.");
       }
       this.queue.clear();
     }
