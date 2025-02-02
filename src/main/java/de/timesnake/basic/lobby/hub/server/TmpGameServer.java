@@ -49,7 +49,7 @@ public class TmpGameServer extends GameServer<TmpGameInfo> {
     this.maxPlayersPerTeam = gameServer.getMaxPlayersPerTeam();
 
     Integer teamAmount = gameServer.getTeamAmount();
-    if (gameHub.getGameInfo().getTeamSizes().size() > 1) {
+    if (gameHub.getGameInfo().getTeamAmounts().size() > 1) {
       this.teamAmount = teamAmount;
     } else {
       this.teamAmount = null;
