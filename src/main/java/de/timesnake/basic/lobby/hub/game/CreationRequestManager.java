@@ -9,7 +9,7 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
-import de.timesnake.basic.lobby.chat.Plugin;
+import de.timesnake.basic.lobby.server.LobbyServer;
 import de.timesnake.channel.util.message.ChannelUserMessage;
 import de.timesnake.channel.util.message.MessageType;
 import de.timesnake.library.basic.util.Availability;
@@ -20,7 +20,7 @@ import org.bukkit.Material;
 
 public class CreationRequestManager implements UserInventoryClickListener {
 
-  public static final Code CREATION_PERM = Plugin.LOBBY.createPermssionCode(
+  public static final Code CREATION_PERM = LobbyServer.PLUGIN.createPermssionCode(
       "lobby.gamehub.creation_request");
 
   private final ExItemStack item = new ExItemStack(Material.BLUE_WOOL)
@@ -45,7 +45,7 @@ public class CreationRequestManager implements UserInventoryClickListener {
 
     e.setCancelled(true);
 
-    if (!user.hasPermission(CREATION_PERM, Plugin.LOBBY)) {
+    if (!user.hasPermission(CREATION_PERM, LobbyServer.PLUGIN)) {
       return;
     }
 

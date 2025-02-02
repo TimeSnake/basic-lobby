@@ -5,7 +5,6 @@
 package de.timesnake.basic.lobby.user;
 
 import de.timesnake.basic.bukkit.util.user.User;
-import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.server.LobbyServer;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.user.DbPunishment;
@@ -75,9 +74,9 @@ public class LobbyUser extends User {
     if (!this.isService()) {
       this.setService(true);
       this.unlockInventory();
-      this.sendPluginTDMessage(Plugin.LOBBY, "§sSwitched to buildmode!");
+      this.sendPluginTDMessage(LobbyServer.PLUGIN, "§sSwitched to buildmode!");
     } else {
-      this.sendPluginTDMessage(Plugin.LOBBY, "§sSwitched to lobbymode!");
+      this.sendPluginTDMessage(LobbyServer.PLUGIN, "§sSwitched to lobbymode!");
       this.setService(false);
       this.joinLobby(false);
     }

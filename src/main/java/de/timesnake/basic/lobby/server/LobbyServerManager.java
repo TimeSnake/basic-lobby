@@ -14,7 +14,6 @@ import de.timesnake.basic.bukkit.util.user.scoreboard.SideboardBuilder;
 import de.timesnake.basic.bukkit.util.world.ExWorld;
 import de.timesnake.basic.bukkit.util.world.ExWorld.Restriction;
 import de.timesnake.basic.lobby.build.Build;
-import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.hub.GamesMenu;
 import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.basic.lobby.user.JailManager;
@@ -24,6 +23,7 @@ import de.timesnake.basic.lobby.user.UserManager;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.library.basic.util.Status;
 import de.timesnake.library.chat.ExTextColor;
+import de.timesnake.library.chat.Plugin;
 import de.timesnake.library.network.NetworkVariables;
 import de.timesnake.library.pets.PetManager;
 import de.timesnake.library.plot.plots.PlotManager;
@@ -241,7 +241,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
   public void onUserJoin(UserJoinEvent e) {
     LobbyUser user = (LobbyUser) e.getUser();
     if (user.isService()) {
-      user.sendPluginTDMessage(Plugin.LOBBY, "§sSwitched to lobby-mode!");
+      user.sendPluginTDMessage(LobbyServer.PLUGIN, "§sSwitched to lobby-mode!");
       user.setStatus(Status.User.ONLINE);
     }
 

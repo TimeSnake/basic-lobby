@@ -9,7 +9,6 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserDamageByUserEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserDamageEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserDeathEvent;
-import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.basic.lobby.server.LobbyServer;
 import org.bukkit.Material;
@@ -76,7 +75,7 @@ public class UserManager implements Listener {
         && e.getClickedBlock().getType().equals(Material.TURTLE_EGG)) {
       User user = Server.getUser(e.getPlayer());
       user.removeCoins(10, true);
-      Server.broadcastTDMessage(Plugin.LOBBY, user.getTDChatName() + "§w trampled on turtle eggs!");
+      Server.broadcastTDMessage(LobbyServer.PLUGIN, user.getTDChatName() + "§w trampled on turtle eggs!");
     }
   }
 }

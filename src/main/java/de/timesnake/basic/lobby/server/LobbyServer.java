@@ -10,9 +10,12 @@ import de.timesnake.basic.bukkit.util.world.ExWorld;
 import de.timesnake.basic.lobby.build.Build;
 import de.timesnake.basic.lobby.hub.GamesMenu;
 import de.timesnake.basic.lobby.user.LobbyInventory;
+import de.timesnake.library.chat.Plugin;
 import de.timesnake.library.waitinggames.WaitingGameManager;
 
 public class LobbyServer extends Server {
+
+  public static final Plugin PLUGIN = new Plugin("Lobby", "BLY");
 
   public static void msgHelp() {
     server.broadcastInfoMessage();

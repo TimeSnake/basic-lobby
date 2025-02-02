@@ -7,8 +7,8 @@ package de.timesnake.basic.lobby.user;
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
-import de.timesnake.basic.lobby.chat.Plugin;
 import de.timesnake.basic.lobby.main.BasicLobby;
+import de.timesnake.basic.lobby.server.LobbyServer;
 import de.timesnake.library.chat.ExTextColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -34,13 +34,13 @@ public class LobbyInventory implements Listener {
       .setLore("§fClick to show the rules")
       .setMoveable(false)
       .setDropable(false)
-      .onClick(event -> event.getUser().sendPluginMessage(Plugin.LOBBY,
+      .onClick(event -> event.getUser().sendPluginMessage(LobbyServer.PLUGIN,
               Component.text("https://timesnake.de/rules", ExTextColor.PERSONAL)
                   .hoverEvent(HoverEvent.hoverEvent(Action.SHOW_TEXT,
                       Component.text("Click to open link")))
                   .clickEvent(ClickEvent.openUrl("https://timesnake.de/rules"))),
           true)
-      .onInteract(event -> event.getUser().sendPluginMessage(Plugin.LOBBY,
+      .onInteract(event -> event.getUser().sendPluginMessage(LobbyServer.PLUGIN,
           Component.text("https://timesnake.de/rules", ExTextColor.PERSONAL)
               .hoverEvent(HoverEvent.hoverEvent(Action.SHOW_TEXT,
                   Component.text("Click to open link")))
@@ -76,7 +76,7 @@ public class LobbyInventory implements Listener {
       if (p.getInventory().getItem(e.getNewSlot()) != null
           && p.getInventory().getItem(e.getNewSlot()).getItemMeta() != null
           && ExItemStack.getItem(p.getInventory().getItem(e.getNewSlot()), true)
-          .equals(SPEED)) {
+              .equals(SPEED)) {
         p.setWalkSpeed(0.8F);
         return;
       }
