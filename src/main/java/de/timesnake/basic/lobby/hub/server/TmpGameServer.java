@@ -102,9 +102,9 @@ public class TmpGameServer extends GameServer<TmpGameInfo> {
       user.setTask(this.getTask());
       user.setStatus(Status.User.SPECTATOR);
       user.switchToServer(gameServerName);
+    } else {
+      super.tryMoveUserToGameStateServer(user);
     }
-
-    super.tryMoveUserToGameStateServer(user);
   }
 
   @ChannelHandler(type = {ListenerType.SERVER_PASSWORD, ListenerType.SERVER_STATUS,
