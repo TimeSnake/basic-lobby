@@ -8,13 +8,10 @@ import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserQuitEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
 import de.timesnake.basic.lobby.hub.ServerPasswordCmd;
 import de.timesnake.basic.lobby.hub.game.GameHub;
 import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.basic.lobby.server.LobbyServer;
-import de.timesnake.basic.lobby.user.LobbyUser;
 import de.timesnake.channel.util.listener.ChannelListener;
 import de.timesnake.database.util.server.DbTaskServer;
 import de.timesnake.library.basic.util.Status;
@@ -29,7 +26,7 @@ import java.util.List;
 import java.util.Queue;
 
 public abstract class GameServer<GameInfo extends de.timesnake.library.game.GameInfo>
-    implements ChannelListener, UserInventoryClickListener, Listener, GameServerBasis {
+    implements ChannelListener, Listener, GameServerBasis {
 
   protected final DbTaskServer database;
 
@@ -64,15 +61,14 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
 
     this.item = new ExItemStack(Material.WHITE_WOOL)
         .setDisplayName("§6" + this.displayName)
-        .setSlot(slot);
+        .setSlot(slot)
+        .onClick(e -> this.onClick(e.getUser(), e.getClickType()), true);
 
     this.updateItemAmount();
     this.updateItemDescription();
     if (updateItem) {
       this.updateItem();
     }
-
-    Server.getInventoryEventManager().addClickListener(this, this.item);
   }
 
   protected void update() {
@@ -114,7 +110,7 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
       this.item = this.item.withType(OFFLINE);
       lore.add(OFFLINE_TEXT);
       this.queueing = false;
-    } else if (Status.Server.LOADING.equals(this.status)) {
+    } else if (Status.Server.LAUNCHING.equals(this.status) || Status.Server.LOADING.equals(this.status)) {
       this.item.setAmount(1);
       this.item = this.item.withType(STARTING);
       lore.add(STARTING_TEXT);
@@ -168,15 +164,6 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
 
   protected void updateItem() {
     gameHub.updateServer(this);
-  }
-
-  @Override
-  public void onUserInventoryClick(UserInventoryClickEvent e) {
-    LobbyUser user = (LobbyUser) e.getUser();
-    ClickType clickType = e.getClickType();
-
-    this.onClick(user, clickType);
-    e.setCancelled(true);
   }
 
   protected void onClick(User user, ClickType type) {
@@ -301,7 +288,7 @@ public abstract class GameServer<GameInfo extends de.timesnake.library.game.Game
   public void destroy() {
     Server.getChannel().removeListener(this);
     UserQuitEvent.getHandlerList().unregister(this);
-    Server.getInventoryEventManager().removeClickListener(this);
+    this.item.clearListeners();
   }
 
 }
