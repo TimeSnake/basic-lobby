@@ -12,7 +12,7 @@ import de.timesnake.basic.bukkit.util.user.event.UserJoinEvent;
 import de.timesnake.basic.bukkit.util.user.scoreboard.Sideboard;
 import de.timesnake.basic.bukkit.util.user.scoreboard.SideboardBuilder;
 import de.timesnake.basic.bukkit.util.world.ExWorld;
-import de.timesnake.basic.bukkit.util.world.ExWorld.Restriction;
+import de.timesnake.basic.bukkit.util.world.ExWorldOption;
 import de.timesnake.basic.lobby.build.Build;
 import de.timesnake.basic.lobby.hub.GamesMenu;
 import de.timesnake.basic.lobby.main.BasicLobby;
@@ -89,18 +89,18 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
       }
     }
 
-    this.lobbyWorld.restrict(Restriction.ENTITY_EXPLODE, true);
-    this.lobbyWorld.restrict(Restriction.FLUID_FLOW, true);
-    this.lobbyWorld.restrict(Restriction.NO_PLAYER_DAMAGE, false);
-    this.lobbyWorld.restrict(Restriction.FOOD_CHANGE, true);
-    this.lobbyWorld.restrict(Restriction.BLOCK_BURN_UP, true);
-    this.lobbyWorld.restrict(Restriction.ENTITY_BLOCK_BREAK, true);
-    this.lobbyWorld.restrict(Restriction.DROP_PICK_ITEM, true);
-    this.lobbyWorld.restrict(Restriction.BLOCK_BREAK, true);
-    this.lobbyWorld.restrict(Restriction.BLOCK_PLACE, true);
-    this.lobbyWorld.restrict(Restriction.PLACE_IN_BLOCK, true);
-    this.lobbyWorld.restrict(Restriction.FLINT_AND_STEEL, true);
-    this.lobbyWorld.restrict(Restriction.LIGHT_UP_INTERACTION, true);
+    this.lobbyWorld.setOption(ExWorldOption.ENABLE_ENTITY_EXPLOSION, false);
+    this.lobbyWorld.setOption(ExWorldOption.ALLOW_FLUID_FLOW, false);
+    this.lobbyWorld.setOption(ExWorldOption.ENABLE_PLAYER_DAMAGE, false);
+    this.lobbyWorld.setOption(ExWorldOption.CHANGE_FOOD, false);
+    this.lobbyWorld.setOption(ExWorldOption.BLOCK_BURN_UP, false);
+    this.lobbyWorld.setOption(ExWorldOption.ALLOW_ENTITY_BLOCK_BREAK, false);
+    this.lobbyWorld.setOption(ExWorldOption.ALLOW_DROP_PICK_ITEM, false);
+    this.lobbyWorld.setOption(ExWorldOption.ALLOW_BLOCK_BREAK, false);
+    this.lobbyWorld.setOption(ExWorldOption.ALLOW_BLOCK_PLACE, false);
+    this.lobbyWorld.setOption(ExWorldOption.ALLOW_PLACE_IN_BLOCK, false);
+    this.lobbyWorld.setOption(ExWorldOption.ALLOW_FLINT_AND_STEEL, false);
+    this.lobbyWorld.setOption(ExWorldOption.ALLOW_LIGHT_UP_INTERACTION, false);
     this.lobbyWorld.setExceptService(true);
     this.lobbyWorld.setPVP(true);
     this.lobbyWorld.setGameRule(GameRule.KEEP_INVENTORY, true);

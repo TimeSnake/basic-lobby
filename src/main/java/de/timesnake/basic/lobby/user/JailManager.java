@@ -7,7 +7,7 @@ package de.timesnake.basic.lobby.user;
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.event.UserQuitEvent;
 import de.timesnake.basic.bukkit.util.world.ExWorld;
-import de.timesnake.basic.bukkit.util.world.ExWorld.Restriction;
+import de.timesnake.basic.bukkit.util.world.ExWorldOption;
 import de.timesnake.basic.lobby.main.BasicLobby;
 import de.timesnake.database.util.user.DbPunishment;
 import de.timesnake.library.basic.util.Tuple;
@@ -37,8 +37,8 @@ public class JailManager implements Listener {
   public JailManager() {
     this.jailWorld = Server.getWorld("jail");
 
-    this.jailWorld.restrict(Restriction.FOOD_CHANGE, true);
-    this.jailWorld.restrict(Restriction.NO_PLAYER_DAMAGE, true);
+    this.jailWorld.setOption(ExWorldOption.CHANGE_FOOD, false);
+    this.jailWorld.setOption(ExWorldOption.ENABLE_PLAYER_DAMAGE, false);
 
     Server.registerListener(this, BasicLobby.getPlugin());
   }
