@@ -99,7 +99,7 @@ public class LobbyServerManager extends ServerManager implements ChannelListener
     this.lobbyWorld.setOption(ExWorldOption.ALLOW_BLOCK_BREAK, false);
     this.lobbyWorld.setOption(ExWorldOption.ALLOW_BLOCK_PLACE, false);
     this.lobbyWorld.setOption(ExWorldOption.ALLOW_PLACE_IN_BLOCK, false);
-    this.lobbyWorld.setOption(ExWorldOption.ALLOW_FLINT_AND_STEEL, false);
+    this.lobbyWorld.setOption(ExWorldOption.ALLOW_FLINT_AND_STEEL_AND_FIRE_CHARGE, false);
     this.lobbyWorld.setOption(ExWorldOption.ALLOW_LIGHT_UP_INTERACTION, false);
     this.lobbyWorld.setExceptService(true);
     this.lobbyWorld.setPVP(true);
